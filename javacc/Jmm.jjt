@@ -1,0 +1,202 @@
+options
+{
+    LOOKAHEAD=1;
+}
+
+PARSER_BEGIN(Jmm)
+public class Jmm {
+    public static void main(String args[]) throws ParseException {
+        
+        System.out.println("Write an Java-- expression:");
+        Jmm myParser = new Jmm(System.in);
+        SimpleNode root = myParser.ParseExpression(); // returns reference to root node 
+        
+        root.dump(""); // prints the tree on the screen
+
+        System.out.println("Finished Parsing");
+        
+        }
+    }
+
+PARSER_END(Jmm)
+
+
+/* Caracters to be skiped */
+SKIP:
+{
+    " " | "\r" | "\t" | "\n"
+}
+
+/*Reserved Words*/
+TOKEN :
+{
+    <IMPORT: "import">
+    | <CLASS: "class" >
+    | <EXTENDS: "extends">
+    | <PUBLIC: "public">
+    | <RETURN: "return">
+    | <STATIC: "static">
+    | <VOID: "void">
+    | <MAIN: "main">
+    | <STRING: "String">
+    | <INT: "int">
+    | <BOOLEAN: "boolean">
+    | <IF: "if">
+    | <ELSE: "else">
+    | <WHILE: "while">
+    | <LENGTH: "length">
+    | <TRUE_: "true">
+    | <FALSE_: "false">
+    | <THIS: "this">
+    | <NEW: "new">
+}
+
+/*Identifier and IntegerLiteral*/
+TOKEN:
+{
+    /*IntegerLiteral*/
+     < INTEGER_LITERAL : <DECIMAL> | <HEXADECIMAL> | <BINARY> | <OCTAL> > 
+   | < #DECIMAL: (["0"-"9"])+ > 
+   | < #HEXADECIMAL: ("0x" | "0X")(["0"-"9", "A"-"F", "a"-"f"])+ > 
+   | < #BINARY: ("0b" | "0B")(["0", "1"])+ > 
+   | < #OCTAL: "0"(["0"-"7"])* > 
+
+   /*Identifier*/
+   | < IDENTIFIER : <LETTER> (<LETTER> | <DIGIT>)* > 
+   | < #LETTER : ["$", "_", "a"-"z", "A"-"Z"] > 
+   | < #DIGIT : ["0"-"9"] >
+    
+}
+
+/* Delimitaters*/
+TOKEN : {
+    < SEMICOLON: ";">
+    | < COLON: ",">
+    | < LEFT_BRACE: "{">
+    | < RIGHT_BRACE: "}">
+    | < LEFT_BRACKET: "[">
+    | < RIGHT_BRACKET: "]">
+    | < LEFT_PARENTESIS: "(">
+    | < RIGHT_PARENTESIS: ")">
+    | < DOT: ".">
+}
+
+/*Operators*/
+TOKEN : {
+    <SUM: "+">
+    | <SUB: "-">
+    | <MUL: "*">
+    | <DIV: "/">
+    | <LESS_THAN: "<">
+    | <AND: "&&"> 
+    | <NEGATION: "!">
+    | <ASSIGN: "=">
+}
+
+SimpleNode ParseExpression(): {}
+{
+    ClassDeclaration() <EOF>  {return jjtThis;} //Java code inside brackets
+
+}
+
+void ClassDeclaration(): {} {
+    <CLASS> <IDENTIFIER> (<EXTENDS> <IDENTIFIER>)? 
+    <LEFT_BRACE> 
+        ( VarDeclaration() )*
+        ( MethodDeclaration() )*
+    <RIGHT_BRACE>
+
+}
+
+void VarDeclaration(): {} {
+    Type() <IDENTIFIER> <SEMICOLON>
+}
+
+void Type(): {} {
+   (<INT> (<LEFT_BRACKET> <RIGHT_BRACKET>)?)
+   | <BOOLEAN> | <IDENTIFIER>
+}
+
+void MethodDeclaration(): {} {
+    <PUBLIC> Type() <IDENTIFIER> 
+    <LEFT_PARENTESIS> 
+        Type() <IDENTIFIER> (<COLON> Type() <IDENTIFIER>)*
+    <RIGHT_PARENTESIS>
+    <LEFT_BRACE> 
+        (LOOKAHEAD(2) VarDeclaration())* 
+        (Statement())*
+        <RETURN>
+        Expression()
+        <SEMICOLON>
+    <RIGHT_BRACE>
+
+}
+
+
+void Statement(): {} {
+
+    (<LEFT_BRACKET> (Statement())* <RIGHT_BRACKET>)
+    | (
+       <IF> 
+        <LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS>
+        Statement()
+       <ELSE>
+        Statement()
+      )
+    | (
+       <WHILE> 
+        <LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS>
+        Statement()
+      )
+    | (LOOKAHEAD(2) 
+    (Expression() <SEMICOLON>)
+    | (
+      <IDENTIFIER> 
+        (<LEFT_BRACKET> Expression() <RIGHT_BRACKET>)? 
+        <ASSIGN> Expression() <SEMICOLON>
+      ))
+}
+
+void Expression() #void : {} {
+
+    AND()
+
+}
+
+ void AND() #void : {} {
+     LessThan() (LOOKAHEAD(2) <AND> LessThan() #AND(2))*
+ }
+
+ void LessThan() #void : {} {
+     Sum() (LOOKAHEAD(2) <LESS_THAN> Sum() #LESSTHAN(2))*
+ }
+
+ void Sum() #void : {} {
+     Mul() (LOOKAHEAD(2) (<SUM> | <SUB>) Mul() #SUM(2))*
+ }
+
+ void Mul() #void : {} {
+     DotExpression() (LOOKAHEAD(2) (<MUL> | <DIV>) DotExpression() #MUL(2))*
+ }
+
+ void DotExpression() #void : {} {
+
+    RestOfExpression() | (( <THIS> | <IDENTIFIER>)
+        (<DOT> <IDENTIFIER> 
+            (<LEFT_PARENTESIS> 
+                (Expression() (<COLON> Expression())*)?
+            <RIGHT_PARENTESIS>)?
+        )?)
+ }
+ 
+
+void RestOfExpression() : {} {
+
+    <INTEGER_LITERAL>
+    | <TRUE_>
+    | <FALSE_>
+    | <NEW> (( <INT> <LEFT_BRACKET> Expression() <RIGHT_BRACKET> ) | (<IDENTIFIER> <LEFT_PARENTESIS> <RIGHT_PARENTESIS> ))
+    | ( <NEGATION> Expression() )
+    | ( <LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS>)
+}
+
