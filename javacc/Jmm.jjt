@@ -24,13 +24,15 @@ PARSER_END(Jmm)
 /* Caracters to be skiped */
 SKIP:
 {
-    " " | "\r" | "\t" | "\n"
+    " " | "\r" | "\t" | "\n" 
+    | <"//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")> |         /* Inline comments */
+    <"/*" (~["*"])* "*" (~["/"] (~["*"])* "*")* "/">    /* Block comments */
 }
 
 /*Reserved Words*/
 TOKEN :
 {
-    <IMPORT: "import">
+    <IMPORT: "import" (~[";"])* ";" > //Temporary: Change when professors give all the rules
     | <CLASS: "class" >
     | <EXTENDS: "extends">
     | <PUBLIC: "public">
@@ -95,11 +97,12 @@ TOKEN : {
 
 SimpleNode ParseExpression(): {}
 {
-    ClassDeclaration() <EOF>  {return jjtThis;} //Java code inside brackets
+    ClassDeclaration() <EOF> {return jjtThis;} //Java code inside brackets
 
 }
 
 void ClassDeclaration() #void : {} {
+    (<IMPORT>)?
     <CLASS> <IDENTIFIER> (<EXTENDS> <IDENTIFIER>)? 
     <LEFT_BRACE> 
         ( VarDeclaration() )*
@@ -118,9 +121,19 @@ void Type(): {} {
 }
 
 void MethodDeclaration(): {} {
-    <PUBLIC> Type() <IDENTIFIER> 
+    <PUBLIC> 
+    ((<STATIC> <VOID> <MAIN> 
     <LEFT_PARENTESIS> 
-        Type() <IDENTIFIER> (<COLON> Type() <IDENTIFIER>)*
+        <STRING> <LEFT_BRACKET> <RIGHT_BRACKET> <IDENTIFIER>
+    <RIGHT_PARENTESIS>
+    <LEFT_BRACE> 
+        (LOOKAHEAD(2) VarDeclaration())* 
+        (Statement())*
+    <RIGHT_BRACE>)
+    |
+    (Type() <IDENTIFIER> 
+    <LEFT_PARENTESIS> 
+        (Type() <IDENTIFIER> (<COLON> Type() <IDENTIFIER>)*)?
     <RIGHT_PARENTESIS>
     <LEFT_BRACE> 
         (LOOKAHEAD(2) VarDeclaration())* 
@@ -128,14 +141,14 @@ void MethodDeclaration(): {} {
         <RETURN>
         Expression()
         <SEMICOLON>
-    <RIGHT_BRACE>
+    <RIGHT_BRACE>))
 
 }
 
 
 void Statement(): {} {
 
-    (<LEFT_BRACKET> (Statement())* <RIGHT_BRACKET>)
+    (<LEFT_BRACE> (Statement())* <RIGHT_BRACE>)
     | (
        <IF> 
         <LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS>
@@ -149,12 +162,11 @@ void Statement(): {} {
         Statement()
       )
     | (LOOKAHEAD(2) 
-    (Expression() <SEMICOLON>)
-    | (
-      <IDENTIFIER> 
+    ( <IDENTIFIER> 
         (<LEFT_BRACKET> Expression() <RIGHT_BRACKET>)? 
         <ASSIGN> Expression() <SEMICOLON>
-      ))
+      ) 
+      | (Expression() <SEMICOLON>))
 }
 
 void Expression() #void : {} {
@@ -176,20 +188,29 @@ void Expression() #void : {} {
  }
 
  void Mul() #void : {} {
-     RestOfExpression() (LOOKAHEAD(2) (<MUL> | <DIV>) RestOfExpression() #MUL(2))*
+     RestOfExpression2() (LOOKAHEAD(2) (<MUL> | <DIV>) RestOfExpression2() #MUL(2))*
+ } 
+
+void DotExpression() #void : {} {
+     BracketExpression() (LOOKAHEAD(2) <DOT> (<IDENTIFIER> | <LENGTH>)
+            (<LEFT_PARENTESIS> 
+                (Expression() (<COLON> Expression())*)?
+            <RIGHT_PARENTESIS>)?
+        )*
+ } 
+
+ void BracketExpression() #void : {} {
+     RestOfExpression() (LOOKAHEAD(2) <LEFT_BRACKET> Expression() <RIGHT_BRACKET>)*
  } 
 
 void RestOfExpression() : {} {
 
-    <INTEGER_LITERAL>
-    | <TRUE_>
-    | <FALSE_>
-    | <NEW> (( <INT> <LEFT_BRACKET> Expression() <RIGHT_BRACKET> ) | (<IDENTIFIER> <LEFT_PARENTESIS> <RIGHT_PARENTESIS> ))
+     <NEW> (( <INT> <LEFT_BRACKET> Expression() <RIGHT_BRACKET> ) | (<IDENTIFIER> <LEFT_PARENTESIS> <RIGHT_PARENTESIS> ))
     | ( <NEGATION> Expression() )
     | ( <LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS>)
-    | ((<IDENTIFIER> | <THIS>) (<DOT> <IDENTIFIER> 
-            (<LEFT_PARENTESIS> 
-                (Expression() (<COLON> Expression())*)?
-            <RIGHT_PARENTESIS>)?
-        )? )
+    | <IDENTIFIER> | <THIS>
+}
+
+void RestOfExpression2() : {} {
+     DotExpression() | <INTEGER_LITERAL> | <TRUE_> | <FALSE_>
 }

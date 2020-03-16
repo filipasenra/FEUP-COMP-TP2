@@ -9,93 +9,93 @@ public interface JmmConstants {
   /** End of File. */
   int EOF = 0;
   /** RegularExpression Id. */
-  int IMPORT = 5;
+  int IMPORT = 7;
   /** RegularExpression Id. */
-  int CLASS = 6;
+  int CLASS = 8;
   /** RegularExpression Id. */
-  int EXTENDS = 7;
+  int EXTENDS = 9;
   /** RegularExpression Id. */
-  int PUBLIC = 8;
+  int PUBLIC = 10;
   /** RegularExpression Id. */
-  int RETURN = 9;
+  int RETURN = 11;
   /** RegularExpression Id. */
-  int STATIC = 10;
+  int STATIC = 12;
   /** RegularExpression Id. */
-  int VOID = 11;
+  int VOID = 13;
   /** RegularExpression Id. */
-  int MAIN = 12;
+  int MAIN = 14;
   /** RegularExpression Id. */
-  int STRING = 13;
+  int STRING = 15;
   /** RegularExpression Id. */
-  int INT = 14;
+  int INT = 16;
   /** RegularExpression Id. */
-  int BOOLEAN = 15;
+  int BOOLEAN = 17;
   /** RegularExpression Id. */
-  int IF = 16;
+  int IF = 18;
   /** RegularExpression Id. */
-  int ELSE = 17;
+  int ELSE = 19;
   /** RegularExpression Id. */
-  int WHILE = 18;
+  int WHILE = 20;
   /** RegularExpression Id. */
-  int LENGTH = 19;
+  int LENGTH = 21;
   /** RegularExpression Id. */
-  int TRUE_ = 20;
+  int TRUE_ = 22;
   /** RegularExpression Id. */
-  int FALSE_ = 21;
+  int FALSE_ = 23;
   /** RegularExpression Id. */
-  int THIS = 22;
+  int THIS = 24;
   /** RegularExpression Id. */
-  int NEW = 23;
+  int NEW = 25;
   /** RegularExpression Id. */
-  int INTEGER_LITERAL = 24;
+  int INTEGER_LITERAL = 26;
   /** RegularExpression Id. */
-  int DECIMAL = 25;
+  int DECIMAL = 27;
   /** RegularExpression Id. */
-  int HEXADECIMAL = 26;
+  int HEXADECIMAL = 28;
   /** RegularExpression Id. */
-  int BINARY = 27;
+  int BINARY = 29;
   /** RegularExpression Id. */
-  int OCTAL = 28;
+  int OCTAL = 30;
   /** RegularExpression Id. */
-  int IDENTIFIER = 29;
+  int IDENTIFIER = 31;
   /** RegularExpression Id. */
-  int LETTER = 30;
+  int LETTER = 32;
   /** RegularExpression Id. */
-  int DIGIT = 31;
+  int DIGIT = 33;
   /** RegularExpression Id. */
-  int SEMICOLON = 32;
+  int SEMICOLON = 34;
   /** RegularExpression Id. */
-  int COLON = 33;
+  int COLON = 35;
   /** RegularExpression Id. */
-  int LEFT_BRACE = 34;
+  int LEFT_BRACE = 36;
   /** RegularExpression Id. */
-  int RIGHT_BRACE = 35;
+  int RIGHT_BRACE = 37;
   /** RegularExpression Id. */
-  int LEFT_BRACKET = 36;
+  int LEFT_BRACKET = 38;
   /** RegularExpression Id. */
-  int RIGHT_BRACKET = 37;
+  int RIGHT_BRACKET = 39;
   /** RegularExpression Id. */
-  int LEFT_PARENTESIS = 38;
+  int LEFT_PARENTESIS = 40;
   /** RegularExpression Id. */
-  int RIGHT_PARENTESIS = 39;
+  int RIGHT_PARENTESIS = 41;
   /** RegularExpression Id. */
-  int DOT = 40;
+  int DOT = 42;
   /** RegularExpression Id. */
-  int SUM = 41;
+  int SUM = 43;
   /** RegularExpression Id. */
-  int SUB = 42;
+  int SUB = 44;
   /** RegularExpression Id. */
-  int MUL = 43;
+  int MUL = 45;
   /** RegularExpression Id. */
-  int DIV = 44;
+  int DIV = 46;
   /** RegularExpression Id. */
-  int LESS_THAN = 45;
+  int LESS_THAN = 47;
   /** RegularExpression Id. */
-  int AND = 46;
+  int AND = 48;
   /** RegularExpression Id. */
-  int NEGATION = 47;
+  int NEGATION = 49;
   /** RegularExpression Id. */
-  int ASSIGN = 48;
+  int ASSIGN = 50;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -107,7 +107,9 @@ public interface JmmConstants {
     "\"\\r\"",
     "\"\\t\"",
     "\"\\n\"",
-    "\"import\"",
+    "<token of kind 5>",
+    "<token of kind 6>",
+    "<IMPORT>",
     "\"class\"",
     "\"extends\"",
     "\"public\"",

@@ -12,6 +12,7 @@ public interface JmmTreeConstants
   public int JJTSUM = 8;
   public int JJTMUL = 9;
   public int JJTRESTOFEXPRESSION = 10;
+  public int JJTRESTOFEXPRESSION2 = 11;
 
 
   public String[] jjtNodeName = {
@@ -26,6 +27,7 @@ public interface JmmTreeConstants
     "SUM",
     "MUL",
     "RestOfExpression",
+    "RestOfExpression2",
   };
 }
-/* JavaCC - OriginalChecksum=cc2fb9103345e444205c0bac20a89d07 (do not edit this line) */
+/* JavaCC - OriginalChecksum=ff3f946169a1d210e8ef42ad6a1cf8a4 (do not edit this line) */
