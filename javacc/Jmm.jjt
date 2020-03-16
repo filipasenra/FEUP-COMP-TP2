@@ -176,13 +176,8 @@ void Expression() #void : {} {
  }
 
  void Mul() #void : {} {
-     DotExpression() (LOOKAHEAD(2) (<MUL> | <DIV>) DotExpression() #MUL(2))*
- }
-
- void DotExpression() #void : {} {
-   RestOfExpression()
- }
- 
+     RestOfExpression() (LOOKAHEAD(2) (<MUL> | <DIV>) RestOfExpression() #MUL(2))*
+ } 
 
 void RestOfExpression() : {} {
 
@@ -198,4 +193,3 @@ void RestOfExpression() : {} {
             <RIGHT_PARENTESIS>)?
         )? )
 }
-
