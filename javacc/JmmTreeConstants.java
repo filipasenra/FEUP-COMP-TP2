@@ -2,27 +2,25 @@
 public interface JmmTreeConstants
 {
   public int JJTPARSEEXPRESSION = 0;
-  public int JJTCLASSDECLARATION = 1;
+  public int JJTVOID = 1;
   public int JJTVARDECLARATION = 2;
   public int JJTTYPE = 3;
   public int JJTMETHODDECLARATION = 4;
   public int JJTSTATEMENT = 5;
-  public int JJTVOID = 6;
-  public int JJTAND = 7;
-  public int JJTLESSTHAN = 8;
-  public int JJTSUM = 9;
-  public int JJTMUL = 10;
-  public int JJTRESTOFEXPRESSION = 11;
+  public int JJTAND = 6;
+  public int JJTLESSTHAN = 7;
+  public int JJTSUM = 8;
+  public int JJTMUL = 9;
+  public int JJTRESTOFEXPRESSION = 10;
 
 
   public String[] jjtNodeName = {
     "ParseExpression",
-    "ClassDeclaration",
+    "void",
     "VarDeclaration",
     "Type",
     "MethodDeclaration",
     "Statement",
-    "void",
     "AND",
     "LESSTHAN",
     "SUM",
@@ -30,4 +28,4 @@ public interface JmmTreeConstants
     "RestOfExpression",
   };
 }
-/* JavaCC - OriginalChecksum=312616704707f40fb33c40da8865a456 (do not edit this line) */
+/* JavaCC - OriginalChecksum=cc2fb9103345e444205c0bac20a89d07 (do not edit this line) */

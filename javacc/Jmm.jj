@@ -134,38 +134,12 @@ SimpleNode ParseExpression(): {/*@bgen(jjtree) ParseExpression */
 
 }
 
-void ClassDeclaration(): {/*@bgen(jjtree) ClassDeclaration */
-  SimpleNode jjtn000 = new SimpleNode(JJTCLASSDECLARATION);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
-/*@egen*/} {/*@bgen(jjtree) ClassDeclaration */
-    try {
-/*@egen*/
+void ClassDeclaration()       : {} {
     <CLASS> <IDENTIFIER> (<EXTENDS> <IDENTIFIER>)? 
     <LEFT_BRACE> 
         ( VarDeclaration() )*
         ( MethodDeclaration() )*
-    <RIGHT_BRACE>/*@bgen(jjtree)*/
-    } catch (Throwable jjte000) {
-      if (jjtc000) {
-        jjtree.clearNodeScope(jjtn000);
-        jjtc000 = false;
-      } else {
-        jjtree.popNode();
-      }
-      if (jjte000 instanceof RuntimeException) {
-        throw (RuntimeException)jjte000;
-      }
-      if (jjte000 instanceof ParseException) {
-        throw (ParseException)jjte000;
-      }
-      throw (Error)jjte000;
-    } finally {
-      if (jjtc000) {
-        jjtree.closeNodeScope(jjtn000, true);
-      }
-    }
-/*@egen*/
+    <RIGHT_BRACE>
 
 }
 
@@ -196,7 +170,7 @@ void VarDeclaration(): {/*@bgen(jjtree) VarDeclaration */
         jjtree.closeNodeScope(jjtn000, true);
       }
     }
-/*@egen*/
+/*@egen*/ 
 }
 
 void Type(): {/*@bgen(jjtree) Type */
@@ -279,8 +253,13 @@ void Statement(): {/*@bgen(jjtree) Statement */
         <LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS>
         Statement()
       )
-    | 
-    Expression() <SEMICOLON>/*@bgen(jjtree)*/
+    | (LOOKAHEAD(2) 
+    (Expression() <SEMICOLON>)
+    | (
+      <IDENTIFIER> 
+        (<LEFT_BRACKET> Expression() <RIGHT_BRACKET>)? 
+        <ASSIGN> Expression() <SEMICOLON>
+      ))/*@bgen(jjtree)*/
     } catch (Throwable jjte000) {
       if (jjtc000) {
         jjtree.clearNodeScope(jjtn000);
@@ -434,13 +413,7 @@ void Expression()       : {} {
  }
 
  void DotExpression()       : {} {
-
-    RestOfExpression() | (( <THIS> | <IDENTIFIER>)
-        (<DOT> <IDENTIFIER> 
-            (<LEFT_PARENTESIS> 
-                (Expression() (<COLON> Expression())*)?
-            <RIGHT_PARENTESIS>)?
-        )?)
+   RestOfExpression()
  }
  
 
@@ -457,7 +430,12 @@ void RestOfExpression() : {/*@bgen(jjtree) RestOfExpression */
     | <FALSE_>
     | <NEW> (( <INT> <LEFT_BRACKET> Expression() <RIGHT_BRACKET> ) | (<IDENTIFIER> <LEFT_PARENTESIS> <RIGHT_PARENTESIS> ))
     | ( <NEGATION> Expression() )
-    | ( <LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS>)/*@bgen(jjtree)*/
+    | ( <LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS>)
+    | ((<IDENTIFIER> | <THIS>) (<DOT> <IDENTIFIER> 
+            (<LEFT_PARENTESIS> 
+                (Expression() (<COLON> Expression())*)?
+            <RIGHT_PARENTESIS>)?
+        )? )/*@bgen(jjtree)*/
     } catch (Throwable jjte000) {
       if (jjtc000) {
         jjtree.clearNodeScope(jjtn000);

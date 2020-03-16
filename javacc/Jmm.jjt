@@ -99,7 +99,7 @@ SimpleNode ParseExpression(): {}
 
 }
 
-void ClassDeclaration(): {} {
+void ClassDeclaration() #void : {} {
     <CLASS> <IDENTIFIER> (<EXTENDS> <IDENTIFIER>)? 
     <LEFT_BRACE> 
         ( VarDeclaration() )*
@@ -109,7 +109,7 @@ void ClassDeclaration(): {} {
 }
 
 void VarDeclaration(): {} {
-    Type() <IDENTIFIER> <SEMICOLON>
+    Type() <IDENTIFIER> <SEMICOLON> 
 }
 
 void Type(): {} {
@@ -180,13 +180,7 @@ void Expression() #void : {} {
  }
 
  void DotExpression() #void : {} {
-
-    RestOfExpression() | (( <THIS> | <IDENTIFIER>)
-        (<DOT> <IDENTIFIER> 
-            (<LEFT_PARENTESIS> 
-                (Expression() (<COLON> Expression())*)?
-            <RIGHT_PARENTESIS>)?
-        )?)
+   RestOfExpression()
  }
  
 
@@ -198,5 +192,10 @@ void RestOfExpression() : {} {
     | <NEW> (( <INT> <LEFT_BRACKET> Expression() <RIGHT_BRACKET> ) | (<IDENTIFIER> <LEFT_PARENTESIS> <RIGHT_PARENTESIS> ))
     | ( <NEGATION> Expression() )
     | ( <LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS>)
+    | ((<IDENTIFIER> | <THIS>) (<DOT> <IDENTIFIER> 
+            (<LEFT_PARENTESIS> 
+                (Expression() (<COLON> Expression())*)?
+            <RIGHT_PARENTESIS>)?
+        )? )
 }
 
