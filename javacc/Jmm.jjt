@@ -7,16 +7,26 @@ PARSER_BEGIN(Jmm)
 public class Jmm {
     public static void main(String args[]) throws ParseException {
         
-        System.out.println("Write an Java-- expression:");
-        Jmm myParser = new Jmm(System.in);
-        SimpleNode root = myParser.ParseExpression(); // returns reference to root node 
-        
-        root.dump(""); // prints the tree on the screen
+        if(args.length != 1){
+            System.err.println("Usage: java Jmm <filename>");
+            return;
+            }
 
-        System.out.println("Finished Parsing");
         
-        }
+        try {
+            Jmm myParser = new Jmm(new java.io.FileInputStream(args[0]));
+
+            SimpleNode root = myParser.ParseExpression(); // returns reference to root node 
+            root.dump(""); // prints the tree on the screen
+            System.out.println("Finished Parsing");
+            
+        } 
+        catch (java.io.FileNotFoundException e) {
+            System.out.println("file " + args[0] + " not found.");
+            return;
+        }        
     }
+}
 
 PARSER_END(Jmm)
 
@@ -101,7 +111,7 @@ SimpleNode ParseExpression(): {}
 
 }
 
-void ClassDeclaration() #void : {} {
+void ClassDeclaration(): {} {
     (<IMPORT>)?
     <CLASS> <IDENTIFIER> (<EXTENDS> <IDENTIFIER>)? 
     <LEFT_BRACE> 
@@ -111,16 +121,16 @@ void ClassDeclaration() #void : {} {
 
 }
 
-void VarDeclaration(): {} {
-    Type() <IDENTIFIER> <SEMICOLON> 
+void VarDeclaration() : {Token t;} {
+    Type() t = <IDENTIFIER> <SEMICOLON> {jjtThis.val = t.image;}
 }
 
-void Type(): {} {
+void Type() #void : {} {
    (<INT> (<LEFT_BRACKET> <RIGHT_BRACKET>)?)
    | <BOOLEAN> | <IDENTIFIER>
 }
 
-void MethodDeclaration(): {} {
+void MethodDeclaration() : {} {
     <PUBLIC> 
     ((<STATIC> <VOID> <MAIN> 
     <LEFT_PARENTESIS> 
@@ -149,27 +159,32 @@ void MethodDeclaration(): {} {
 void Statement(): {} {
 
     (<LEFT_BRACE> (Statement())* <RIGHT_BRACE>)
-    | (
-       <IF> 
-        <LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS>
-        Statement()
-       <ELSE>
-        Statement()
-      )
-    | (
-       <WHILE> 
-        <LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS>
-        Statement()
-      )
-    | (LOOKAHEAD(2) 
-    ( <IDENTIFIER> 
-        (<LEFT_BRACKET> Expression() <RIGHT_BRACKET>)? 
-        <ASSIGN> Expression() <SEMICOLON>
-      ) 
-      | (Expression() <SEMICOLON>))
+    | If()
+    | While()
+    | (LOOKAHEAD(2) Equality() | (Expression() <SEMICOLON>))
 }
 
-void Expression() #void : {} {
+void If() : {} {
+    <IF> 
+        <LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS>
+        Statement()
+    <ELSE>
+        Statement()
+}
+
+void While() : {} {
+    <WHILE> 
+        <LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS>
+        Statement()
+}
+
+void Equality() : {Token t;} {
+    t = <IDENTIFIER> 
+        (<LEFT_BRACKET> Expression() <RIGHT_BRACKET>)? 
+        <ASSIGN> Expression() <SEMICOLON> {jjtThis.val = t.image;}
+}
+
+void Expression() : {} {
 
     AND()
 
@@ -188,8 +203,13 @@ void Expression() #void : {} {
  }
 
  void Mul() #void : {} {
-     FinalExpression2() (LOOKAHEAD(2) (<MUL> | <DIV>) FinalExpression2() #MUL(2))*
+     Literal() (LOOKAHEAD(2) (<MUL> | <DIV>) Literal() #MUL(2))*
  } 
+
+void Literal() #void : {Token t;} {
+   DotExpression() | 
+   ( t= <INTEGER_LITERAL> | t = <TRUE_> | t = <FALSE_>) {jjtThis.val = t.image;} #Literal
+}
 
 void DotExpression() #void : {} {
      BracketExpression() (LOOKAHEAD(2) <DOT> (<IDENTIFIER> | <LENGTH>)
@@ -203,14 +223,22 @@ void DotExpression() #void : {} {
      FinalExpression() (LOOKAHEAD(2) <LEFT_BRACKET> Expression() <RIGHT_BRACKET>)*
  } 
 
-void FinalExpression() : {} {
+void FinalExpression() #void : {Token t;} {
 
-     <NEW> (( <INT> <LEFT_BRACKET> Expression() <RIGHT_BRACKET> ) | (<IDENTIFIER> <LEFT_PARENTESIS> <RIGHT_PARENTESIS> ))
-    | ( <NEGATION> Expression() )
+    New()
+    | ( <NEGATION> Expression() #Negation)
     | ( <LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS>)
-    | <IDENTIFIER> | <THIS>
+    | ( t = <IDENTIFIER> | t = <THIS>) {jjtThis.val = t.image;} #Literal
 }
 
-void FinalExpression2() : {} {
-     DotExpression() | <INTEGER_LITERAL> | <TRUE_> | <FALSE_>
+void New() #void : {} {
+     <NEW> ( NewIntObject() | NewObject() )
+}
+
+void NewIntObject() : {} {
+    <INT> <LEFT_BRACKET> Expression() <RIGHT_BRACKET>
+}
+
+void NewObject() : {Token t;} {
+    t = <IDENTIFIER> <LEFT_PARENTESIS> <RIGHT_PARENTESIS> {jjtThis.val = t.image;}
 }

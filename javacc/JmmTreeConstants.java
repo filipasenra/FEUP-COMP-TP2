@@ -2,32 +2,44 @@
 public interface JmmTreeConstants
 {
   public int JJTPARSEEXPRESSION = 0;
-  public int JJTVOID = 1;
+  public int JJTCLASSDECLARATION = 1;
   public int JJTVARDECLARATION = 2;
-  public int JJTTYPE = 3;
+  public int JJTVOID = 3;
   public int JJTMETHODDECLARATION = 4;
   public int JJTSTATEMENT = 5;
-  public int JJTAND = 6;
-  public int JJTLESSTHAN = 7;
-  public int JJTSUM = 8;
-  public int JJTMUL = 9;
-  public int JJTRESTOFEXPRESSION = 10;
-  public int JJTRESTOFEXPRESSION2 = 11;
+  public int JJTIF = 6;
+  public int JJTWHILE = 7;
+  public int JJTEQUALITY = 8;
+  public int JJTEXPRESSION = 9;
+  public int JJTAND = 10;
+  public int JJTLESSTHAN = 11;
+  public int JJTSUM = 12;
+  public int JJTMUL = 13;
+  public int JJTLITERAL = 14;
+  public int JJTNEGATION = 15;
+  public int JJTNEWINTOBJECT = 16;
+  public int JJTNEWOBJECT = 17;
 
 
   public String[] jjtNodeName = {
     "ParseExpression",
-    "void",
+    "ClassDeclaration",
     "VarDeclaration",
-    "Type",
+    "void",
     "MethodDeclaration",
     "Statement",
+    "If",
+    "While",
+    "Equality",
+    "Expression",
     "AND",
     "LESSTHAN",
     "SUM",
     "MUL",
-    "RestOfExpression",
-    "RestOfExpression2",
+    "Literal",
+    "Negation",
+    "NewIntObject",
+    "NewObject",
   };
 }
-/* JavaCC - OriginalChecksum=ff3f946169a1d210e8ef42ad6a1cf8a4 (do not edit this line) */
+/* JavaCC - OriginalChecksum=1012a2d1510d3bc6c760a5cfc193e6e6 (do not edit this line) */
