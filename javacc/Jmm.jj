@@ -4,11 +4,17 @@
     LOOKAHEAD=1;
 }
 
+//java Jmm ../bin/test/fixtures/public/Lazysort.jmm
+
 PARSER_BEGIN(Jmm)
 public class Jmm/*@bgen(jjtree)*/implements JmmTreeConstants/*@egen*/ {/*@bgen(jjtree)*/
   protected static JJTJmmState jjtree = new JJTJmmState();
 
 /*@egen*/
+
+    private static final int MAX_ERRORS = 10;
+    private static int nErrors = 0;
+
     public static void main(String args[]) throws ParseException {
         
         if(args.length != 1){
@@ -23,12 +29,37 @@ public class Jmm/*@bgen(jjtree)*/implements JmmTreeConstants/*@egen*/ {/*@bgen(j
             SimpleNode root = myParser.ParseExpression(); // returns reference to root node 
             root.dump(""); // prints the tree on the screen
             System.out.println("Finished Parsing");
-            
+
         } 
         catch (java.io.FileNotFoundException e) {
             System.out.println("file " + args[0] + " not found.");
             return;
         }        
+    }
+
+    private static void errorHandling(ParseException e, int kind) {
+
+        System.out.println("Syntatic error: " + e.toString());  // print the error message
+        
+        nErrors++;
+
+        if(MAX_ERRORS > 10){
+
+            System.out.println("Reached maximum number of errors (" + MAX_ERRORS + ")!");
+            System.exit(-1);
+        }
+
+        error_skipto(kind);
+
+    }
+
+    private static void error_skipto(int kind) {
+    
+        Token t;
+
+        do {
+            t = getNextToken();
+        } while (t.kind != kind);
     }
 }
 
@@ -46,7 +77,7 @@ SKIP:
 /*Reserved Words*/
 TOKEN :
 {
-    <IMPORT: "import" (~[";"])* ";" > //Temporary: Change when professors give all the rules
+    <IMPORT: "import" (~[";"])* ";" > //Temporary: Change when professors give all the rules erase
     | <CLASS: "class" >
     | <EXTENDS: "extends">
     | <PUBLIC: "public">
@@ -350,7 +381,14 @@ void While() : {/*@bgen(jjtree) While */
     try {
 /*@egen*/
     <WHILE> 
-        <LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS>
+        try {
+            <LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS>
+
+        } catch (ParseException e) {
+            
+            errorHandling(e, RIGHT_PARENTESIS);
+        }
+        
         Statement()/*@bgen(jjtree)*/
     } catch (Throwable jjte000) {
       if (jjtc000) {
