@@ -184,7 +184,7 @@ void ClassDeclaration(): {/*@bgen(jjtree) ClassDeclaration */
 /*@egen*/} {/*@bgen(jjtree) ClassDeclaration */
     try {
 /*@egen*/
-    (<IMPORT>)?
+    (<IMPORT>)*
     <CLASS> <IDENTIFIER> (<EXTENDS> <IDENTIFIER>)? 
     <LEFT_BRACE> 
         ( VarDeclaration() )*

@@ -143,7 +143,7 @@ SimpleNode ParseExpression(): {}
 }
 
 void ClassDeclaration(): {} {
-    (<IMPORT>)?
+    (<IMPORT>)*
     <CLASS> <IDENTIFIER> (<EXTENDS> <IDENTIFIER>)? 
     <LEFT_BRACE> 
         ( VarDeclaration() )*
