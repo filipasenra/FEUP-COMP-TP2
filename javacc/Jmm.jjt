@@ -3,7 +3,11 @@ options
     LOOKAHEAD=1;
 }
 
-//java Jmm ../bin/test/fixtures/public/Lazysort.jmm
+// When in javacc folder
+// jjtree Jmm.jjt
+// javacc Jmm.jj
+// javac *.java
+// java Jmm ../bin/test/fixtures/public/Lazysort.jmm
 
 PARSER_BEGIN(Jmm)
 public class Jmm {
