@@ -7,7 +7,6 @@ plugins {
 // Java project
 apply plugin: 'java'
 
-
 // Repositories providers
 repositories {
     mavenCentral()
@@ -16,6 +15,7 @@ repositories {
 dependencies {
     testImplementation "junit:junit:4.11" 
 }
+
 
 
 // Execute JJTree
@@ -41,13 +41,16 @@ sourceSets {
          srcDir 'src'
       }
    }
-	
+   
    test {
       java {
          srcDir 'test'
       }
-   }
-    
+     
+      resources {
+        srcDir 'test'
+      }
+   }  
 }
 
 
@@ -70,4 +73,5 @@ task copyJar() {
 		}	
     }
 }
+
 build.dependsOn copyJar
