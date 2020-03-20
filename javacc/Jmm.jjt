@@ -150,26 +150,29 @@ SimpleNode ParseExpression(): {}
 
 }
 
-void ClassDeclaration(): {} {
+void ClassDeclaration(): {Token className; Token extendsClass;} {
+
     (<IMPORT>)*
-    <CLASS> <IDENTIFIER> (<EXTENDS> <IDENTIFIER>)? 
+    <CLASS> className = <IDENTIFIER> (<EXTENDS> extendsClass = <IDENTIFIER>  {jjtThis.ext = extendsClass.image;})?
     <LEFT_BRACE> 
         ( VarDeclaration() )*
         ( MethodDeclaration() )*
     <RIGHT_BRACE>
+    { jjtThis.name = className.image; }
 
 }
 
 void VarDeclaration() : {Token t;} {
-    Type() t = <IDENTIFIER> <SEMICOLON> {jjtThis.val = t.image;}
+    Type() t = <IDENTIFIER> <SEMICOLON> {jjtThis.name = t.image;}
 }
 
-void Type() #void : {} {
-   (<INT> (<LEFT_BRACKET> <RIGHT_BRACKET>)?)
-   | <BOOLEAN> | <IDENTIFIER>
+void Type() : {Token t;} {
+   (t = <INT> (<LEFT_BRACKET> <RIGHT_BRACKET> {jjtThis.isArray = true;})?)
+   | t = <BOOLEAN> | t = <IDENTIFIER>
+   { jjtThis.type = t.image; }
 }
 
-void MethodDeclaration() : {} {
+void MethodDeclaration() #void : {Token t;} {
     <PUBLIC> 
     ((<STATIC> <VOID> <MAIN> 
     <LEFT_PARENTESIS> 
@@ -178,9 +181,9 @@ void MethodDeclaration() : {} {
     <LEFT_BRACE> 
         (LOOKAHEAD(2) VarDeclaration())* 
         (Statement())*
-    <RIGHT_BRACE>)
+    <RIGHT_BRACE>) #MainDeclaration
     |
-    (Type() <IDENTIFIER> 
+    (Type() t = <IDENTIFIER>
     <LEFT_PARENTESIS> 
         (Type() <IDENTIFIER> (<COLON> Type() <IDENTIFIER>)*)?
     <RIGHT_PARENTESIS>
@@ -190,17 +193,17 @@ void MethodDeclaration() : {} {
         <RETURN>
         Expression()
         <SEMICOLON>
-    <RIGHT_BRACE>))
+    <RIGHT_BRACE> ) {jjtThis.name = t.image;} #MethodDeclaration )
 
 }
 
 
-void Statement(): {} {
+void Statement() #void : {} {
 
-    (<LEFT_BRACE> (Statement())* <RIGHT_BRACE>)
+    (<LEFT_BRACE> (Statement())* <RIGHT_BRACE> ) #ComplexStatement
     | If()
     | While()
-    | (LOOKAHEAD(2) Equality() | (Expression() <SEMICOLON>))
+    | (LOOKAHEAD(2) Equality() | (Expression() <SEMICOLON>) ) #SimpleStatement
 }
 
 void If() : {} {
@@ -226,8 +229,8 @@ void While() : {} {
 
 void Equality() : {Token t;} {
     t = <IDENTIFIER> 
-        (<LEFT_BRACKET> Expression() <RIGHT_BRACKET>)? 
-        <ASSIGN> Expression() <SEMICOLON> {jjtThis.val = t.image;}
+        (<LEFT_BRACKET> Expression() <RIGHT_BRACKET> {jjtThis.isArray = true;} )?
+        <ASSIGN> Expression() <SEMICOLON> {jjtThis.name = t.image;}
 }
 
 void Expression() : {} {
@@ -262,7 +265,7 @@ void DotExpression() #void : {} {
             (<LEFT_PARENTESIS> 
                 (Expression() (<COLON> Expression())*)?
             <RIGHT_PARENTESIS>)?
-        )*
+         )* #DotExpression
  } 
 
  void BracketExpression() #void : {} {
@@ -272,9 +275,9 @@ void DotExpression() #void : {} {
 void FinalExpression() #void : {Token t;} {
 
     New()
-    | ( <NEGATION> Expression() #Negation)
+    | ( <NEGATION> Expression()) #Negation
     | ( <LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS>)
-    | ( t = <IDENTIFIER> | t = <THIS>) {jjtThis.val = t.image;} #Literal
+    | (t = <IDENTIFIER> | t = <THIS>) {jjtThis.val = t.image;} #Literal
 }
 
 void New() #void : {} {

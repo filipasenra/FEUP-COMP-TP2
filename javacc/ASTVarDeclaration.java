@@ -3,7 +3,7 @@
 public
 class ASTVarDeclaration extends SimpleNode {
 
-  public String val;
+  public String name;
   
   public ASTVarDeclaration(int id) {
     super(id);
@@ -14,7 +14,7 @@ class ASTVarDeclaration extends SimpleNode {
   }
 
   @Override
-  public String toString(String prefix) { return prefix + ": " + this.val; }
+  public String toString(String prefix) { return prefix + ": " + this.name; }
 
 
 }
