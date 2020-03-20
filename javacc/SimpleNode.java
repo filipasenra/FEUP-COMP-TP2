@@ -9,7 +9,6 @@ class SimpleNode implements Node {
   protected Object value;
   protected Jmm parser;
 
-  public String val;
 
   public SimpleNode(int i) {
     id = i;
@@ -57,7 +56,6 @@ class SimpleNode implements Node {
      toString(String), otherwise overriding toString() is probably all
      you need to do. */
 
-  public String toString() { return JmmTreeConstants.jjtNodeName[id]; }
   public String toString(String prefix) { return prefix + toString(); }
 
   /* Override this method if you want to customize how the node dumps
@@ -65,9 +63,6 @@ class SimpleNode implements Node {
 
   public void dump(String prefix) {
     System.out.println(toString(prefix));
-
-    if(this.val != null)
-      System.out.println("\t["+this.val+"]");
 
     if (children != null) {
       for (int i = 0; i < children.length; ++i) {

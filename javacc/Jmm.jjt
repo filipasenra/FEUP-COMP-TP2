@@ -1,6 +1,7 @@
 options
 {
     LOOKAHEAD=1;
+    MULTI=true;
 }
 
 // When in javacc folder
@@ -17,11 +18,12 @@ public class Jmm {
 
     public static void main(String args[]) throws ParseException {
         
+        nErrors = 0;
+
         if(args.length != 1){
             System.err.println("Usage: java Jmm <filename>");
             return;
             }
-
         
         try {
             Jmm myParser = new Jmm(new java.io.FileInputStream(args[0]));
@@ -43,7 +45,7 @@ public class Jmm {
         
         nErrors++;
 
-        if(MAX_ERRORS > 10){
+        if(nErrors > MAX_ERRORS){
 
             System.out.println("Reached maximum number of errors (" + MAX_ERRORS + ")!");
             System.exit(-1);
