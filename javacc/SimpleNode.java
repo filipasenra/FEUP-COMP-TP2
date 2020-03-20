@@ -58,6 +58,10 @@ class SimpleNode implements Node {
 
   public String toString(String prefix) { return prefix + toString(); }
 
+  public int getId(){
+    return id;
+  }
+
   /* Override this method if you want to customize how the node dumps
      out its children. */
 

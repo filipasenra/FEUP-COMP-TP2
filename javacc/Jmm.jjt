@@ -2,6 +2,7 @@ options
 {
     LOOKAHEAD=1;
     MULTI=true;
+    STATIC=false;
 }
 
 // When in javacc folder
@@ -14,12 +15,9 @@ PARSER_BEGIN(Jmm)
 public class Jmm {
 
     private static final int MAX_ERRORS = 10;
-    private static int nErrors = 0;
+    private int nErrors = 0;
 
     public static void main(String args[]) throws ParseException {
-        
-        nErrors = 0;
-
         if(args.length != 1){
             System.err.println("Usage: java Jmm <filename>");
             return;
@@ -29,6 +27,9 @@ public class Jmm {
             Jmm myParser = new Jmm(new java.io.FileInputStream(args[0]));
 
             SimpleNode root = myParser.ParseExpression(); // returns reference to root node 
+            if(myParser.nErrors > 0 ){
+                throw new RuntimeException("Has errors");
+            }
             root.dump(""); // prints the tree on the screen
             System.out.println("Finished Parsing");
 
@@ -39,7 +40,7 @@ public class Jmm {
         }        
     }
 
-    private static void errorHandling(ParseException e, int kind) {
+    private void errorHandling(ParseException e, int kind) {
 
         System.out.println("Syntatic error: " + e.toString());  // print the error message
         
@@ -47,21 +48,22 @@ public class Jmm {
 
         if(nErrors > MAX_ERRORS){
 
-            System.out.println("Reached maximum number of errors (" + MAX_ERRORS + ")!");
-            System.exit(-1);
+            throw new RuntimeException("Reached maximum number of errors (" + MAX_ERRORS + ")!");
+            
         }
 
         error_skipto(kind);
 
     }
 
-    private static void error_skipto(int kind) {
+    private void error_skipto(int kind) {
     
         Token t;
 
         do {
             t = getNextToken();
-        } while (t.kind != kind);
+        
+        } while (!(t.kind == kind || t.kind == EOF));
     }
 }
 
