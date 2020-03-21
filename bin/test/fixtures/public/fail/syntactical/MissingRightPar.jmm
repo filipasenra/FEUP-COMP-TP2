@@ -1,0 +1,8 @@
+class MissingRightPar {
+	public static void main(String[] args) {
+	while (i < 10 {
+		}
+	
+		while (i < 10 {
+		}
+}
