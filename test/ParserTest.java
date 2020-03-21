@@ -184,5 +184,4 @@ public class ParserTest {
     public void testNestedLoop() {
         test("fixtures/public/fail/syntactical/NestedLoop.jmm", true);
     }
-    
 }

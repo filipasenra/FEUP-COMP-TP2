@@ -46,8 +46,6 @@ public class Jmm/*@bgen(jjtree)*/implements JmmTreeConstants/*@egen*/ {/*@bgen(j
 
     private void errorHandling(ParseException e, int kind) {
 
-        System.out.println("Syntatic error: " + e.getLocalizedMessage());  // print the error message
-        
         nErrors++;
 
         if(nErrors > MAX_ERRORS){
@@ -56,28 +54,46 @@ public class Jmm/*@bgen(jjtree)*/implements JmmTreeConstants/*@egen*/ {/*@bgen(j
             
         }
 
-        
-            error_skipto(kind);
+        error_skipto(e, kind);
+
     }
 
-    private void error_skipto(int kind) {
+    private void error_skipto(ParseException e, int kind) {
     
-                 if (getToken(1).kind == LEFT_BRACE) {
-            System.out.println("Missing ) on while expression.");
-        }
-        else {
-            
         Token t;
-            
+        Token t1;
 
         do {
-            t = getNextToken();
+            t1 = getToken(1);
+            if(t1.image ==  "{")
+                {
+                    System.out.println("Syntactical error: Missing \")\" at line " + t1.beginLine + " and column " + t1.beginColumn + ".");
+                    return;
+                }
 
+            t = getNextToken();
         
         } while (!(t.kind == kind || t.kind == EOF));
+
+        System.out.println("Syntactical error: " + customErrorMessage(e));  // print the error message
+
+
     }
 
-}
+    private String customErrorMessage(ParseException e) {
+        StringBuffer expected = new StringBuffer();
+
+        for (int i = 0; i < e.expectedTokenSequences.length; i++) {
+
+            for (int j = 0; j < e.expectedTokenSequences[i].length; j++) {
+                expected.append(e.tokenImage[e.expectedTokenSequences[i][j]]).append(' ');
+            }
+
+            expected.append("\n\t");
+        }
+
+        return "Encountered \"" + e.currentToken.next + "\" at line " + e.currentToken.beginLine + " and column " + e.currentToken.beginColumn + " was expecting \n\t" + expected.toString();  // print the error message
+    }
 }
 
 PARSER_END(Jmm)
@@ -474,6 +490,7 @@ void While() : {/*@bgen(jjtree) While */
             <LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS>
 
         } catch (ParseException e) {
+            
             errorHandling(e, RIGHT_PARENTESIS);
         }
         
