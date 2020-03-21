@@ -27,7 +27,7 @@ public class Jmm/*@bgen(jjtree)*/implements JmmTreeConstants, JmmConstants {/*@b
         }
     }
 
-    private void errorHandling(ParseException e, int kind) {
+    private void errorHandling(ParseException e, int kindToConsume, int kindNotToConsume) {
 
         nErrors++;
 
@@ -37,18 +37,18 @@ public class Jmm/*@bgen(jjtree)*/implements JmmTreeConstants, JmmConstants {/*@b
 
         }
 
-        error_skipto(e, kind);
+        error_skipto(e, kindToConsume, kindNotToConsume);
 
     }
 
-    private void error_skipto(ParseException e, int kind) {
+    private void error_skipto(ParseException e, int kindToConsume, int kindNotToConsume) {
 
         Token t;
         Token t1;
 
         do {
             t1 = getToken(1);
-            if(t1.image ==  "{")
+            if(t1.kind ==  kindNotToConsume)
                 {
                     System.out.println("Syntactical error: Missing \u005c")\u005c" at line " + t1.beginLine + " and column " + t1.beginColumn + ".");
                     return;
@@ -56,7 +56,7 @@ public class Jmm/*@bgen(jjtree)*/implements JmmTreeConstants, JmmConstants {/*@b
 
             t = getNextToken();
 
-        } while (!(t.kind == kind || t.kind == EOF));
+        } while (!(t.kind == kindToConsume || t.kind == EOF));
 
         System.out.println("Syntactical error: " + customErrorMessage(e));  // print the error message
 
@@ -589,7 +589,7 @@ public class Jmm/*@bgen(jjtree)*/implements JmmTreeConstants, JmmConstants {/*@b
         Expression();
         jj_consume_token(RIGHT_PARENTESIS);
       } catch (ParseException e) {
-            errorHandling(e, RIGHT_PARENTESIS);
+            errorHandling(e, RIGHT_PARENTESIS, LEFT_BRACE);
       }
       Statement();
     } catch (Throwable jjte000) {

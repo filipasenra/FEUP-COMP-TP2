@@ -9,8 +9,10 @@
 // When in javacc folder
 // jjtree Jmm.jjt
 // javacc Jmm.jj
-// javac *.java
-// java Jmm ../bin/test/fixtures/public/Lazysort.jmm
+// When in root folder (comp2020-3a)
+// gradle build
+// or
+// gradle test
 
 PARSER_BEGIN(Jmm)
 public class Jmm/*@bgen(jjtree)*/implements JmmTreeConstants/*@egen*/ {/*@bgen(jjtree)*/
@@ -44,7 +46,7 @@ public class Jmm/*@bgen(jjtree)*/implements JmmTreeConstants/*@egen*/ {/*@bgen(j
         }        
     }
 
-    private void errorHandling(ParseException e, int kind) {
+    private void errorHandling(ParseException e, int kindToConsume, int kindNotToConsume) {
 
         nErrors++;
 
@@ -54,18 +56,18 @@ public class Jmm/*@bgen(jjtree)*/implements JmmTreeConstants/*@egen*/ {/*@bgen(j
             
         }
 
-        error_skipto(e, kind);
+        error_skipto(e, kindToConsume, kindNotToConsume);
 
     }
 
-    private void error_skipto(ParseException e, int kind) {
+    private void error_skipto(ParseException e, int kindToConsume, int kindNotToConsume) {
     
         Token t;
         Token t1;
 
         do {
             t1 = getToken(1);
-            if(t1.image ==  "{")
+            if(t1.kind ==  kindNotToConsume)
                 {
                     System.out.println("Syntactical error: Missing \")\" at line " + t1.beginLine + " and column " + t1.beginColumn + ".");
                     return;
@@ -73,7 +75,7 @@ public class Jmm/*@bgen(jjtree)*/implements JmmTreeConstants/*@egen*/ {/*@bgen(j
 
             t = getNextToken();
         
-        } while (!(t.kind == kind || t.kind == EOF));
+        } while (!(t.kind == kindToConsume || t.kind == EOF));
 
         System.out.println("Syntactical error: " + customErrorMessage(e));  // print the error message
 
@@ -491,7 +493,7 @@ void While() : {/*@bgen(jjtree) While */
 
         } catch (ParseException e) {
             
-            errorHandling(e, RIGHT_PARENTESIS);
+            errorHandling(e, RIGHT_PARENTESIS, LEFT_BRACE);
         }
         
         Statement()/*@bgen(jjtree)*/
