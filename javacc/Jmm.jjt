@@ -108,7 +108,7 @@ SKIP:
 /*Reserved Words*/
 TOKEN :
 {
-    <IMPORT: "import" (~[";"])* ";" > //Temporary: Change when professors give all the rules erase
+    <IMPORT: "import">
     | <CLASS: "class" >
     | <EXTENDS: "extends">
     | <PUBLIC: "public">
@@ -179,7 +179,7 @@ SimpleNode ParseExpression(): {}
 
 void ClassDeclaration(): {Token className; Token extendsClass;} {
 
-    (<IMPORT>)*
+    (Import())*
     <CLASS> className = <IDENTIFIER> (<EXTENDS> extendsClass = <IDENTIFIER>  {jjtThis.ext = extendsClass.image;})?
     <LEFT_BRACE> 
         ( VarDeclaration() )*
@@ -189,13 +189,27 @@ void ClassDeclaration(): {Token className; Token extendsClass;} {
 
 }
 
+void Import() : {} {
+
+    <IMPORT> (<STATIC>)? <IDENTIFIER> (<DOT> <IDENTIFIER>)* 
+    (
+        <LEFT_PARENTESIS> (ImportClass())? <RIGHT_PARENTESIS>
+        Type())? <SEMICOLON>
+
+}
+
+void ImportClass() : {} {
+
+    Type() (<COLON> Type())*
+}
+
 void VarDeclaration() : {Token t;} {
     Type() t = <IDENTIFIER> <SEMICOLON> {jjtThis.name = t.image;}
 }
 
 void Type() : {Token t;} {
    ((t = <INT> (<LEFT_BRACKET> <RIGHT_BRACKET> {jjtThis.isArray = true;})? )
-   | t = <BOOLEAN> | t = <IDENTIFIER> | t = <STRING>)
+   | t = <BOOLEAN> | t = <IDENTIFIER> | t = <STRING> | t=<VOID>)
    { jjtThis.type = t.image; }
 }
 
@@ -212,7 +226,7 @@ void MethodDeclaration() #void : {Token t;} {
     |
     Type() t = <IDENTIFIER>
     <LEFT_PARENTESIS>
-        (Type() <IDENTIFIER> (<COLON> Type() <IDENTIFIER>)*)?
+        (Paramethers())?
     <RIGHT_PARENTESIS>
     <LEFT_BRACE>
         (LOOKAHEAD(2) VarDeclaration())*
@@ -224,6 +238,15 @@ void MethodDeclaration() #void : {Token t;} {
 
 }
 
+void Paramethers() : {} {
+
+    Arg() (<COLON> Arg())*
+}
+
+void Arg() : {Token t;} { 
+    
+    Type() t=<IDENTIFIER> {jjtThis.val = t.image;} 
+}
 
 void Statement() #void : {} {
 

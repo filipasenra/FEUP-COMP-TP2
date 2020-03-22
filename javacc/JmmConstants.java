@@ -109,7 +109,7 @@ public interface JmmConstants {
     "\"\\n\"",
     "<token of kind 5>",
     "<token of kind 6>",
-    "<IMPORT>",
+    "\"import\"",
     "\"class\"",
     "\"extends\"",
     "\"public\"",

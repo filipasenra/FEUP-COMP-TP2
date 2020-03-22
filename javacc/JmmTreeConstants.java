@@ -3,40 +3,48 @@ public interface JmmTreeConstants
 {
   public int JJTPARSEEXPRESSION = 0;
   public int JJTCLASSDECLARATION = 1;
-  public int JJTVARDECLARATION = 2;
-  public int JJTTYPE = 3;
-  public int JJTVOID = 4;
-  public int JJTMAINDECLARATION = 5;
-  public int JJTMETHODDECLARATION = 6;
-  public int JJTSTATMENTBLOCK = 7;
-  public int JJTSTATEMENT = 8;
-  public int JJTIF = 9;
-  public int JJTWHILE = 10;
-  public int JJTEQUALITY = 11;
-  public int JJTAND = 12;
-  public int JJTLESSTHAN = 13;
-  public int JJTSUM = 14;
-  public int JJTSUB = 15;
-  public int JJTMUL = 16;
-  public int JJTDIV = 17;
-  public int JJTLITERAL = 18;
-  public int JJTBOOLEAN = 19;
-  public int JJTDOTEXPRESSION = 20;
-  public int JJTARGUMENTS = 21;
-  public int JJTNEGATION = 22;
-  public int JJTIDENTIFIER = 23;
-  public int JJTNEWINTOBJECT = 24;
-  public int JJTNEWOBJECT = 25;
+  public int JJTIMPORT = 2;
+  public int JJTIMPORTCLASS = 3;
+  public int JJTVARDECLARATION = 4;
+  public int JJTTYPE = 5;
+  public int JJTVOID = 6;
+  public int JJTMAINDECLARATION = 7;
+  public int JJTMETHODDECLARATION = 8;
+  public int JJTPARAMETHERS = 9;
+  public int JJTARG = 10;
+  public int JJTSTATMENTBLOCK = 11;
+  public int JJTSTATEMENT = 12;
+  public int JJTIF = 13;
+  public int JJTWHILE = 14;
+  public int JJTEQUALITY = 15;
+  public int JJTAND = 16;
+  public int JJTLESSTHAN = 17;
+  public int JJTSUM = 18;
+  public int JJTSUB = 19;
+  public int JJTMUL = 20;
+  public int JJTDIV = 21;
+  public int JJTLITERAL = 22;
+  public int JJTBOOLEAN = 23;
+  public int JJTDOTEXPRESSION = 24;
+  public int JJTARGUMENTS = 25;
+  public int JJTNEGATION = 26;
+  public int JJTIDENTIFIER = 27;
+  public int JJTNEWINTOBJECT = 28;
+  public int JJTNEWOBJECT = 29;
 
 
   public String[] jjtNodeName = {
     "ParseExpression",
     "ClassDeclaration",
+    "Import",
+    "ImportClass",
     "VarDeclaration",
     "Type",
     "void",
     "MainDeclaration",
     "MethodDeclaration",
+    "Paramethers",
+    "Arg",
     "StatmentBlock",
     "Statement",
     "If",
@@ -58,4 +66,4 @@ public interface JmmTreeConstants
     "NewObject",
   };
 }
-/* JavaCC - OriginalChecksum=33b4da84abf294b806568dc97bce086d (do not edit this line) */
+/* JavaCC - OriginalChecksum=f39b5a5a5f5191d6c640ff840f59ad4e (do not edit this line) */
