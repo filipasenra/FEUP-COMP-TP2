@@ -333,7 +333,7 @@ void Literal() #void : {Token t;} {
 void DotExpression() #void : {Token t;} {
      FinalExpression() (LOOKAHEAD(2) (<DOT> (t = <IDENTIFIER> | t = <LENGTH>) {jjtThis.val = t.image;} #DotExpression)
             (<LEFT_PARENTESIS>
-                (Expression() (<COLON> Expression())* #Arguments)?
+                ((Expression() (<COLON> Expression())*) #Arguments)?
             <RIGHT_PARENTESIS>)?)*
  } 
 
