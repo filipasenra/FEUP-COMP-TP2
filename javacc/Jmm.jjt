@@ -190,7 +190,7 @@ void ClassDeclaration(): {Token className; Token extendsClass;} {
 
 void Import() : {} {
 
-    <IMPORT> (<STATIC>)? (IdentifierFromImport() (<DOT> IdentifierFromImport())? )
+    <IMPORT> (<STATIC> {jjtThis.isStatic = true; })? (IdentifierFromImport() (<DOT> IdentifierFromImport())? )
     (ImportMethod())? 
     <SEMICOLON>
 
@@ -230,9 +230,9 @@ void MethodDeclaration() #void : {Token t;} {
     <LEFT_BRACE> 
         (LOOKAHEAD(2) VarDeclaration())* 
         (Statement())*
-    <RIGHT_BRACE>) #MainDeclaration(true)
+    <RIGHT_BRACE>) #MainDeclaration
     |
-    Type() t = <IDENTIFIER>
+    (Type() t = <IDENTIFIER>
     <LEFT_PARENTESIS>
         (Paramethers())?
     <RIGHT_PARENTESIS>
@@ -242,7 +242,7 @@ void MethodDeclaration() #void : {Token t;} {
         <RETURN>
         Expression()
         <SEMICOLON>
-    <RIGHT_BRACE> {jjtThis.name = t.image;} #MethodDeclaration(true) )
+    <RIGHT_BRACE> {jjtThis.name = t.image;} ) #MethodDeclaration(true) )
 
 }
 
@@ -290,7 +290,7 @@ void While() : {} {
 }
 
 void Equality() : {Token t;} {
-    t = <IDENTIFIER>
+    t = <IDENTIFIER> 
         (<LEFT_BRACKET> Expression() <RIGHT_BRACKET> {jjtThis.isArray = true;} )?
         <ASSIGN> Expression() <SEMICOLON> {jjtThis.name = t.image;}
 }
@@ -338,7 +338,7 @@ void DotExpression() #void : {Token t;} {
  } 
 
  void BracketExpression() #void : {} {
-     FinalExpression() (LOOKAHEAD(2) <LEFT_BRACKET> Expression() <RIGHT_BRACKET>)*
+     FinalExpression() (LOOKAHEAD(2) (<LEFT_BRACKET> Expression() <RIGHT_BRACKET>) #BracketExpression)*
  } 
 
 void FinalExpression() #void : {Token t;} {
