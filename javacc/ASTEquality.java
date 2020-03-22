@@ -16,7 +16,7 @@ class ASTEquality extends SimpleNode {
 
   @Override
   public String toString(String prefix) {
-    String isArrayString = (this.isArray) ? "is an array" : "";
+    String isArrayString = (this.isArray) ? " is an array" : "";
     return super.toString(prefix) + ": " + this.name +  isArrayString; }
 
 }

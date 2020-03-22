@@ -9,6 +9,8 @@ options
 // gradle build
 // or
 // gradle test
+// to run:
+// java -jar comp2020-3a.jar test/fixtures/public/FindMaximum.jmm
 
 PARSER_BEGIN(Jmm)
 public class Jmm {

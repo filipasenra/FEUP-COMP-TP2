@@ -17,7 +17,7 @@ class ASTClassDeclaration extends SimpleNode {
   @Override
   public String toString(String prefix) { 
 
-    String extendOption = (this.ext != null) ? (" extends" + this.ext) : "";
+    String extendOption = (this.ext != null) ? (" extends " + this.ext) : "";
     return super.toString(prefix) + ": " + this.name + extendOption; }
 
 }
