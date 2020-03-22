@@ -210,7 +210,7 @@ public class Jmm/*@bgen(jjtree)*/implements JmmTreeConstants, JmmConstants {/*@b
         jj_la1[4] = jj_gen;
         ;
       }
-      jj_consume_token(IDENTIFIER);
+      IdentifierFromImport();
       label_4:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -222,28 +222,14 @@ public class Jmm/*@bgen(jjtree)*/implements JmmTreeConstants, JmmConstants {/*@b
           break label_4;
         }
         jj_consume_token(DOT);
-        jj_consume_token(IDENTIFIER);
+        IdentifierFromImport();
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case LEFT_PARENTESIS:
-        jj_consume_token(LEFT_PARENTESIS);
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case VOID:
-        case STRING:
-        case INT:
-        case BOOLEAN:
-        case IDENTIFIER:
-          ImportClass();
-          break;
-        default:
-          jj_la1[6] = jj_gen;
-          ;
-        }
-        jj_consume_token(RIGHT_PARENTESIS);
-        Type();
+        ImportMethod();
         break;
       default:
-        jj_la1[7] = jj_gen;
+        jj_la1[6] = jj_gen;
         ;
       }
       jj_consume_token(SEMICOLON);
@@ -268,9 +254,68 @@ public class Jmm/*@bgen(jjtree)*/implements JmmTreeConstants, JmmConstants {/*@b
     }
   }
 
-  final public void ImportClass() throws ParseException {
-                      /*@bgen(jjtree) ImportClass */
-  ASTImportClass jjtn000 = new ASTImportClass(JJTIMPORTCLASS);
+  final public void IdentifierFromImport() throws ParseException {
+                                           /*@bgen(jjtree) Identifier */
+                                           ASTIdentifier jjtn000 = new ASTIdentifier(JJTIDENTIFIER);
+                                           boolean jjtc000 = true;
+                                           jjtree.openNodeScope(jjtn000);Token t;
+    try {
+      t = jj_consume_token(IDENTIFIER);
+                       jjtree.closeNodeScope(jjtn000, true);
+                       jjtc000 = false;
+                      jjtn000.val = t.image;
+    } finally {
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+      }
+    }
+  }
+
+  final public void ImportMethod() throws ParseException {
+                       /*@bgen(jjtree) ImportMethod */
+  ASTImportMethod jjtn000 = new ASTImportMethod(JJTIMPORTMETHOD);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+    try {
+      jj_consume_token(LEFT_PARENTESIS);
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case VOID:
+      case STRING:
+      case INT:
+      case BOOLEAN:
+      case IDENTIFIER:
+        ImportMethodArgs();
+        break;
+      default:
+        jj_la1[7] = jj_gen;
+        ;
+      }
+      jj_consume_token(RIGHT_PARENTESIS);
+      Type();
+    } catch (Throwable jjte000) {
+      if (jjtc000) {
+        jjtree.clearNodeScope(jjtn000);
+        jjtc000 = false;
+      } else {
+        jjtree.popNode();
+      }
+      if (jjte000 instanceof RuntimeException) {
+        {if (true) throw (RuntimeException)jjte000;}
+      }
+      if (jjte000 instanceof ParseException) {
+        {if (true) throw (ParseException)jjte000;}
+      }
+      {if (true) throw (Error)jjte000;}
+    } finally {
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+      }
+    }
+  }
+
+  final public void ImportMethodArgs() throws ParseException {
+                           /*@bgen(jjtree) ImportMethodArgs */
+  ASTImportMethodArgs jjtn000 = new ASTImportMethodArgs(JJTIMPORTMETHODARGS);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
     try {
@@ -1720,10 +1765,10 @@ public class Jmm/*@bgen(jjtree)*/implements JmmTreeConstants, JmmConstants {/*@b
       jj_la1_init_1();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x80,0x200,0x8003a000,0x400,0x1000,0x0,0x8003a000,0x0,0x0,0x0,0x8003a000,0x87d40000,0x8003a000,0x87d40000,0x8003b000,0x0,0x87d40000,0x87c00000,0x87d40000,0x0,0xc00000,0x87c00000,0x80200000,0x0,0x87c00000,0x0,0x81000000,0x83000000,0x80010000,};
+      jj_la1_0 = new int[] {0x80,0x200,0x8003a000,0x400,0x1000,0x0,0x0,0x8003a000,0x0,0x0,0x8003a000,0x87d40000,0x8003a000,0x87d40000,0x8003b000,0x0,0x87d40000,0x87c00000,0x87d40000,0x0,0xc00000,0x87c00000,0x80200000,0x0,0x87c00000,0x0,0x81000000,0x83000000,0x80010000,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x400,0x0,0x100,0x8,0x40,0x0,0x20110,0x0,0x20110,0x0,0x8,0x20110,0x20100,0x20110,0x40,0x0,0x20100,0x0,0x8,0x20100,0x100,0x0,0x20100,0x0,};
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x400,0x100,0x0,0x8,0x40,0x0,0x20110,0x0,0x20110,0x0,0x8,0x20110,0x20100,0x20110,0x40,0x0,0x20100,0x0,0x8,0x20100,0x100,0x0,0x20100,0x0,};
    }
   final private JJCalls[] jj_2_rtns = new JJCalls[11];
   private boolean jj_rescan = false;

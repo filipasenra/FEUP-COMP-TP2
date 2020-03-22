@@ -191,14 +191,23 @@ void ClassDeclaration(): {Token className; Token extendsClass;} {
 
 void Import() : {} {
 
-    <IMPORT> (<STATIC>)? <IDENTIFIER> (<DOT> <IDENTIFIER>)* 
-    (
-        <LEFT_PARENTESIS> (ImportClass())? <RIGHT_PARENTESIS>
-        Type())? <SEMICOLON>
+    <IMPORT> (<STATIC>)? (IdentifierFromImport() (<DOT> IdentifierFromImport())* )
+    (ImportMethod())? 
+    <SEMICOLON>
 
 }
 
-void ImportClass() : {} {
+void IdentifierFromImport() #Identifier : {Token t;} {
+
+    t = <IDENTIFIER> {jjtThis.val = t.image;}
+}
+
+void ImportMethod() : {} {
+
+    <LEFT_PARENTESIS> (ImportMethodArgs())? <RIGHT_PARENTESIS> Type()
+}
+
+void ImportMethodArgs() : {} {
 
     Type() (<COLON> Type())*
 }

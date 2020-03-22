@@ -4,40 +4,43 @@ public interface JmmTreeConstants
   public int JJTPARSEEXPRESSION = 0;
   public int JJTCLASSDECLARATION = 1;
   public int JJTIMPORT = 2;
-  public int JJTIMPORTCLASS = 3;
-  public int JJTVARDECLARATION = 4;
-  public int JJTTYPE = 5;
-  public int JJTVOID = 6;
-  public int JJTMAINDECLARATION = 7;
-  public int JJTMETHODDECLARATION = 8;
-  public int JJTPARAMETHERS = 9;
-  public int JJTARG = 10;
-  public int JJTSTATMENTBLOCK = 11;
-  public int JJTSTATEMENT = 12;
-  public int JJTIF = 13;
-  public int JJTWHILE = 14;
-  public int JJTEQUALITY = 15;
-  public int JJTAND = 16;
-  public int JJTLESSTHAN = 17;
-  public int JJTSUM = 18;
-  public int JJTSUB = 19;
-  public int JJTMUL = 20;
-  public int JJTDIV = 21;
-  public int JJTLITERAL = 22;
-  public int JJTBOOLEAN = 23;
-  public int JJTDOTEXPRESSION = 24;
-  public int JJTARGUMENTS = 25;
-  public int JJTNEGATION = 26;
-  public int JJTIDENTIFIER = 27;
-  public int JJTNEWINTOBJECT = 28;
-  public int JJTNEWOBJECT = 29;
+  public int JJTIDENTIFIER = 3;
+  public int JJTIMPORTMETHOD = 4;
+  public int JJTIMPORTMETHODARGS = 5;
+  public int JJTVARDECLARATION = 6;
+  public int JJTTYPE = 7;
+  public int JJTVOID = 8;
+  public int JJTMAINDECLARATION = 9;
+  public int JJTMETHODDECLARATION = 10;
+  public int JJTPARAMETHERS = 11;
+  public int JJTARG = 12;
+  public int JJTSTATMENTBLOCK = 13;
+  public int JJTSTATEMENT = 14;
+  public int JJTIF = 15;
+  public int JJTWHILE = 16;
+  public int JJTEQUALITY = 17;
+  public int JJTAND = 18;
+  public int JJTLESSTHAN = 19;
+  public int JJTSUM = 20;
+  public int JJTSUB = 21;
+  public int JJTMUL = 22;
+  public int JJTDIV = 23;
+  public int JJTLITERAL = 24;
+  public int JJTBOOLEAN = 25;
+  public int JJTDOTEXPRESSION = 26;
+  public int JJTARGUMENTS = 27;
+  public int JJTNEGATION = 28;
+  public int JJTNEWINTOBJECT = 29;
+  public int JJTNEWOBJECT = 30;
 
 
   public String[] jjtNodeName = {
     "ParseExpression",
     "ClassDeclaration",
     "Import",
-    "ImportClass",
+    "Identifier",
+    "ImportMethod",
+    "ImportMethodArgs",
     "VarDeclaration",
     "Type",
     "void",
@@ -61,9 +64,8 @@ public interface JmmTreeConstants
     "DotExpression",
     "Arguments",
     "Negation",
-    "Identifier",
     "NewIntObject",
     "NewObject",
   };
 }
-/* JavaCC - OriginalChecksum=f39b5a5a5f5191d6c640ff840f59ad4e (do not edit this line) */
+/* JavaCC - OriginalChecksum=0b9e2a9e902bd03e9bde925378fb65da (do not edit this line) */
