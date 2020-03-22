@@ -242,7 +242,7 @@ void MethodDeclaration() #void : {Token t;} {
         <RETURN>
         Expression()
         <SEMICOLON>
-    <RIGHT_BRACE> {jjtThis.name = t.image;} ) #MethodDeclaration(true) )
+    <RIGHT_BRACE> {jjtThis.name = t.image;} ) #MethodDeclaration )
 
 }
 
