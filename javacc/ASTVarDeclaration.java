@@ -14,7 +14,7 @@ class ASTVarDeclaration extends SimpleNode {
   }
 
   @Override
-  public String toString(String prefix) { return prefix + ": " + this.name; }
+  public String toString(String prefix) { return super.toString(prefix) + ": " + this.name; }
 
 
 }

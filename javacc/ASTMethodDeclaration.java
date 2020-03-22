@@ -15,7 +15,7 @@ class ASTMethodDeclaration extends SimpleNode {
   @Override
   public String toString(String prefix) {
 
-    return prefix + ": " + this.name;
+    return super.toString(prefix) + ": " + this.name;
   }
 
 }

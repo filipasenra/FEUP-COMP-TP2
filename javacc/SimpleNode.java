@@ -56,6 +56,8 @@ class SimpleNode implements Node {
      toString(String), otherwise overriding toString() is probably all
      you need to do. */
 
+  public String toString() { return JmmTreeConstants.jjtNodeName[id]; }
+
   public String toString(String prefix) { return prefix + toString(); }
 
   public int getId(){

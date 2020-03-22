@@ -195,7 +195,7 @@ void VarDeclaration() : {Token t;} {
 
 void Type() : {Token t;} {
    (t = <INT> (<LEFT_BRACKET> <RIGHT_BRACKET> {jjtThis.isArray = true;})?)
-   | t = <BOOLEAN> | t = <IDENTIFIER>
+   | t = <BOOLEAN> | t = <IDENTIFIER> | t = <STRING>
    { jjtThis.type = t.image; }
 }
 

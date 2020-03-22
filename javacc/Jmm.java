@@ -145,6 +145,7 @@ public class Jmm/*@bgen(jjtree)*/implements JmmTreeConstants, JmmConstants {/*@b
       label_2:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case STRING:
         case INT:
         case BOOLEAN:
         case IDENTIFIER:
@@ -251,6 +252,9 @@ public class Jmm/*@bgen(jjtree)*/implements JmmTreeConstants, JmmConstants {/*@b
         break;
       case IDENTIFIER:
         t = jj_consume_token(IDENTIFIER);
+        break;
+      case STRING:
+        t = jj_consume_token(STRING);
      jjtree.closeNodeScope(jjtn000, true);
      jjtc000 = false;
      jjtn000.type = t.image;
@@ -338,6 +342,7 @@ public class Jmm/*@bgen(jjtree)*/implements JmmTreeConstants, JmmConstants {/*@b
        }
       }
       break;
+    case STRING:
     case INT:
     case BOOLEAN:
     case IDENTIFIER:
@@ -345,6 +350,7 @@ public class Jmm/*@bgen(jjtree)*/implements JmmTreeConstants, JmmConstants {/*@b
       t = jj_consume_token(IDENTIFIER);
       jj_consume_token(LEFT_PARENTESIS);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case STRING:
       case INT:
       case BOOLEAN:
       case IDENTIFIER:
@@ -1262,11 +1268,6 @@ public class Jmm/*@bgen(jjtree)*/implements JmmTreeConstants, JmmConstants {/*@b
     return false;
   }
 
-  private boolean jj_3R_30() {
-    if (jj_scan_token(IDENTIFIER)) return true;
-    return false;
-  }
-
   private boolean jj_3R_37() {
     if (jj_scan_token(LEFT_PARENTESIS)) return true;
     return false;
@@ -1353,7 +1354,10 @@ public class Jmm/*@bgen(jjtree)*/implements JmmTreeConstants, JmmConstants {/*@b
     jj_scanpos = xsp;
     if (jj_scan_token(17)) {
     jj_scanpos = xsp;
+    if (jj_scan_token(31)) {
+    jj_scanpos = xsp;
     if (jj_3R_30()) return true;
+    }
     }
     }
     return false;
@@ -1426,6 +1430,11 @@ public class Jmm/*@bgen(jjtree)*/implements JmmTreeConstants, JmmConstants {/*@b
     return false;
   }
 
+  private boolean jj_3R_30() {
+    if (jj_scan_token(STRING)) return true;
+    return false;
+  }
+
   private boolean jj_3R_20() {
     if (jj_3R_21()) return true;
     return false;
@@ -1450,7 +1459,7 @@ public class Jmm/*@bgen(jjtree)*/implements JmmTreeConstants, JmmConstants {/*@b
       jj_la1_init_1();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x80,0x200,0x80030000,0x400,0x0,0x80030000,0x87d40000,0x0,0x80030000,0x87d40000,0x80031000,0x87d40000,0x87c00000,0x87d40000,0x0,0x0,0x0,0x4c00000,0x87c00000,0x80200000,0x0,0x87c00000,0x0,0x81000000,0x83000000,0x80010000,};
+      jj_la1_0 = new int[] {0x80,0x200,0x80038000,0x400,0x0,0x80038000,0x87d40000,0x0,0x80038000,0x87d40000,0x80039000,0x87d40000,0x87c00000,0x87d40000,0x0,0x0,0x0,0x4c00000,0x87c00000,0x80200000,0x0,0x87c00000,0x0,0x81000000,0x83000000,0x80010000,};
    }
    private static void jj_la1_init_1() {
       jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x40,0x0,0x20110,0x8,0x0,0x20110,0x0,0x20110,0x20100,0x20110,0x40,0x1800,0x6000,0x0,0x20100,0x0,0x8,0x20100,0x100,0x0,0x20100,0x0,};

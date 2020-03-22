@@ -99,6 +99,11 @@ public class ParserTest {
     public void testWhileAndIF() {
         test("fixtures/public/WhileAndIF.jmm", false);
     }
+
+    @Test
+    public void stringType() {
+        test("fixtures/public/StringType.jmm", false);
+    }
 /*
     @Test
     public void testarr_index_not_int() {

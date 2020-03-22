@@ -298,7 +298,7 @@ void Type() : {/*@bgen(jjtree) Type */
    try {
 /*@egen*/
    (t = <INT> (<LEFT_BRACKET> <RIGHT_BRACKET> {jjtn000.isArray = true;})?)
-   | t = <BOOLEAN> | t = <IDENTIFIER>/*@bgen(jjtree)*/
+   | t = <BOOLEAN> | t = <IDENTIFIER> | t = <STRING>/*@bgen(jjtree)*/
    {
      jjtree.closeNodeScope(jjtn000, true);
      jjtc000 = false;

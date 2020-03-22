@@ -14,7 +14,7 @@ class ASTLiteral extends SimpleNode {
   }
 
   @Override
-  public String toString(String prefix) { return prefix + ": " + this.val; }
+  public String toString(String prefix) { return super.toString(prefix) + ": " + this.val; }
 
 }
 /* JavaCC - OriginalChecksum=2b64301e52a91b0151a96865c743d2aa (do not edit this line) */

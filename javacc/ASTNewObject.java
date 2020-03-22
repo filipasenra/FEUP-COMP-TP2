@@ -14,7 +14,7 @@ class ASTNewObject extends SimpleNode {
   }
 
   @Override
-  public String toString(String prefix) { return prefix + ": " + this.val; }
+  public String toString(String prefix) { return super.toString(prefix) + ": " + this.val; }
 
 }
 /* JavaCC - OriginalChecksum=ede2b2f69469aac49323e026c608b62e (do not edit this line) */

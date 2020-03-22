@@ -17,7 +17,7 @@ class ASTType extends SimpleNode {
   @Override
   public String toString(String prefix) {
     String isArrayString = (this.isArray) ? " is an array " : "";
-    return prefix + ": " + this.type + isArrayString; }
+    return super.toString(prefix) + ": " + this.type + isArrayString; }
 
 }
 /* JavaCC - OriginalChecksum=de59af60bb166da05476944689c03bfe (do not edit this line) */

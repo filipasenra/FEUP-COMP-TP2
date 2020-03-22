@@ -18,7 +18,7 @@ class ASTClassDeclaration extends SimpleNode {
   public String toString(String prefix) { 
 
     String extendOption = (this.ext != null) ? (" extends" + this.ext) : "";
-    return prefix + ": " + this.name + extendOption; }
+    return super.toString(prefix) + ": " + this.name + extendOption; }
 
 }
 /* JavaCC - OriginalChecksum=de93fed517ebd8fb13c9fe84a844e1ce (do not edit this line) */
