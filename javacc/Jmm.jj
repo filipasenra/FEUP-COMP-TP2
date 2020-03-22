@@ -263,7 +263,7 @@ void Import() : {/*@bgen(jjtree) Import */
     try {
 /*@egen*/
 
-    <IMPORT> (<STATIC>)? (IdentifierFromImport() (<DOT> IdentifierFromImport())* )
+    <IMPORT> (<STATIC>)? (IdentifierFromImport() (<DOT> IdentifierFromImport())? )
     (ImportMethod())? 
     <SEMICOLON>/*@bgen(jjtree)*/
     } catch (Throwable jjte000) {

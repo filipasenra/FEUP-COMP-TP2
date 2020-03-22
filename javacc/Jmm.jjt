@@ -191,7 +191,7 @@ void ClassDeclaration(): {Token className; Token extendsClass;} {
 
 void Import() : {} {
 
-    <IMPORT> (<STATIC>)? (IdentifierFromImport() (<DOT> IdentifierFromImport())* )
+    <IMPORT> (<STATIC>)? (IdentifierFromImport() (<DOT> IdentifierFromImport())? )
     (ImportMethod())? 
     <SEMICOLON>
 
