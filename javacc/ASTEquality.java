@@ -4,7 +4,6 @@ public
 class ASTEquality extends SimpleNode {
 
   public String name;
-  public boolean isArray = false;
 
   public ASTEquality(int id) {
     super(id);
@@ -16,8 +15,8 @@ class ASTEquality extends SimpleNode {
 
   @Override
   public String toString(String prefix) {
-    String isArrayString = (this.isArray) ? " is an array" : "";
-    return super.toString(prefix) + ": " + this.name +  isArrayString; }
+    
+    return super.toString(prefix) + ": " + this.name; }
 
 }
 /* JavaCC - OriginalChecksum=18bf3b796762994a872ed19e1067c294 (do not edit this line) */

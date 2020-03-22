@@ -291,7 +291,7 @@ void While() : {} {
 
 void Equality() : {Token t;} {
     t = <IDENTIFIER> 
-        (<LEFT_BRACKET> Expression() <RIGHT_BRACKET> {jjtThis.isArray = true;} )?
+        (accessToArray() #accessToArray)?
         <ASSIGN> Expression() <SEMICOLON> {jjtThis.name = t.image;}
 }
 
@@ -331,14 +331,10 @@ void Literal() #void : {Token t;} {
 }
 
 void DotExpression() #void : {Token t;} {
-     BracketExpression() (LOOKAHEAD(2) (<DOT> (t = <IDENTIFIER> | t = <LENGTH>) {jjtThis.val = t.image;} #DotExpression)
+     FinalExpression() (LOOKAHEAD(2) (<DOT> (t = <IDENTIFIER> | t = <LENGTH>) {jjtThis.val = t.image;} #DotExpression)
             (<LEFT_PARENTESIS>
-                (Expression() (<COLON> Expression())*)?
-            <RIGHT_PARENTESIS>)? #Arguments  )*
- } 
-
- void BracketExpression() #void : {} {
-     FinalExpression() (LOOKAHEAD(2) (<LEFT_BRACKET> Expression() <RIGHT_BRACKET>) #BracketExpression)*
+                (Expression() (<COLON> Expression())* #Arguments)?
+            <RIGHT_PARENTESIS>)?)*
  } 
 
 void FinalExpression() #void : {Token t;} {
@@ -346,17 +342,24 @@ void FinalExpression() #void : {Token t;} {
     New()
     | ( <NEGATION> Expression()) #Negation
     | ( <LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS>)
-    | (t = <IDENTIFIER> | t = <THIS>) {jjtThis.val = t.image;} #Identifier
+    | (t = <IDENTIFIER> {jjtThis.val = t.image;} #Identifier) (accessToArray() #accessToArray)?
+    | (t = <THIS> {jjtThis.val = t.image;} #Identifier)
 }
 
 void New() #void : {} {
-     <NEW> ( NewIntObject() | NewObject() )
+     <NEW> ( InitializeArray() | NewObject() )
 }
 
-void NewIntObject() : {} {
-    <INT> <LEFT_BRACKET> Expression() <RIGHT_BRACKET>
+void InitializeArray() : {} {
+    <INT> accessToArray()
 }
 
 void NewObject() : {Token t;} {
     t = <IDENTIFIER> <LEFT_PARENTESIS> <RIGHT_PARENTESIS> {jjtThis.val = t.image;}
+}
+
+void accessToArray() #void : {} {
+
+    <LEFT_BRACKET> Expression() <RIGHT_BRACKET>
+
 }
