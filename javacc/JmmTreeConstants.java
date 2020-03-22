@@ -16,15 +16,17 @@ public interface JmmTreeConstants
   public int JJTAND = 12;
   public int JJTLESSTHAN = 13;
   public int JJTSUM = 14;
-  public int JJTMUL = 15;
-  public int JJTLITERAL = 16;
-  public int JJTBOOLEAN = 17;
-  public int JJTDOTEXPRESSION = 18;
-  public int JJTARGUMENTS = 19;
-  public int JJTNEGATION = 20;
-  public int JJTIDENTIFIER = 21;
-  public int JJTNEWINTOBJECT = 22;
-  public int JJTNEWOBJECT = 23;
+  public int JJTSUB = 15;
+  public int JJTMUL = 16;
+  public int JJTDIV = 17;
+  public int JJTLITERAL = 18;
+  public int JJTBOOLEAN = 19;
+  public int JJTDOTEXPRESSION = 20;
+  public int JJTARGUMENTS = 21;
+  public int JJTNEGATION = 22;
+  public int JJTIDENTIFIER = 23;
+  public int JJTNEWINTOBJECT = 24;
+  public int JJTNEWOBJECT = 25;
 
 
   public String[] jjtNodeName = {
@@ -43,7 +45,9 @@ public interface JmmTreeConstants
     "AND",
     "LESSTHAN",
     "SUM",
+    "SUB",
     "MUL",
+    "DIV",
     "Literal",
     "Boolean",
     "DotExpression",
@@ -54,4 +58,4 @@ public interface JmmTreeConstants
     "NewObject",
   };
 }
-/* JavaCC - OriginalChecksum=3b1e25d13136a5ec646113049230087a (do not edit this line) */
+/* JavaCC - OriginalChecksum=33b4da84abf294b806568dc97bce086d (do not edit this line) */

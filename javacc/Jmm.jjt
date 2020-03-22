@@ -279,12 +279,20 @@ void Expression() #void : {} {
  }
 
  void Sum() #void : {} {
-     Mul() (LOOKAHEAD(2) (<SUM> | <SUB>) Mul() #SUM(2))*
+     Sub() (LOOKAHEAD(2) <SUM> Sub() #SUM(2))*
  }
 
+ void Sub() #void : {} {
+      Mul() (LOOKAHEAD(2) <SUB> Mul() #SUB(2))*
+  }
+
  void Mul() #void : {} {
-     Literal() (LOOKAHEAD(2) (<MUL> | <DIV>) Literal() #MUL(2))*
- } 
+     Div() (LOOKAHEAD(2) <MUL> Div() #MUL(2))*
+ }
+
+ void Div() #void : {} {
+      Literal() (LOOKAHEAD(2) <DIV> Literal() #DIV(2))*
+  }
 
 void Literal() #void : {Token t;} {
    DotExpression() |
