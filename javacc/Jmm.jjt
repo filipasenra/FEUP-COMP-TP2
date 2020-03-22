@@ -194,48 +194,52 @@ void VarDeclaration() : {Token t;} {
 }
 
 void Type() : {Token t;} {
-   (t = <INT> (<LEFT_BRACKET> <RIGHT_BRACKET> {jjtThis.isArray = true;})?)
-   | t = <BOOLEAN> | t = <IDENTIFIER> | t = <STRING>
+   ((t = <INT> (<LEFT_BRACKET> <RIGHT_BRACKET> {jjtThis.isArray = true;})? )
+   | t = <BOOLEAN> | t = <IDENTIFIER> | t = <STRING>)
    { jjtThis.type = t.image; }
 }
 
 void MethodDeclaration() #void : {Token t;} {
     <PUBLIC> 
-    ((<STATIC> <VOID> <MAIN> 
+    ((<STATIC> <VOID> <MAIN>
     <LEFT_PARENTESIS> 
         <STRING> <LEFT_BRACKET> <RIGHT_BRACKET> <IDENTIFIER>
     <RIGHT_PARENTESIS>
     <LEFT_BRACE> 
         (LOOKAHEAD(2) VarDeclaration())* 
         (Statement())*
-    <RIGHT_BRACE>) #MainDeclaration
+    <RIGHT_BRACE>) #MainDeclaration(true)
     |
-    (Type() t = <IDENTIFIER>
-    <LEFT_PARENTESIS> 
+    Type() t = <IDENTIFIER>
+    <LEFT_PARENTESIS>
         (Type() <IDENTIFIER> (<COLON> Type() <IDENTIFIER>)*)?
     <RIGHT_PARENTESIS>
-    <LEFT_BRACE> 
-        (LOOKAHEAD(2) VarDeclaration())* 
+    <LEFT_BRACE>
+        (LOOKAHEAD(2) VarDeclaration())*
         (Statement())*
         <RETURN>
         Expression()
         <SEMICOLON>
-    <RIGHT_BRACE> ) {jjtThis.name = t.image;} #MethodDeclaration )
+    <RIGHT_BRACE> {jjtThis.name = t.image;} #MethodDeclaration(true) )
 
 }
 
 
 void Statement() #void : {} {
 
-    (<LEFT_BRACE> (Statement())* <RIGHT_BRACE> ) #ComplexStatement
+    (<LEFT_BRACE> (Statement())* <RIGHT_BRACE> ) #StatmentBlock
     | If()
     | While()
-    | (LOOKAHEAD(2) Equality() | (Expression() <SEMICOLON>) ) #SimpleStatement
+    | (LOOKAHEAD(2) Equality() | (Expression() <SEMICOLON>) ) #Statement
+}
+
+void Conditional() #void: {} {
+    <LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS>
 }
 
 void If() : {} {
     <IF> 
-        <LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS>
+        Conditional()
         Statement()
     <ELSE>
         Statement()
@@ -244,7 +248,7 @@ void If() : {} {
 void While() : {} {
     <WHILE> 
         try {
-            <LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS>
+            Conditional()
 
         } catch (ParseException e) {
             
@@ -255,12 +259,12 @@ void While() : {} {
 }
 
 void Equality() : {Token t;} {
-    t = <IDENTIFIER> 
+    t = <IDENTIFIER>
         (<LEFT_BRACKET> Expression() <RIGHT_BRACKET> {jjtThis.isArray = true;} )?
         <ASSIGN> Expression() <SEMICOLON> {jjtThis.name = t.image;}
 }
 
-void Expression() : {} {
+void Expression() #void : {} {
 
     AND()
 
@@ -283,16 +287,15 @@ void Expression() : {} {
  } 
 
 void Literal() #void : {Token t;} {
-   DotExpression() | 
-   ( t= <INTEGER_LITERAL> | t = <TRUE_> | t = <FALSE_>) {jjtThis.val = t.image;} #Literal
+   DotExpression() |
+   ( t= <INTEGER_LITERAL> {jjtThis.val = t.image;} #Literal) | ((t = <TRUE_> | t = <FALSE_>) {jjtThis.val = t.image.equals("true") ;} #Boolean)
 }
 
-void DotExpression() #void : {} {
-     BracketExpression() (LOOKAHEAD(2) <DOT> (<IDENTIFIER> | <LENGTH>)
-            (<LEFT_PARENTESIS> 
+void DotExpression() #void : {Token t;} {
+     BracketExpression() (LOOKAHEAD(2) (<DOT> (t = <IDENTIFIER> | t = <LENGTH>) {jjtThis.val = t.image;} #DotExpression)
+            (<LEFT_PARENTESIS>
                 (Expression() (<COLON> Expression())*)?
-            <RIGHT_PARENTESIS>)?
-         )* #DotExpression
+            <RIGHT_PARENTESIS>)? #Arguments  )*
  } 
 
  void BracketExpression() #void : {} {
@@ -304,7 +307,7 @@ void FinalExpression() #void : {Token t;} {
     New()
     | ( <NEGATION> Expression()) #Negation
     | ( <LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS>)
-    | (t = <IDENTIFIER> | t = <THIS>) {jjtThis.val = t.image;} #Literal
+    | (t = <IDENTIFIER> | t = <THIS>) {jjtThis.val = t.image;} #Identifier
 }
 
 void New() #void : {} {

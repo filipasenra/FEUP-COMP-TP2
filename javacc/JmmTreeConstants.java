@@ -8,21 +8,23 @@ public interface JmmTreeConstants
   public int JJTVOID = 4;
   public int JJTMAINDECLARATION = 5;
   public int JJTMETHODDECLARATION = 6;
-  public int JJTCOMPLEXSTATEMENT = 7;
-  public int JJTSIMPLESTATEMENT = 8;
+  public int JJTSTATMENTBLOCK = 7;
+  public int JJTSTATEMENT = 8;
   public int JJTIF = 9;
   public int JJTWHILE = 10;
   public int JJTEQUALITY = 11;
-  public int JJTEXPRESSION = 12;
-  public int JJTAND = 13;
-  public int JJTLESSTHAN = 14;
-  public int JJTSUM = 15;
-  public int JJTMUL = 16;
-  public int JJTLITERAL = 17;
+  public int JJTAND = 12;
+  public int JJTLESSTHAN = 13;
+  public int JJTSUM = 14;
+  public int JJTMUL = 15;
+  public int JJTLITERAL = 16;
+  public int JJTBOOLEAN = 17;
   public int JJTDOTEXPRESSION = 18;
-  public int JJTNEGATION = 19;
-  public int JJTNEWINTOBJECT = 20;
-  public int JJTNEWOBJECT = 21;
+  public int JJTARGUMENTS = 19;
+  public int JJTNEGATION = 20;
+  public int JJTIDENTIFIER = 21;
+  public int JJTNEWINTOBJECT = 22;
+  public int JJTNEWOBJECT = 23;
 
 
   public String[] jjtNodeName = {
@@ -33,21 +35,23 @@ public interface JmmTreeConstants
     "void",
     "MainDeclaration",
     "MethodDeclaration",
-    "ComplexStatement",
-    "SimpleStatement",
+    "StatmentBlock",
+    "Statement",
     "If",
     "While",
     "Equality",
-    "Expression",
     "AND",
     "LESSTHAN",
     "SUM",
     "MUL",
     "Literal",
+    "Boolean",
     "DotExpression",
+    "Arguments",
     "Negation",
+    "Identifier",
     "NewIntObject",
     "NewObject",
   };
 }
-/* JavaCC - OriginalChecksum=5dc85696eb3cc2a56a579927ec7efb75 (do not edit this line) */
+/* JavaCC - OriginalChecksum=3b1e25d13136a5ec646113049230087a (do not edit this line) */
