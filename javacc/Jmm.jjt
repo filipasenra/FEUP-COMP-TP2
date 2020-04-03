@@ -287,7 +287,6 @@ void While() : {} {
             Conditional()
 
         } catch (ParseException e) {
-            
             errorHandling(e, RIGHT_PARENTESIS, LEFT_BRACE);
         }
         
