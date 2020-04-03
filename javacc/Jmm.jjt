@@ -11,6 +11,7 @@ options
 // gradle test
 // to run:
 // java -jar comp2020-3a.jar test/fixtures/public/FindMaximum.jmm
+// java -jar comp2020-3a.jar test/fixtures/public/fail/syntactical/MultipleSequential.jmm
 
 PARSER_BEGIN(Jmm)
 public class Jmm {
@@ -60,19 +61,24 @@ public class Jmm {
         Token t;
         Token t1;
 
+        boolean consumedParentesis = false;
+
         do {
             t1 = getToken(1);
-            if(t1.kind ==  kindNotToConsume)
-                {
-                    System.out.println("Syntactical error: Missing \")\" at line " + t1.beginLine + " and column " + t1.beginColumn + ".");
-                    return;
-                }
+            if (t1.kind == kindToConsume) {
+                consumedParentesis = true;
+            } else if (consumedParentesis || (t1.kind ==  kindNotToConsume))
+                break;
 
             t = getNextToken();
         
-        } while (!(t.kind == kindToConsume || t.kind == EOF));
+        } while (!(t.kind == EOF));
 
-        System.out.println("Syntactical error: " + customErrorMessage(e));  // print the error message
+        if(consumedParentesis)
+            System.out.println("Syntactical error: " + customErrorMessage(e));  // print the error message
+        else
+            System.out.println("Syntactical error: Missing \")\" at line " + t1.beginLine + " and column " + t1.beginColumn + ".");
+                    
 
 
     }
@@ -172,13 +178,12 @@ TOKEN : {
 
 SimpleNode ParseExpression(): {}
 {
-    ClassDeclaration() <EOF> {return jjtThis;} //Java code inside brackets
+    (Import())* ClassDeclaration() <EOF> {return jjtThis;} //Java code inside brackets
 
 }
 
 void ClassDeclaration(): {Token className; Token extendsClass;} {
 
-    (Import())*
     <CLASS> className = <IDENTIFIER> (<EXTENDS> extendsClass = <IDENTIFIER>  {jjtThis.ext = extendsClass.image;})?
     <LEFT_BRACE> 
         ( VarDeclaration() )*
@@ -331,10 +336,10 @@ void Literal() #void : {Token t;} {
 }
 
 void DotExpression() #void : {Token t;} {
-     FinalExpression() (LOOKAHEAD(2) (<DOT> (t = <IDENTIFIER> | t = <LENGTH>) {jjtThis.val = t.image;} #DotExpression)
+     FinalExpression() (LOOKAHEAD(2) ((<DOT> (t = <IDENTIFIER> | t = <LENGTH>) {jjtThis.val = t.image;}
             (<LEFT_PARENTESIS>
-                ((Expression() (<COLON> Expression())*) #Arguments)?
-            <RIGHT_PARENTESIS>)?)*
+                (Expression() (<COLON> Expression())*)?
+            <RIGHT_PARENTESIS>)?) #Identifier) #DotExpression(2))?
  } 
 
 void FinalExpression() #void : {Token t;} {
