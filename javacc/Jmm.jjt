@@ -295,9 +295,9 @@ void While() : {} {
 }
 
 void Equality() : {Token t;} {
-    t = <IDENTIFIER> 
-        (accessToArray() #accessToArray)?
-        <ASSIGN> Expression() <SEMICOLON> {jjtThis.name = t.image;}
+    (t = <IDENTIFIER> {jjtThis.val = t.image;}
+        (accessToArray() #accessToArray)? ) #Identifier
+        <ASSIGN> Expression() <SEMICOLON>
 }
 
 void Expression() #void : {} {
