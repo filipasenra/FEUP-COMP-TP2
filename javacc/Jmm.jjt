@@ -266,7 +266,7 @@ void Statement() #void : {} {
     (<LEFT_BRACE> (Statement())* <RIGHT_BRACE> ) #StatmentBlock
     | If()
     | While()
-    | (LOOKAHEAD(2) Equality() | (Expression() <SEMICOLON>) ) #Statement
+    | (LOOKAHEAD(2) Equality() | (Expression() <SEMICOLON>) )
 }
 
 void Conditional() #void: {} {
