@@ -7,7 +7,7 @@ import org.junit.Test;
 
 public class ParserTest {
 
-    private static String CLASS_WITH_MAIN = "Jmm";
+    private static String CLASS_WITH_MAIN = "ParserAST";
 
     private void test(String jmmResource, boolean mustFail) {
         // Copy contents of resource to a temporary file

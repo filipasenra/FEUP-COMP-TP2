@@ -9,7 +9,7 @@ class ASTVarDeclaration extends SimpleNode {
     super(id);
   }
 
-  public ASTVarDeclaration(Jmm p, int id) {
+  public ASTVarDeclaration(ParserAST p, int id) {
     super(p, id);
   }
 

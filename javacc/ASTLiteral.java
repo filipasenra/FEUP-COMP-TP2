@@ -9,7 +9,7 @@ class ASTLiteral extends SimpleNode {
     super(id);
   }
 
-  public ASTLiteral(Jmm p, int id) {
+  public ASTLiteral(ParserAST p, int id) {
     super(p, id);
   }
 

@@ -9,7 +9,7 @@ class ASTIdentifier extends SimpleNode {
     super(id);
   }
 
-  public ASTIdentifier(Jmm p, int id) {
+  public ASTIdentifier(ParserAST p, int id) {
     super(p, id);
   }
 

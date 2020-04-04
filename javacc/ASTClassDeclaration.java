@@ -10,7 +10,7 @@ class ASTClassDeclaration extends SimpleNode {
     super(id);
   }
 
-  public ASTClassDeclaration(Jmm p, int id) {
+  public ASTClassDeclaration(ParserAST p, int id) {
     super(p, id);
   }
 

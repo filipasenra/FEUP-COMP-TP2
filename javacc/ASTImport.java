@@ -9,7 +9,7 @@ class ASTImport extends SimpleNode {
     super(id);
   }
 
-  public ASTImport(Jmm p, int id) {
+  public ASTImport(ParserAST p, int id) {
     super(p, id);
   }
 

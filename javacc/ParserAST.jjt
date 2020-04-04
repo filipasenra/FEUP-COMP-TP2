@@ -13,8 +13,8 @@ options
 // java -jar comp2020-3a.jar test/fixtures/public/FindMaximum.jmm
 // java -jar comp2020-3a.jar test/fixtures/public/fail/syntactical/MultipleSequential.jmm
 
-PARSER_BEGIN(Jmm)
-public class Jmm {
+PARSER_BEGIN(ParserAST)
+public class ParserAST {
 
     private static final int MAX_ERRORS = 10;
     private int nErrors = 0;
@@ -26,7 +26,7 @@ public class Jmm {
             }
         
         try {
-            Jmm myParser = new Jmm(new java.io.FileInputStream(args[0]));
+            ParserAST myParser = new ParserAST(new java.io.FileInputStream(args[0]));
 
             SimpleNode root = myParser.ParseExpression(); // returns reference to root node 
             if(myParser.nErrors > 0 ){
@@ -99,7 +99,7 @@ public class Jmm {
     }
 }
 
-PARSER_END(Jmm)
+PARSER_END(ParserAST)
 
 
 /* Caracters to be skiped */

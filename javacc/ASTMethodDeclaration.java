@@ -8,7 +8,7 @@ class ASTMethodDeclaration extends SimpleNode {
     super(id);
   }
 
-  public ASTMethodDeclaration(Jmm p, int id) {
+  public ASTMethodDeclaration(ParserAST p, int id) {
     super(p, id);
   }
 

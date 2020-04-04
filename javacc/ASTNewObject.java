@@ -9,7 +9,7 @@ class ASTNewObject extends SimpleNode {
     super(id);
   }
 
-  public ASTNewObject(Jmm p, int id) {
+  public ASTNewObject(ParserAST p, int id) {
     super(p, id);
   }
 

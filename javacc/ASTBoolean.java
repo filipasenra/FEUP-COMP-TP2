@@ -9,7 +9,7 @@ class ASTBoolean extends SimpleNode {
     super(id);
   }
 
-  public ASTBoolean(Jmm p, int id) {
+  public ASTBoolean(ParserAST p, int id) {
     super(p, id);
   }
 

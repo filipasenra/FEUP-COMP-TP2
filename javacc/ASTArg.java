@@ -9,7 +9,7 @@ class ASTArg extends SimpleNode {
     super(id);
   }
 
-  public ASTArg(Jmm p, int id) {
+  public ASTArg(ParserAST p, int id) {
     super(p, id);
   }
 
