@@ -39,6 +39,7 @@ sourceSets {
    main {
       java {
          srcDir 'src'
+          srcDir 'symbolTable'
       }
    }
    
