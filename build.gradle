@@ -39,7 +39,8 @@ sourceSets {
    main {
       java {
          srcDir 'src'
-          srcDir 'symbolTable'
+          srcDir 'generated/javacc'
+          srcDir 'generated/jjtree'
       }
    }
    
@@ -58,7 +59,7 @@ sourceSets {
 // Create JAR with main class
 jar {
    manifest {
-      attributes 'Main-Class': 'ParserAST'
+      attributes 'Main-Class': 'jmm'
    }
 }
 

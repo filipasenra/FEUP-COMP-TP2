@@ -19,6 +19,8 @@ public class ParserAST {
     private static final int MAX_ERRORS = 10;
     private int nErrors = 0;
 
+    //Used for first checkpoint (moved to jmm in src)
+/*
     public static void main(String args[]) throws ParseException {
         if(args.length != 1){
             System.err.println("Usage: java Jmm <filename>");
@@ -40,6 +42,12 @@ public class ParserAST {
             System.out.println("file " + args[0] + " not found.");
             return;
         }        
+    }
+
+ */
+
+    public int getNerros() {
+        return nErrors;
     }
 
     private void errorHandling(ParseException e, int kindToConsume, int kindNotToConsume) {
@@ -244,14 +252,12 @@ void MethodDeclaration() #void : {Token t;} {
     <LEFT_BRACE>
         (LOOKAHEAD(2) VarDeclaration())*
         (Statement())*
-        <RETURN>
-        Expression()
-        <SEMICOLON>
+        (<RETURN> Expression() <SEMICOLON>) #Return
     <RIGHT_BRACE> {jjtThis.name = t.image;} ) #MethodDeclaration )
 
 }
 
-void Paramethers() : {} {
+void Paramethers() #void : {} {
 
     Arg() (<COLON> Arg())*
 }
@@ -263,7 +269,7 @@ void Arg() : {Token t;} {
 
 void Statement() #void : {} {
 
-    (<LEFT_BRACE> (Statement())* <RIGHT_BRACE> ) #StatmentBlock
+    (<LEFT_BRACE> (Statement())* <RIGHT_BRACE> ) #StatementBlock
     | If()
     | While()
     | (LOOKAHEAD(2) Equality() | (Expression() <SEMICOLON>) )
