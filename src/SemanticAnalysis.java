@@ -69,10 +69,112 @@ public class SemanticAnalysis {
             }
 
             if(methodNode.jjtGetChild(i) instanceof ASTReturn){
-
+                //TODO: maybe verify if return expression matches the function's return type
+                continue;
             }
 
+            analysingStatement(symbolClass, symbolMethod, (SimpleNode) methodNode.jjtGetChild(i));
+
         }
+
+    }
+
+    private void analysingStatement(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node) {
+        if(node instanceof ASTStatementBlock){
+            //TODO: maybe verify if return expression matches the function's return type
+            return;
+        }
+
+        if(node instanceof ASTIf){
+            //TODO
+            return;
+        }
+
+        if(node instanceof ASTWhile){
+            //TODO
+            return;
+        }
+
+        if(node instanceof ASTEquality){
+            //TODO
+            return;
+        }
+
+
+    }
+
+    private void analysingExpression(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node) {
+
+        if(node instanceof ASTAND){
+            //TODO: maybe verify if return expression matches the function's return type
+            return;
+        }
+
+        if(node instanceof ASTLESSTHAN){
+            //TODO
+            return;
+        }
+
+        if(node instanceof ASTSUM){
+            //TODO
+            return;
+        }
+
+        if(node instanceof ASTSUB){
+            //TODO
+            return;
+        }
+
+        if(node instanceof ASTMUL){
+            //TODO
+            return;
+        }
+
+        if(node instanceof ASTDIV){
+            //TODO
+            return;
+        }
+
+        if(node instanceof ASTLiteral){
+            //TODO
+            return;
+        }
+
+        if(node instanceof ASTBoolean){
+            //TODO
+            return;
+        }
+
+        if(node instanceof ASTDotExpression){
+            //TODO
+            return;
+        }
+
+        if(node instanceof ASTNegation){
+            //TODO
+            return;
+        }
+
+        if(node instanceof ASTaccessToArray){
+            //TODO
+            return;
+        }
+
+        if(node instanceof ASTIdentifier){
+            //TODO
+            return;
+        }
+
+        if(node instanceof ASTInitializeArray){
+            //TODO
+            return;
+        }
+
+        if(node instanceof ASTNewObject){
+            //TODO
+            return;
+        }
+
 
     }
 
