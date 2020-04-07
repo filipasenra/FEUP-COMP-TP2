@@ -6,8 +6,8 @@ public abstract class Symbol {
         this.type = type;
     }
 
-    public static enum Type {
-        INT, INT_ARRAY, BOOLEAN, STRING, OBJECT, STRING_ARRAY, VOID
+    public Type getType() {
+        return type;
     }
 
     String name; //Name of the variable

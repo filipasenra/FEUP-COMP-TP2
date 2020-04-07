@@ -5,14 +5,6 @@ options
     STATIC=false;
 }
 
-// When in root folder (comp2020-3a)
-// gradle build
-// or
-// gradle test
-// to run:
-// java -jar comp2020-3a.jar test/fixtures/public/FindMaximum.jmm
-// java -jar comp2020-3a.jar test/fixtures/public/fail/syntactical/MultipleSequential.jmm
-
 PARSER_BEGIN(ParserAST)
 public class ParserAST {
 
@@ -352,7 +344,7 @@ void FinalExpression() #void : {Token t;} {
     New()
     | ( <NEGATION> Expression()) #Negation
     | ( <LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS>)
-    | (t = <IDENTIFIER> {jjtThis.val = t.image;} #Identifier) (accessToArray() #accessToArray)?
+    | ((t = <IDENTIFIER> {jjtThis.val = t.image;} (accessToArray() #accessToArray)? ) #Identifier)
     | (t = <THIS> {jjtThis.val = t.image;} #Identifier)
 }
 
