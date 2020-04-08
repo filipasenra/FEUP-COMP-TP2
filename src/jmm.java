@@ -35,11 +35,9 @@ public class jmm {
         SemanticAnalysis semanticAnalysis = new SemanticAnalysis();
         semanticAnalysis.startAnalysing(root);
 
-        /*if (semanticAnalysis.getNerros() > 0) {
-            throw new RuntimeException("Has semantic errors");
-        }*/
-
-        System.out.println("ERRORS: " + semanticAnalysis.getNerros());
+        if (semanticAnalysis.getNerros() > 0) {
+            throw new RuntimeException("Has " + semanticAnalysis.getNerros() + " semantic errors");
+        }
 
     }
 }

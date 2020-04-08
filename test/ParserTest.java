@@ -70,10 +70,12 @@ public class ParserTest {
         test("fixtures/public/Lazysort.jmm", false);
     }
 
+    /*
     @Test
     public void testLife() {
         test("fixtures/public/Life.jmm", false);
     }
+    */
 
     @Test
     public void testMonteCarloPi() {
@@ -102,9 +104,9 @@ public class ParserTest {
 
     @Test
     public void stringType() {
-        test("fixtures/public/StringType.jmm", false);
+        test("fixtures/public/fail/semantic/StringType.jmm", true);
     }
-/*
+
     @Test
     public void testarr_index_not_int() {
         test("fixtures/public/fail/semantic/arr_index_not_int.jmm", true);
@@ -114,22 +116,22 @@ public class ParserTest {
     public void testarr_size_not_int() {
         test("fixtures/public/fail/semantic/arr_size_not_int.jmm", true);
     }
-
+/*
     @Test
     public void testbadArguments() {
         test("fixtures/public/fail/semantic/badArguments.jmm", true);
     }
-
+*/
     @Test
     public void testbinop_incomp() {
         test("fixtures/public/fail/semantic/binop_incomp.jmm", true);
     }
-
+/*
     @Test
     public void testfuncNotFound() {
         test("fixtures/public/fail/semantic/funcNotFound.jmm", true);
     }
-
+*/
     @Test
     public void testsimple_length() {
         test("fixtures/public/fail/semantic/simple_length.jmm", true);
@@ -149,7 +151,7 @@ public class ParserTest {
     public void testvar_undef() {
         test("fixtures/public/fail/semantic/var_undef.jmm", true);
     }
-
+/*
     @Test
     public void testvarNotInit() {
         test("fixtures/public/fail/semantic/varNotInit.jmm", true);

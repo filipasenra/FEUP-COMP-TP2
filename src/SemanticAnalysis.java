@@ -26,16 +26,23 @@ public class SemanticAnalysis {
 
     private void startAnalysingClass(ASTClassDeclaration classNode) {
 
-        this.symbolTable.put(classNode.name, new SymbolClass(classNode.name));
+        SymbolClass symbolClass = new SymbolClass(classNode.name);
+
+        this.symbolTable.put(classNode.name, symbolClass);
 
         for(int i = 0; i < classNode.jjtGetNumChildren(); i++)
         {
-            if(classNode.jjtGetChild(i) instanceof ASTMethodDeclaration) {
 
-                startAnalysingMethod((SymbolClass) this.symbolTable.get(classNode.name), (ASTMethodDeclaration) classNode.jjtGetChild(i));
+            if(classNode.jjtGetChild(i) instanceof  ASTVarDeclaration) {
+
+                analysingVarDeclarationClass(symbolClass, (ASTVarDeclaration) classNode.jjtGetChild(i));
+
+            }else if(classNode.jjtGetChild(i) instanceof ASTMethodDeclaration) {
+
+                startAnalysingMethod(symbolClass, (ASTMethodDeclaration) classNode.jjtGetChild(i));
 
             } else if(classNode.jjtGetChild(i) instanceof ASTMainDeclaration)
-                startAnalysingMainDeclaration((SymbolClass) this.symbolTable.get(classNode.name), (ASTMainDeclaration) classNode.jjtGetChild(i));
+                startAnalysingMainDeclaration(symbolClass, (ASTMainDeclaration) classNode.jjtGetChild(i));
 
         }
 
@@ -45,8 +52,10 @@ public class SemanticAnalysis {
     private void startAnalysingMainDeclaration(SymbolClass symbolClass, ASTMainDeclaration methodNode) {
 
         if(symbolClass.symbolTable.containsKey("main")) {
-            this.errorMessage("Main already exists in class");
-            return;
+            if(symbolClass.symbolTable.get("main") instanceof SymbolMethod) {
+                this.errorMessage("Main already exists in class");
+                return;
+            }
         }
 
         SymbolMethod symbolMethod = new SymbolMethod("main");
@@ -70,14 +79,7 @@ public class SemanticAnalysis {
 
     private void startAnalysingMethod(SymbolClass symbolClass, ASTMethodDeclaration methodNode) {
 
-        if(symbolClass.symbolTable.containsKey(methodNode.name)) {
-            this.errorMessage("Method already exists in class");
-            return;
-        }
-
         SymbolMethod symbolMethod = new SymbolMethod(methodNode.name);
-
-        symbolClass.addSymbol(methodNode.name, symbolMethod);
 
         for(int i = 0; i < methodNode.jjtGetNumChildren(); i++)
         {
@@ -105,6 +107,17 @@ public class SemanticAnalysis {
             }
 
             analysingStatement(symbolClass, symbolMethod, (SimpleNode) methodNode.jjtGetChild(i));
+
+
+            if(symbolClass.symbolTable.containsKey(methodNode.name)) {
+                if(symbolClass.symbolTable.get(methodNode.name) instanceof SymbolMethod && symbolMethod.symbolTable.equals(symbolClass.symbolTable.get(methodNode.name)) ) {
+                    this.errorMessage("Method " + methodNode.name + " already exists in class");
+                    return;
+                }
+            }
+
+
+            symbolClass.addSymbol(methodNode.name, symbolMethod);
 
         }
 
@@ -294,6 +307,19 @@ public class SemanticAnalysis {
 
         SymbolVar symbolVar = new SymbolVar(nodeVarDeclaration.name);
         symbolMethod.addSymbol(nodeVarDeclaration.name, symbolVar);
+
+        if(nodeVarDeclaration.jjtGetNumChildren() != 1)
+            return;
+
+        if(nodeVarDeclaration.jjtGetChild(0) instanceof ASTType)
+            analysingType(symbolVar, (ASTType) nodeVarDeclaration.jjtGetChild(0));
+
+    }
+
+    private void analysingVarDeclarationClass(SymbolClass symbolClass, ASTVarDeclaration nodeVarDeclaration) {
+
+        SymbolVar symbolVar = new SymbolVar(nodeVarDeclaration.name);
+        symbolClass.addSymbol(nodeVarDeclaration.name, symbolVar);
 
         if(nodeVarDeclaration.jjtGetNumChildren() != 1)
             return;
