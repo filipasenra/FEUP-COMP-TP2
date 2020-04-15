@@ -30,6 +30,7 @@ public class CodeGenerator {
         PrintWriter file = getFile(classNode.name);
         file.println(".class public " + classNode.name );
         file.println(".super java/lang/Object\n");
+        //PAUSING..
         
     }
 

@@ -328,22 +328,23 @@ void Expression() #void : {} {
   }
 
 void Literal() #void : {Token t;} {
-   DotExpression() |
+
+    ( <NEGATION> Expression()) #Negation
+    | ( <LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS>)
+   | DotExpression() |
    ( t= <INTEGER_LITERAL> {jjtThis.val = t.image;} #Literal) | ((t = <TRUE_> | t = <FALSE_>) {jjtThis.val = t.image.equals("true") ;} #Boolean)
 }
 
 void DotExpression() #void : {Token t;} {
-     FinalExpression() (LOOKAHEAD(2) ((<DOT> (t = <IDENTIFIER> | t = <LENGTH>) {jjtThis.val = t.image;}
-            (<LEFT_PARENTESIS>
-                (Expression() (<COLON> Expression())*)?
-            <RIGHT_PARENTESIS>)?) #Identifier) #DotExpression(2))?
- } 
+    FinalExpression() (LOOKAHEAD(2) ((<DOT> (t = <IDENTIFIER> | t = <LENGTH>) {jjtThis.val = t.image;}
+                                  (<LEFT_PARENTESIS>
+                                      (Expression() (<COLON> Expression())*)?
+                                  <RIGHT_PARENTESIS>)? {jjtThis.method = true;}) #Identifier) #DotExpression(2))?
+ }
 
 void FinalExpression() #void : {Token t;} {
 
     New()
-    | ( <NEGATION> Expression()) #Negation
-    | ( <LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS>)
     | ((t = <IDENTIFIER> {jjtThis.val = t.image;} (accessToArray() #accessToArray)? ) #Identifier)
     | (t = <THIS> {jjtThis.val = t.image;} #Identifier)
 }
