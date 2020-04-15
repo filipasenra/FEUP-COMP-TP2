@@ -4,6 +4,7 @@ public
 class ASTIdentifier extends SimpleNode {
 
   public String val;
+  boolean method = false;
 
   public ASTIdentifier(int id) {
     super(id);
@@ -14,7 +15,9 @@ class ASTIdentifier extends SimpleNode {
   }
 
   @Override
-  public String toString(String prefix) { return super.toString(prefix) + ": " + this.val; }
+  public String toString(String prefix) {
+    String methodOption = (this.method) ? (" is method") : "";
+    return super.toString(prefix) + ": " + this.val + methodOption; }
 
 }
 /* JavaCC - OriginalChecksum=8cc68f076904fa03c08bbbd0c4b1d8b7 (do not edit this line) */
