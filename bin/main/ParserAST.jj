@@ -6,14 +6,6 @@
     STATIC=false;
 }
 
-// When in root folder (comp2020-3a)
-// gradle build
-// or
-// gradle test
-// to run:
-// java -jar comp2020-3a.jar test/fixtures/public/FindMaximum.jmm
-// java -jar comp2020-3a.jar test/fixtures/public/fail/syntactical/MultipleSequential.jmm
-
 PARSER_BEGIN(ParserAST)
 public class ParserAST/*@bgen(jjtree)*/implements ParserASTTreeConstants/*@egen*/ {/*@bgen(jjtree)*/
   protected JJTParserASTState jjtree = new JJTParserASTState();
@@ -1116,52 +1108,61 @@ void FinalExpression()       : {Token t;} {
       }
 /*@egen*/          
     | ( <LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS>)
-    | (t = <IDENTIFIER>/*@bgen(jjtree) Identifier */
-                        {
-                          ASTIdentifier jjtn002 = new ASTIdentifier(JJTIDENTIFIER);
-                          boolean jjtc002 = true;
-                          jjtree.openNodeScope(jjtn002);
-                        }
-                        try {
-/*@egen*//*@bgen(jjtree)*/
-                        {
-                          jjtree.closeNodeScope(jjtn002, true);
-                          jjtc002 = false;
-                        }
-/*@egen*/ {jjtn002.val = t.image;}/*@bgen(jjtree)*/
-                        } finally {
-                          if (jjtc002) {
-                            jjtree.closeNodeScope(jjtn002, true);
-                          }
-                        }
-/*@egen*/            ) (/*@bgen(jjtree) accessToArray */
-                                                               {
-                                                                 ASTaccessToArray jjtn003 = new ASTaccessToArray(JJTACCESSTOARRAY);
-                                                                 boolean jjtc003 = true;
-                                                                 jjtree.openNodeScope(jjtn003);
-                                                               }
-                                                               try {
+    | (/*@bgen(jjtree) Identifier */
+       {
+         ASTIdentifier jjtn003 = new ASTIdentifier(JJTIDENTIFIER);
+         boolean jjtc003 = true;
+         jjtree.openNodeScope(jjtn003);
+       }
+       try {
+/*@egen*/(t = <IDENTIFIER> {jjtn003.val = t.image;} (/*@bgen(jjtree) accessToArray */
+                                                   {
+                                                     ASTaccessToArray jjtn002 = new ASTaccessToArray(JJTACCESSTOARRAY);
+                                                     boolean jjtc002 = true;
+                                                     jjtree.openNodeScope(jjtn002);
+                                                   }
+                                                   try {
 /*@egen*/accessToArray()/*@bgen(jjtree)*/
-                                                               } catch (Throwable jjte003) {
-                                                                 if (jjtc003) {
-                                                                   jjtree.clearNodeScope(jjtn003);
-                                                                   jjtc003 = false;
-                                                                 } else {
-                                                                   jjtree.popNode();
-                                                                 }
-                                                                 if (jjte003 instanceof RuntimeException) {
-                                                                   throw (RuntimeException)jjte003;
-                                                                 }
-                                                                 if (jjte003 instanceof ParseException) {
-                                                                   throw (ParseException)jjte003;
-                                                                 }
-                                                                 throw (Error)jjte003;
-                                                               } finally {
-                                                                 if (jjtc003) {
-                                                                   jjtree.closeNodeScope(jjtn003, true);
-                                                                 }
-                                                               }
-/*@egen*/               )?
+                                                   } catch (Throwable jjte002) {
+                                                     if (jjtc002) {
+                                                       jjtree.clearNodeScope(jjtn002);
+                                                       jjtc002 = false;
+                                                     } else {
+                                                       jjtree.popNode();
+                                                     }
+                                                     if (jjte002 instanceof RuntimeException) {
+                                                       throw (RuntimeException)jjte002;
+                                                     }
+                                                     if (jjte002 instanceof ParseException) {
+                                                       throw (ParseException)jjte002;
+                                                     }
+                                                     throw (Error)jjte002;
+                                                   } finally {
+                                                     if (jjtc002) {
+                                                       jjtree.closeNodeScope(jjtn002, true);
+                                                     }
+                                                   }
+/*@egen*/               )? )/*@bgen(jjtree)*/
+       } catch (Throwable jjte003) {
+         if (jjtc003) {
+           jjtree.clearNodeScope(jjtn003);
+           jjtc003 = false;
+         } else {
+           jjtree.popNode();
+         }
+         if (jjte003 instanceof RuntimeException) {
+           throw (RuntimeException)jjte003;
+         }
+         if (jjte003 instanceof ParseException) {
+           throw (ParseException)jjte003;
+         }
+         throw (Error)jjte003;
+       } finally {
+         if (jjtc003) {
+           jjtree.closeNodeScope(jjtn003, true);
+         }
+       }
+/*@egen*/            )
     | (t = <THIS>/*@bgen(jjtree) Identifier */
                   {
                     ASTIdentifier jjtn004 = new ASTIdentifier(JJTIDENTIFIER);
