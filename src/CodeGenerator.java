@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 
 import symbolTable.SymbolClass;
 
+/*
 public class CodeGenerator {
 
 
@@ -32,19 +33,20 @@ public class CodeGenerator {
                 }
             } 
 */
+/*
 
         }
 
 
     }
-
+*/
 ////AQUIQQ
-    private void functionToJvm(PrintWriter file, ASTMethodDeclaration function) {
+   /* private void functionToJvm(PrintWriter file, ASTMethodDeclaration function) {
 
         SymbolClass functionTable = this.symbolTable.get(function.name); //Estou aqui!! não estou a ver como utilizar a synbol table..
 
         functionTable.setRegisters(function.name);
-
+*/
         /*
         //function header
 
@@ -72,10 +74,10 @@ public class CodeGenerator {
         if(function.name.equals("main")) nrLocals++;
         int nrStack = 6;*/
 
-        file.println("locals_" + function.name);       
-        file.println("stack_" + function.name);
+    //    file.println("locals_" + function.name);
+    //    file.println("stack_" + function.name);
 
-
+/*
         //function statements
         for (int i = 0; i < function.jjtGetNumChildren(); i++) {
            
@@ -102,9 +104,9 @@ public class CodeGenerator {
         }
         file.println(".end method\n");
 */
-    }
-    
+   // }
 
+/*
     private PrintWriter getFile() {
         try {
             File dir = new File("jasmin");
@@ -124,4 +126,4 @@ public class CodeGenerator {
     }
 
 
-}
+}*/
