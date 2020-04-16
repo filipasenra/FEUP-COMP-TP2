@@ -4,7 +4,7 @@ public
 class ASTIdentifier extends SimpleNode {
 
   public String val;
-  boolean method = false;
+  public boolean method = false;
 
   public ASTIdentifier(int id) {
     super(id);

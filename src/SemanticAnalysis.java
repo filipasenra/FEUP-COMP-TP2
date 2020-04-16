@@ -218,7 +218,9 @@ public class SemanticAnalysis {
         }
 
         if(node instanceof ASTDotExpression){
-            //TODO
+         if(node.jjtGetNumChildren() == 2)
+                return analysingDotExpression(symbolClass, symbolMethod, node);
+
             return null;
         }
 
@@ -243,6 +245,31 @@ public class SemanticAnalysis {
 
         if(node instanceof ASTNewObject){
             return Type.OBJECT;
+        }
+
+        return null;
+    }
+
+    private Type analysingDotExpression(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node) {
+        if(node.jjtGetNumChildren() != 2)
+            return null;
+
+        if(node.jjtGetChild(0) instanceof ASTIdentifier && node.jjtGetChild(1) instanceof ASTIdentifier) {
+            ASTIdentifier node1 = (ASTIdentifier) node.jjtGetChild(0);
+            ASTIdentifier node2 = (ASTIdentifier) node.jjtGetChild(1);
+
+            if(node1.val == "this") {
+                if(node2.method) {
+                    if (symbolClass.symbolTable.containsKey(node2.val))
+                        return symbolClass.symbolTable.get(node2.val).getType();
+                    else if (symbolMethod.symbolTable.containsKey(node2.val))
+                        return symbolMethod.symbolTable.get(node2.val).getType();
+                    else {
+                        this.errorMessage(node2.val + " is undefined!");
+                        return null;
+                    }
+                }
+            }
         }
 
         return null;
