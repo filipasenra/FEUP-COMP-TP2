@@ -259,6 +259,7 @@ public class SemanticAnalysis {
             ASTIdentifier node2 = (ASTIdentifier) node.jjtGetChild(1);
 
             if(node1.val == "this") {
+                System.out.println(node2.val + " metodo? " + node2.method);
                 if(node2.method) {
                     if (symbolClass.symbolTable.containsKey(node2.val)) {
                         if (symbolClass.symbolTable.get(node2.val) instanceof SymbolMethod)
@@ -270,7 +271,14 @@ public class SemanticAnalysis {
                     }
                 }
                 else {
-
+                    if (symbolClass.symbolTable.containsKey(node2.val)) {
+                        if (symbolClass.symbolTable.get(node2.val) instanceof SymbolMethod)
+                            return symbolClass.symbolTable.get(node2.val).getType();
+                    }
+                    else {
+                        this.errorMessage(node2.val + " is undefined!");
+                        return null;
+                    }
                 }
 
             }
