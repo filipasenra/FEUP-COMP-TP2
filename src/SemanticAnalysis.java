@@ -37,7 +37,7 @@ public class SemanticAnalysis {
 
                 analysingVarDeclarationClass(symbolClass, (ASTVarDeclaration) classNode.jjtGetChild(i));
 
-            }else if(classNode.jjtGetChild(i) instanceof ASTMethodDeclaration) {
+            } else if(classNode.jjtGetChild(i) instanceof ASTMethodDeclaration) {
 
                 startAnalysingMethod(symbolClass, (ASTMethodDeclaration) classNode.jjtGetChild(i));
 
@@ -260,15 +260,19 @@ public class SemanticAnalysis {
 
             if(node1.val == "this") {
                 if(node2.method) {
-                    if (symbolClass.symbolTable.containsKey(node2.val))
-                        return symbolClass.symbolTable.get(node2.val).getType();
-                    else if (symbolMethod.symbolTable.containsKey(node2.val))
-                        return symbolMethod.symbolTable.get(node2.val).getType();
+                    if (symbolClass.symbolTable.containsKey(node2.val)) {
+                        if (symbolClass.symbolTable.get(node2.val) instanceof SymbolMethod)
+                            return symbolClass.symbolTable.get(node2.val).getType();
+                    }
                     else {
                         this.errorMessage(node2.val + " is undefined!");
                         return null;
                     }
                 }
+                else {
+
+                }
+
             }
         }
 
