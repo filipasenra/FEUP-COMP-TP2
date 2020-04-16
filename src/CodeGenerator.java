@@ -14,17 +14,11 @@ public class CodeGenerator {
 
     public CodeGenerator(){}
 
+
 	public void generate(SimpleNode node) {
 
         System.out.println("Starting creating jasmin code");
-        generateClassHeader(node);
-        generateGlobalVariables((SimpleNode)node.jjtGetChild(1)); //como chamar? -> a funcionar so no findmaximum
-        System.out.println("Jasmin code generated");
-        this.printWriterFile.close();
-    }
-    
 
-    private void generateClassHeader(SimpleNode node) {
         ASTClassDeclaration classNode = null;
 
         for(int i=0;i<node.jjtGetNumChildren();i++){
@@ -33,10 +27,13 @@ public class CodeGenerator {
             }
         }
 
-        //this.printWriterFile = new PrintWriter(System.out);
         this.printWriterFile = getFile(classNode.name);
         this.printWriterFile.println(".class public " + classNode.name);
         this.printWriterFile.write(".super java/lang/Object\n");
+        
+        generateGlobalVariables((SimpleNode)node.jjtGetChild(1)); //como chamar? -> a funcionar so no findmaximum
+        System.out.println("Jasmin code generated");
+        this.printWriterFile.close();
     }
 
     private void generateGlobalVariables(SimpleNode node) {
