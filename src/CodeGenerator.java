@@ -14,11 +14,11 @@ public class CodeGenerator {
     public CodeGenerator(){}
 
 	public void generate(SimpleNode node) {
-
         System.out.println("Starting creating jasmin code");
-
+        System.out.println("N children: " + node.jjtGetNumChildren());
         for(int i = 0; i < node.jjtGetNumChildren(); i++){
             if(node.jjtGetChild(i) instanceof ASTClassDeclaration){
+                System.out.println("SIM");
                 startWritingJasmin((ASTClassDeclaration) node.jjtGetChild(i));
             }
         }
@@ -26,11 +26,15 @@ public class CodeGenerator {
     
 
     private void startWritingJasmin(ASTClassDeclaration classNode) {
-
+       // System.out.println("class name: " + classNode.name);
         PrintWriter file = getFile(classNode.name);
-        file.println(".class public " + classNode.name );
-        file.println(".super java/lang/Object\n");
+        // System.out.println(file.getClass());
+      //  PrintWriter file = new PrintWriter(System.out);
+        file.flush();
+        file.println(".class public " + classNode.name);
+        file.write(".super java/lang/Object\n");
         //PAUSING..
+        file.close();
         
     }
 
