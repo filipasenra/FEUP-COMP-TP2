@@ -208,12 +208,18 @@ void IdentifierFromImport() #Identifier : {Token t;} {
 
 void ImportMethod() : {} {
 
-    <LEFT_PARENTESIS> (ImportMethodArgs())? <RIGHT_PARENTESIS> Type()
+    <LEFT_PARENTESIS> (ImportMethodArgs())? <RIGHT_PARENTESIS> ImportType()
 }
 
 void ImportMethodArgs() : {} {
 
-    Type() (<COLON> Type())*
+    ImportType() (<COLON> ImportType())*
+}
+
+void ImportType() #Type : {Token t;} {
+   ((t = <INT> (<LEFT_BRACKET> <RIGHT_BRACKET> {jjtThis.isArray = true;})? )
+   | t = <BOOLEAN> | t = <IDENTIFIER> | t = <STRING> | t=<VOID>)
+   { jjtThis.type = t.image; }
 }
 
 void VarDeclaration() : {Token t;} {
@@ -222,7 +228,7 @@ void VarDeclaration() : {Token t;} {
 
 void Type() : {Token t;} {
    ((t = <INT> (<LEFT_BRACKET> <RIGHT_BRACKET> {jjtThis.isArray = true;})? )
-   | t = <BOOLEAN> | t = <IDENTIFIER> | t = <STRING> | t=<VOID>)
+   | t = <BOOLEAN> | t = <IDENTIFIER> | t = <STRING>)
    { jjtThis.type = t.image; }
 }
 
