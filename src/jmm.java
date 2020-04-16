@@ -39,8 +39,8 @@ public class jmm {
             throw new RuntimeException("Has " + semanticAnalysis.getNerros() + " semantic errors");
         }
 
-        /*CodeGenerator generator = new CodeGenerator();
+        CodeGenerator generator = new CodeGenerator();
         generator.generate(root);
-*/
+
     }
 }

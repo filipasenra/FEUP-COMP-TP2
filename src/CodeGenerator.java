@@ -10,29 +10,74 @@ import symbolTable.SymbolClass;
 public class CodeGenerator {
 
     private HashMap<String, Symbol> symbolTable = new HashMap<>();
+    private PrintWriter printWriterFile;
 
     public CodeGenerator(){}
 
 	public void generate(SimpleNode node) {
 
         System.out.println("Starting creating jasmin code");
-
-        for(int i = 0; i < node.jjtGetNumChildren(); i++){
-            if(node.jjtGetChild(i) instanceof ASTClassDeclaration){
-                startWritingJasmin((ASTClassDeclaration) node.jjtGetChild(i));
-            }
-        }
+        generateClassHeader(node);
+        generateGlobalVariables((SimpleNode)node.jjtGetChild(1)); //como chamar? -> a funcionar so no findmaximum
+        System.out.println("Jasmin code generated");
+        this.printWriterFile.close();
     }
     
 
-    private void startWritingJasmin(ASTClassDeclaration classNode) {
+    private void generateClassHeader(SimpleNode node) {
+        ASTClassDeclaration classNode = null;
 
-        PrintWriter file = getFile(classNode.name);
-        file.println(".class public " + classNode.name );
-        file.println(".super java/lang/Object\n");
-        //PAUSING..
-        
+        for(int i=0;i<node.jjtGetNumChildren();i++){
+            if(node.jjtGetChild(i) instanceof ASTClassDeclaration){
+                classNode = (ASTClassDeclaration) node.jjtGetChild(i);
+            }
+        }
+
+        //this.printWriterFile = new PrintWriter(System.out);
+        this.printWriterFile = getFile(classNode.name);
+        this.printWriterFile.println(".class public " + classNode.name);
+        this.printWriterFile.write(".super java/lang/Object\n");
     }
+
+    private void generateGlobalVariables(SimpleNode node) {
+        for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+            SimpleNode child = (SimpleNode) node.jjtGetChild(i);
+            if (child instanceof ASTVarDeclaration) {
+                generateVar((ASTVarDeclaration) child);
+            }
+        }
+    }
+
+    private void generateVar(ASTVarDeclaration var){
+        String vType;
+        String finalType = "";
+
+        if(var.jjtGetChild(0) instanceof ASTType){
+            ASTType nodeType = (ASTType) var.jjtGetChild(0);
+            vType = nodeType.type;
+        }
+        else vType = "";
+
+        switch (vType) {
+        case "int":
+            finalType = "I";
+            break;
+        case "int is an array":
+            finalType = "[I";
+            break;
+        case "String":
+            //TODO
+            break;
+        case "boolean":
+            finalType = "B";
+            break;
+        case "void":
+            finalType = "V";
+        }
+
+        printWriterFile.println(".field public " + var.name + " " + finalType);
+    }
+
 
     private PrintWriter getFile(String className) {
         try {
