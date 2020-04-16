@@ -7,8 +7,7 @@ public class SemanticAnalysis {
     private HashMap<String, Symbol> symbolTable = new HashMap<>();
     private int nErrors = 0;
 
-    public SemanticAnalysis() {
-    }
+    public SemanticAnalysis() { }
 
     public void startAnalysing(SimpleNode node) {
 
@@ -253,7 +252,7 @@ public class SemanticAnalysis {
             ASTIdentifier node1 = (ASTIdentifier) node.jjtGetChild(0);
             ASTIdentifier node2 = (ASTIdentifier) node.jjtGetChild(1);
 
-            if (node1.val == "this") {
+            if (node1.val.equals("this")) {
                 if (symbolClass.symbolTable.containsKey(node2.val)) {
                     type = symbolClass.symbolTable.get(node2.val).getType();
 
@@ -265,22 +264,23 @@ public class SemanticAnalysis {
                             return null;
                         } else {
                             for (int i = 0; i < node2.jjtGetNumChildren(); i++) {
-                                System.out.println(node2.jjtGetChild(i).getClass());
                                 if (node2.jjtGetChild(i) instanceof ASTIdentifier) {
                                     ASTIdentifier identifier = (ASTIdentifier) node2.jjtGetChild(i);
 
                                     if (symbolMethod.symbolTable.containsKey(identifier.val)) {
-                                        if (symbolMethod.symbolTable.get(identifier.val).getType() != sm.types.get(i))
-                                            System.out.println("Argument " + (i+1) + " of method " + node2.val + " must be " + sm.types.get(i));
-                                    } else if (symbolClass.symbolTable.containsKey(identifier.val))
-                                        if (symbolClass.symbolTable.get(identifier.val).getType() != sm.types.get(i))
-                                            System.out.println("Argument " + (i+1) + " of method " + node2.val + " must be " + sm.types.get(i));
-                                    else {
+                                        if (symbolMethod.symbolTable.get(identifier.val).getType() != sm.types.get(i)) {
+                                            this.errorMessage("Argument " + (i + 1) + " of method " + node2.val + " must be " + sm.types.get(i));
+                                            return null;
+                                        }
+                                    } else if (symbolClass.symbolTable.containsKey(identifier.val)) {
+                                        if (symbolClass.symbolTable.get(identifier.val).getType() != sm.types.get(i)) {
+                                            this.errorMessage("Argument " + (i + 1) + " of method " + node2.val + " must be " + sm.types.get(i));
+                                            return null;
+                                        }
+                                    } else {
                                         this.errorMessage(identifier.val + " is undefined!");
                                         return null;
                                     }
-
-
                                 } else
                                     System.out.println("so analisa identifiers.");
                             }
