@@ -345,7 +345,7 @@ void DotExpression() #void : {Token t;} {
     FinalExpression() (LOOKAHEAD(2) ((<DOT> (t = <IDENTIFIER> | t = <LENGTH>) {jjtThis.val = t.image;}
                                   (<LEFT_PARENTESIS>
                                       (Expression() (<COLON> Expression())*)?
-                                  <RIGHT_PARENTESIS>)? {jjtThis.method = true;}) #Identifier) #DotExpression(2))?
+                                  <RIGHT_PARENTESIS>  {jjtThis.method = true;})?) #Identifier) #DotExpression(2))?
  }
 
 void FinalExpression() #void : {Token t;} {
