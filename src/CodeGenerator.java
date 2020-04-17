@@ -29,9 +29,10 @@ public class CodeGenerator {
 
         this.printWriterFile = getFile(classNode.name);
         this.printWriterFile.println(".class public " + classNode.name);
-        this.printWriterFile.write(".super java/lang/Object\n");
+        this.printWriterFile.println(".super java/lang/Object\n");
         
         generateGlobalVariables(classNode);
+        generateMethods(classNode);
         System.out.println("Jasmin code generated");
         this.printWriterFile.close();
     }
@@ -46,14 +47,19 @@ public class CodeGenerator {
     }
 
     private void generateVar(ASTVarDeclaration var){
-        String vType="";
-        String finalType = "";
         ASTType nodeType=null;
 
-        if(var.jjtGetChild(0) instanceof ASTType){
+        if(var.jjtGetChild(0) instanceof ASTType)
             nodeType = (ASTType) var.jjtGetChild(0);
-            vType = nodeType.type;
-        }
+
+        String finalType = getType(nodeType);
+
+        printWriterFile.println(".field public " + var.name + " " + finalType + "\n");
+    }
+
+    private String getType(ASTType nodeType){
+        String vType = nodeType.type;
+        String finalType="";
 
         if(nodeType.isArray)
             finalType="[I";
@@ -72,11 +78,65 @@ public class CodeGenerator {
                 case "void":
                     finalType = "V";
                     break;
+                default:
+                    finalType="";
+                    break;
             }
         }
-        printWriterFile.println(".field public " + var.name + " " + finalType);
+        return finalType;
     }
 
+     private void generateMethods(SimpleNode node) {
+        for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+            SimpleNode child = (SimpleNode) node.jjtGetChild(i);
+
+            if (child instanceof ASTMainDeclaration)
+                generateMainMethod(child);
+            if(child instanceof ASTMethodDeclaration)
+                generateMethod(child);
+        }
+    }
+
+    private void generateMainMethod(SimpleNode mainNode) {
+        this.printWriterFile.println(".method public static main([Ljava/lang/String;)V\n");
+        //TODO
+    }
+        
+    private void generateMethod(SimpleNode methodNode){
+        generateMethodHeader((ASTMethodDeclaration) methodNode);
+        //TODO
+    }
+
+    private void generateMethodHeader(ASTMethodDeclaration methodNode) {
+        String methodArgs="";
+        String methodType="";
+
+        if (methodNode.jjtGetNumChildren() == 0)
+            this.printWriterFile.println("()");
+
+        else {
+            for (int i = 0; i < methodNode.jjtGetNumChildren(); i++) {
+                SimpleNode child = (SimpleNode) methodNode.jjtGetChild(i);
+                if (child instanceof ASTArg){
+                    if(child.jjtGetChild(0) instanceof ASTType){
+                        methodArgs+=generateMethodArgument((ASTArg)child);
+                    }
+                }
+                if (child instanceof ASTType) {
+                    methodType+=getType((ASTType) child);
+                }
+            }
+        }
+        this.printWriterFile.println(".method public " + methodNode.name + "(" + methodArgs + ")" + methodType + "\n");
+    }
+
+    private String generateMethodArgument(ASTArg argNode){
+        String argType="";
+        if(argNode.jjtGetChild(0) instanceof ASTType)
+           argType = getType((ASTType) argNode.jjtGetChild(0));
+
+        return argType;
+    }
 
     private PrintWriter getFile(String className) {
         try {
