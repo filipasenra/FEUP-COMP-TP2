@@ -29,7 +29,7 @@ public class CodeGenerator {
 
         this.printWriterFile = getFile(classNode.name);
         this.printWriterFile.println(".class public " + classNode.name);
-        this.printWriterFile.println(".super java/lang/Object\n");
+        this.printWriterFile.println(".super java/lang/Object\n"); //falta a possibilidadae de ser implements!!!!!
         
         generateGlobalVariables(classNode);
         generateMethods(classNode);
@@ -70,7 +70,7 @@ public class CodeGenerator {
                     finalType = "I";
                     break;
                 case "String":
-                    //TODO
+                    finalType = "Ljava/lang/String";
                     break;
                 case "boolean":
                     finalType = "B";
@@ -78,6 +78,12 @@ public class CodeGenerator {
                 case "void":
                     finalType = "V";
                     break;
+                case "double":
+                    finalType = "D";
+                case "byte":
+                    finalType = "B";
+                case "short":
+                    finalType = "S"; 
                 default:
                     finalType="";
                     break;
@@ -90,21 +96,32 @@ public class CodeGenerator {
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             SimpleNode child = (SimpleNode) node.jjtGetChild(i);
 
-            if (child instanceof ASTMainDeclaration)
+            if (child instanceof ASTMainDeclaration){
                 generateMainMethod(child);
-            if(child instanceof ASTMethodDeclaration)
+                printWriterFile.write(".endMethod\n\n");
+            }
+            if(child instanceof ASTMethodDeclaration){
                 generateMethod(child);
+                printWriterFile.write(".endMethod\n\n");
+            }
+                
         }
+        
     }
 
     private void generateMainMethod(SimpleNode mainNode) {
-        this.printWriterFile.println(".method public static main([Ljava/lang/String;)V\n");
-        //TODO
+        this.printWriterFile.println(".method public static main([Ljava/lang/String;)V");
+        generateMethodStatments(mainNode);
     }
         
     private void generateMethod(SimpleNode methodNode){
         generateMethodHeader((ASTMethodDeclaration) methodNode);
-        //TODO
+        generateMethodStatments(methodNode);
+    }
+
+    private void generateMethodStatments(SimpleNode methodNode) {
+        printWriterFile.println(".limit stack 99");//TO-DO calculate stack and locals
+        printWriterFile.println(".limit locals 99\n");
     }
 
     private void generateMethodHeader(ASTMethodDeclaration methodNode) {
@@ -127,7 +144,7 @@ public class CodeGenerator {
                 }
             }
         }
-        this.printWriterFile.println(".method public " + methodNode.name + "(" + methodArgs + ")" + methodType + "\n");
+        this.printWriterFile.println(".method public " + methodNode.name + "(" + methodArgs + ")" + methodType);
     }
 
     private String generateMethodArgument(ASTArg argNode){
