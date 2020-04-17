@@ -7,7 +7,8 @@ public class SemanticAnalysis {
     private HashMap<String, Symbol> symbolTable = new HashMap<>();
     private int nErrors = 0;
 
-    public SemanticAnalysis() { }
+    public SemanticAnalysis() {
+    }
 
     public void startAnalysing(SimpleNode node) {
 
@@ -281,8 +282,17 @@ public class SemanticAnalysis {
                                         this.errorMessage(identifier.val + " is undefined!");
                                         return null;
                                     }
-                                } else
-                                    System.out.println("so analisa identifiers.");
+                                } else if (node2.jjtGetChild(i) instanceof ASTLiteral) {
+                                    if (Type.INT != sm.types.get(i)) {
+                                        this.errorMessage("Argument " + (i + 1) + " of method " + node2.val + " must be " + sm.types.get(i));
+                                        return null;
+                                    }
+                                } else if (node2.jjtGetChild(i) instanceof ASTBoolean) {
+                                    if (Type.BOOLEAN != sm.types.get(i)) {
+                                        this.errorMessage("Argument " + (i + 1) + " of method " + node2.val + " must be " + sm.types.get(i));
+                                        return null;
+                                    }
+                                }
                             }
                         }
                     }
