@@ -13,4 +13,6 @@ public class SymbolClass extends Symbol {
     public void addSymbol(String name, Symbol symbol) {
         this.symbolTable.put(name, symbol);
     }
+
+    public Symbol getSymbol(String name) {return this.symbolTable.get(name);}
 }

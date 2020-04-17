@@ -17,5 +17,7 @@ public class SymbolMethod extends Symbol {
         this.symbolTable.put(name, symbol);
     }
 
+    public Symbol getSymbol(String name) {return this.symbolTable.get(name); }
+
     public void addType(Type type) { this.types.add(type); }
 }

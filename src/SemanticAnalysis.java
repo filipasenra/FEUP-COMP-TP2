@@ -10,26 +10,84 @@ public class SemanticAnalysis {
     public SemanticAnalysis() {
     }
 
-    public void startAnalysing(SimpleNode node) {
-
-        System.out.println("Starting Semantic Analysis");
-
-        for (int i = 0; i < node.jjtGetNumChildren(); i++) {
-            if (node.jjtGetChild(i) instanceof ASTClassDeclaration)
-                startAnalysingClass((ASTClassDeclaration) node.jjtGetChild(i));
-        }
-
-    }
-
     public int getNerros() {
         return nErrors;
     }
 
+    public void startAnalysing(SimpleNode node) {
+        this.getInfo(node);
+
+        System.out.println("Starting Semantic Analysis");
+        for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+            if (node.jjtGetChild(i) instanceof ASTClassDeclaration)
+                startAnalysingClass((ASTClassDeclaration) node.jjtGetChild(i));
+        }
+    }
+
+    private void getInfo(SimpleNode node){
+        System.out.println("Getting classes, methods and respective info");
+        for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+            if (node.jjtGetChild(i) instanceof ASTClassDeclaration)
+                addClassInfo((ASTClassDeclaration) node.jjtGetChild(i));
+        }
+    }
+
+    private void addClassInfo(ASTClassDeclaration classNode) {
+        SymbolClass symbolClass = new SymbolClass(classNode.name);
+        this.symbolTable.put(classNode.name, symbolClass);
+
+        for (int i = 0; i < classNode.jjtGetNumChildren(); i++) {
+            if (classNode.jjtGetChild(i) instanceof ASTVarDeclaration) {
+                addVarDeclarationClassInfo(symbolClass, (ASTVarDeclaration) classNode.jjtGetChild(i));
+            } else if (classNode.jjtGetChild(i) instanceof ASTMethodDeclaration) {
+                addMethod(symbolClass, (ASTMethodDeclaration) classNode.jjtGetChild(i));
+            }
+        }
+    }
+
+    private void addVarDeclarationClassInfo(SymbolClass symbolClass, ASTVarDeclaration nodeVarDeclaration) {
+        SymbolVar symbolVar = new SymbolVar(nodeVarDeclaration.name);
+        symbolClass.addSymbol(nodeVarDeclaration.name, symbolVar);
+    }
+
+    private void addMethod(SymbolClass symbolClass, ASTMethodDeclaration methodNode) {
+        SymbolMethod symbolMethod = new SymbolMethod(methodNode.name);
+
+        for (int i = 0; i < methodNode.jjtGetNumChildren(); i++) {
+            if (methodNode.jjtGetChild(i) instanceof ASTArg)
+                addMethodArg(symbolMethod, (ASTArg) methodNode.jjtGetChild(i));
+        }
+
+        if (symbolClass.symbolTable.containsKey(methodNode.name)) {
+            if (symbolClass.symbolTable.get(methodNode.name) instanceof SymbolMethod) {
+                SymbolMethod sm = (SymbolMethod) symbolClass.symbolTable.get(methodNode.name);
+                if (symbolMethod.types.equals(sm.types)) {
+                    this.errorMessage("Method " + methodNode.name + " already exists in class");
+                    return;
+                }
+            }
+        }
+
+        symbolClass.addSymbol(methodNode.name, symbolMethod);
+
+        System.out.println(symbolClass.symbolTable);
+    }
+
+    private void addMethodArg(SymbolMethod symbolMethod, ASTArg nodeArg) {
+        SymbolVar symbolVar = new SymbolVar(nodeArg.val);
+        symbolMethod.addSymbol(nodeArg.val, symbolVar);
+
+        if (nodeArg.jjtGetNumChildren() != 1)
+            return;
+
+        if (nodeArg.jjtGetChild(0) instanceof ASTType)
+            symbolMethod.addType(analysingType(symbolVar, (ASTType) nodeArg.jjtGetChild(0)));
+    }
+
+
     private void startAnalysingClass(ASTClassDeclaration classNode) {
 
-        SymbolClass symbolClass = new SymbolClass(classNode.name);
-
-        this.symbolTable.put(classNode.name, symbolClass);
+        SymbolClass symbolClass = (SymbolClass) this.symbolTable.get(classNode.name);
 
         for (int i = 0; i < classNode.jjtGetNumChildren(); i++) {
 
@@ -47,7 +105,6 @@ public class SemanticAnalysis {
         }
 
     }
-
 
     private void startAnalysingMainDeclaration(SymbolClass symbolClass, ASTMainDeclaration methodNode) {
 
@@ -77,17 +134,11 @@ public class SemanticAnalysis {
     }
 
     private void startAnalysingMethod(SymbolClass symbolClass, ASTMethodDeclaration methodNode) {
-
-        SymbolMethod symbolMethod = new SymbolMethod(methodNode.name);
+        SymbolMethod symbolMethod = (SymbolMethod) symbolClass.getSymbol(methodNode.name);
 
         for (int i = 0; i < methodNode.jjtGetNumChildren(); i++) {
             if (methodNode.jjtGetChild(i) instanceof ASTType) {
                 analysingType(symbolMethod, (ASTType) methodNode.jjtGetChild(i));
-                continue;
-            }
-
-            if (methodNode.jjtGetChild(i) instanceof ASTArg) {
-                analysingArg(symbolMethod, (ASTArg) methodNode.jjtGetChild(i));
                 continue;
             }
 
@@ -102,20 +153,7 @@ public class SemanticAnalysis {
             }
 
             analysingStatement(symbolClass, symbolMethod, (SimpleNode) methodNode.jjtGetChild(i));
-
-
-            if (symbolClass.symbolTable.containsKey(methodNode.name)) {
-                if (symbolClass.symbolTable.get(methodNode.name) instanceof SymbolMethod && symbolMethod.symbolTable.equals(symbolClass.symbolTable.get(methodNode.name))) {
-                    this.errorMessage("Method " + methodNode.name + " already exists in class");
-                    return;
-                }
-            }
-
-
-            symbolClass.addSymbol(methodNode.name, symbolMethod);
-
         }
-
     }
 
     private void analysingStatement(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node) {
@@ -380,27 +418,13 @@ public class SemanticAnalysis {
 
     private void analysingVarDeclarationClass(SymbolClass symbolClass, ASTVarDeclaration nodeVarDeclaration) {
 
-        SymbolVar symbolVar = new SymbolVar(nodeVarDeclaration.name);
-        symbolClass.addSymbol(nodeVarDeclaration.name, symbolVar);
+        SymbolVar symbolVar = (SymbolVar) symbolClass.getSymbol(nodeVarDeclaration.name);
 
         if (nodeVarDeclaration.jjtGetNumChildren() != 1)
             return;
 
         if (nodeVarDeclaration.jjtGetChild(0) instanceof ASTType)
             analysingType(symbolVar, (ASTType) nodeVarDeclaration.jjtGetChild(0));
-
-    }
-
-    private void analysingArg(SymbolMethod symbolMethod, ASTArg nodeArg) {
-
-        SymbolVar symbolVar = new SymbolVar(nodeArg.val);
-        symbolMethod.addSymbol(nodeArg.val, symbolVar);
-
-        if (nodeArg.jjtGetNumChildren() != 1)
-            return;
-
-        if (nodeArg.jjtGetChild(0) instanceof ASTType)
-            symbolMethod.addType(analysingType(symbolVar, (ASTType) nodeArg.jjtGetChild(0)));
 
     }
 
