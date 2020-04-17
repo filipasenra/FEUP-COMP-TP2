@@ -31,7 +31,7 @@ public class CodeGenerator {
         this.printWriterFile.println(".class public " + classNode.name);
         this.printWriterFile.write(".super java/lang/Object\n");
         
-        generateGlobalVariables((SimpleNode)node.jjtGetChild(1)); //como chamar? -> a funcionar so no findmaximum
+        generateGlobalVariables(classNode);
         System.out.println("Jasmin code generated");
         this.printWriterFile.close();
     }
@@ -46,32 +46,34 @@ public class CodeGenerator {
     }
 
     private void generateVar(ASTVarDeclaration var){
-        String vType;
+        String vType="";
         String finalType = "";
+        ASTType nodeType=null;
 
         if(var.jjtGetChild(0) instanceof ASTType){
-            ASTType nodeType = (ASTType) var.jjtGetChild(0);
+            nodeType = (ASTType) var.jjtGetChild(0);
             vType = nodeType.type;
         }
-        else vType = "";
 
-        switch (vType) {
-        case "int":
-            finalType = "I";
-            break;
-        case "int is an array":
-            finalType = "[I";
-            break;
-        case "String":
-            //TODO
-            break;
-        case "boolean":
-            finalType = "B";
-            break;
-        case "void":
-            finalType = "V";
+        if(nodeType.isArray)
+            finalType="[I";
+
+        else{
+            switch (vType) {
+                case "int":
+                    finalType = "I";
+                    break;
+                case "String":
+                    //TODO
+                    break;
+                case "boolean":
+                    finalType = "B";
+                    break;
+                case "void":
+                    finalType = "V";
+                    break;
+            }
         }
-
         printWriterFile.println(".field public " + var.name + " " + finalType);
     }
 
