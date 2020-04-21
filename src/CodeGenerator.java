@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import symbolTable.Symbol;
 import symbolTable.SymbolClass;
@@ -41,12 +42,12 @@ public class CodeGenerator {
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             SimpleNode child = (SimpleNode) node.jjtGetChild(i);
             if (child instanceof ASTVarDeclaration) {
-                generateVar((ASTVarDeclaration) child);
+                generateGlobalVar((ASTVarDeclaration) child);
             }
         }
     }
 
-    private void generateVar(ASTVarDeclaration var){
+    private void generateGlobalVar(ASTVarDeclaration var){
         ASTType nodeType=null;
 
         if(var.jjtGetChild(0) instanceof ASTType)
@@ -55,6 +56,25 @@ public class CodeGenerator {
         String finalType = getType(nodeType);
 
         printWriterFile.println(".field public " + var.name + " " + finalType + "\n");
+    }
+
+    private void generateVar(ASTVarDeclaration var, HashSet<String> varTable){
+        ASTType nodeType=null;
+        
+        if(var.jjtGetChild(0) instanceof ASTType){
+            nodeType = (ASTType) var.jjtGetChild(0);
+            String finalType = getType(nodeType);
+            switch(finalType){
+                case "I":
+                    printWriterFile.println("\tbipush " + var.value);//var.value está errado!!!!!
+                    printWriterFile.println("\tputstatic fields/" + var.name + " " +  finalType);
+                    break;
+                case "String":
+                    printWriterFile.println("\tldc " + var.value);
+                    break;
+            }
+            
+        }   
     }
 
     private String getType(ASTType nodeType){
@@ -116,14 +136,9 @@ public class CodeGenerator {
         
     private void generateMethod(SimpleNode methodNode){
         generateMethodHeader((ASTMethodDeclaration) methodNode);
-        generateMethodStatments(methodNode);
-    }
-
-    private void generateMethodStatments(SimpleNode methodNode) {
-        printWriterFile.println(".limit stack 99");//TO-DO calculate stack and locals
-        printWriterFile.println(".limit locals 99\n");
-    }
-
+        generateMethodStatments((ASTMethodDeclaration) methodNode);
+    } 
+    
     private void generateMethodHeader(ASTMethodDeclaration methodNode) {
         String methodArgs="";
         String methodType="";
@@ -147,7 +162,33 @@ public class CodeGenerator {
         this.printWriterFile.println(".method public " + methodNode.name + "(" + methodArgs + ")" + methodType);
     }
 
-    private String generateMethodArgument(ASTArg argNode){
+    private void generateMethodStatments(SimpleNode methodNode) {
+        HashSet<String> varsTable = new HashSet<String>();
+        printWriterFile.println(".limit stack 99");//TO-DO calculate stack and locals, just for ckpt3
+        printWriterFile.println(".limit locals 99\n");
+
+        for (int i = 0; i < methodNode.jjtGetNumChildren(); i++){
+            
+            if(methodNode.jjtGetChild(i) instanceof ASTVarDeclaration){
+                ASTVarDeclaration varDeclaration = (ASTVarDeclaration) methodNode.jjtGetChild(i);
+                generateVar(varDeclaration, varsTable);
+            }
+        }
+    }
+
+    // private void generateBlock(ASTStatementBlock block) {
+    //     for (int i = 0; i < block.jjtGetNumChildren(); i++) {
+    //         System.out.println("blockchildren");
+    //        if(block.jjtGetChild(i) instanceof ASTVarDeclaration){
+    //            ASTVarDeclaration declaration = (ASTVarDeclaration) block.jjtGetChild(i);
+    //            System.out.println(declaration.name);
+
+    //        }
+            
+    //     }
+    // }
+
+    private String generateMethodArgument(ASTArg argNode) {
         String argType="";
         if(argNode.jjtGetChild(0) instanceof ASTType)
            argType = getType((ASTType) argNode.jjtGetChild(0));

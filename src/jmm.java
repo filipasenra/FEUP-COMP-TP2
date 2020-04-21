@@ -7,7 +7,7 @@ public class jmm {
     // or
     // gradle test
     // to run:
-    // java -jar comp2020-3a.jar test/fixtures/public/FindMaximum.jmm
+    //
     // java -jar comp2020-3a.jar test/fixtures/public/fail/syntactical/MultipleSequential.jmm
     //java -jar comp2020-3a.jar test/fixtures/public/fail/semantic/binop_incomp.jmm
 
