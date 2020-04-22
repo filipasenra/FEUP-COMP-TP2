@@ -98,6 +98,7 @@ public class CodeGenerator {
     }
 
      private void generateMethods(SimpleNode node) {
+        generateConstructor();
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             HashMap<String, String> varsTable = new HashMap<String, String>();
             SimpleNode child = (SimpleNode) node.jjtGetChild(i);
@@ -109,10 +110,18 @@ public class CodeGenerator {
             if(child instanceof ASTMethodDeclaration){
                 generateMethod(child, varsTable);
                 printWriterFile.write(".endMethod\n\n");
-            }
-                
+            }   
         }
+    }
+
+    private void generateConstructor() {
         
+        printWriterFile.println(".method public<init>()V");
+        printWriterFile.println("\taload_0");
+        printWriterFile.println("\tinvokenonvirtual java/lang/Object<init>()V");//TO-DO if the class extends, we need to change "Object" with extended class name
+        printWriterFile.println("\treturn");
+        printWriterFile.println(".end method\n\n");
+
     }
 
     private void generateMainMethod(SimpleNode mainNode, HashMap<String, String> varsTable) {
@@ -122,12 +131,16 @@ public class CodeGenerator {
         
     private void generateMethod(SimpleNode methodNode, HashMap<String, String> varsTable){
         generateMethodHeader((ASTMethodDeclaration) methodNode, varsTable);
+        printWriterFile.println("\t.limit stack 99");//TO-DO calculate stack and locals, just for ckpt3
+        printWriterFile.println("\t.limit locals 99\n");
         generateMethodStatments((ASTMethodDeclaration) methodNode, varsTable);
     } 
     
     private void generateMethodHeader(ASTMethodDeclaration methodNode, HashMap<String, String> varsTable) {
         String methodArgs="";
+        String arg = "";
         String methodType="";
+        String type = "";
 
         if (methodNode.jjtGetNumChildren() == 0)
             this.printWriterFile.println("()");
@@ -136,7 +149,7 @@ public class CodeGenerator {
             for (int i = 0; i < methodNode.jjtGetNumChildren(); i++) {
                 SimpleNode child = (SimpleNode) methodNode.jjtGetChild(i);
                 if (child instanceof ASTArg){
-                    if(child.jjtGetChild(0) instanceof ASTType){//TO-DO aqui perencher a tabela varstable
+                    if(child.jjtGetChild(0) instanceof ASTType){
                         methodArgs+=generateMethodArgument((ASTArg)child);
 
                     }
@@ -150,9 +163,6 @@ public class CodeGenerator {
     }
 
     private void generateMethodStatments(SimpleNode methodNode, HashMap<String, String> varsTable) {
-        
-        printWriterFile.println(".limit stack 99");//TO-DO calculate stack and locals, just for ckpt3
-        printWriterFile.println(".limit locals 99\n");
 
         for (int i = 0; i < methodNode.jjtGetNumChildren(); i++){
             
