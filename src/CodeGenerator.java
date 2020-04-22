@@ -32,19 +32,17 @@ public class CodeGenerator {
         this.printWriterFile.println(".class public " + classNode.name);
         this.printWriterFile.println(".super java/lang/Object\n"); //falta a possibilidadae de ser implements!!!!!
         
-        generateGlobalVariables(classNode);
+        for (int i = 0; i < node.jjtGetNumChildren(); i++) {//Global Variables
+                SimpleNode child = (SimpleNode) node.jjtGetChild(i);
+                if (child instanceof ASTVarDeclaration) {
+                    generateGlobalVar((ASTVarDeclaration) child);
+                }
+        }
+
         generateMethods(classNode);
+
         System.out.println("Jasmin code generated");
         this.printWriterFile.close();
-    }
-
-    private void generateGlobalVariables(SimpleNode node) {
-        for (int i = 0; i < node.jjtGetNumChildren(); i++) {
-            SimpleNode child = (SimpleNode) node.jjtGetChild(i);
-            if (child instanceof ASTVarDeclaration) {
-                generateGlobalVar((ASTVarDeclaration) child);
-            }
-        }
     }
 
     private void generateGlobalVar(ASTVarDeclaration var){
@@ -60,21 +58,8 @@ public class CodeGenerator {
 
     private void generateVar(ASTVarDeclaration var, HashSet<String> varTable){
         ASTType nodeType=null;
-        
-        if(var.jjtGetChild(0) instanceof ASTType){
-            nodeType = (ASTType) var.jjtGetChild(0);
-            String finalType = getType(nodeType);
-            switch(finalType){
-                case "I":
-                    printWriterFile.println("\tbipush " + var.value);//var.value está errado!!!!!
-                    printWriterFile.println("\tputstatic fields/" + var.name + " " +  finalType);
-                    break;
-                case "String":
-                    printWriterFile.println("\tldc " + var.value);
-                    break;
-            }
-            
-        }   
+
+         
     }
 
     private String getType(ASTType nodeType){
@@ -135,11 +120,12 @@ public class CodeGenerator {
     }
         
     private void generateMethod(SimpleNode methodNode){
-        generateMethodHeader((ASTMethodDeclaration) methodNode);
-        generateMethodStatments((ASTMethodDeclaration) methodNode);
+        HashMap<String, String> varsTable = new HashMap<String, String>();
+        generateMethodHeader((ASTMethodDeclaration) methodNode, varsTable);
+        generateMethodStatments((ASTMethodDeclaration) methodNode, varsTable);
     } 
     
-    private void generateMethodHeader(ASTMethodDeclaration methodNode) {
+    private void generateMethodHeader(ASTMethodDeclaration methodNode, HashMap<String, String> varsTable) {
         String methodArgs="";
         String methodType="";
 
@@ -150,8 +136,9 @@ public class CodeGenerator {
             for (int i = 0; i < methodNode.jjtGetNumChildren(); i++) {
                 SimpleNode child = (SimpleNode) methodNode.jjtGetChild(i);
                 if (child instanceof ASTArg){
-                    if(child.jjtGetChild(0) instanceof ASTType){
+                    if(child.jjtGetChild(0) instanceof ASTType){//TO-DO aqui perencher a tabela varstable
                         methodArgs+=generateMethodArgument((ASTArg)child);
+
                     }
                 }
                 if (child instanceof ASTType) {
@@ -163,7 +150,7 @@ public class CodeGenerator {
     }
 
     private void generateMethodStatments(SimpleNode methodNode) {
-        HashSet<String> varsTable = new HashSet<String>();
+        
         printWriterFile.println(".limit stack 99");//TO-DO calculate stack and locals, just for ckpt3
         printWriterFile.println(".limit locals 99\n");
 
