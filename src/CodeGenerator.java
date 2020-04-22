@@ -56,7 +56,7 @@ public class CodeGenerator {
         printWriterFile.println(".field public " + var.name + " " + finalType + "\n");
     }
 
-    private void generateVar(ASTVarDeclaration var, HashSet<String> varTable){
+    private void generateVar(ASTVarDeclaration var, HashMap<String, String> varTable){
         ASTType nodeType=null;
 
          
@@ -99,14 +99,15 @@ public class CodeGenerator {
 
      private void generateMethods(SimpleNode node) {
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+            HashMap<String, String> varsTable = new HashMap<String, String>();
             SimpleNode child = (SimpleNode) node.jjtGetChild(i);
 
             if (child instanceof ASTMainDeclaration){
-                generateMainMethod(child);
+                generateMainMethod(child, varsTable);
                 printWriterFile.write(".endMethod\n\n");
             }
             if(child instanceof ASTMethodDeclaration){
-                generateMethod(child);
+                generateMethod(child, varsTable);
                 printWriterFile.write(".endMethod\n\n");
             }
                 
@@ -114,13 +115,12 @@ public class CodeGenerator {
         
     }
 
-    private void generateMainMethod(SimpleNode mainNode) {
+    private void generateMainMethod(SimpleNode mainNode, HashMap<String, String> varsTable) {
         this.printWriterFile.println(".method public static main([Ljava/lang/String;)V");
-        generateMethodStatments(mainNode);
+        generateMethodStatments(mainNode, varsTable);
     }
         
-    private void generateMethod(SimpleNode methodNode){
-        HashMap<String, String> varsTable = new HashMap<String, String>();
+    private void generateMethod(SimpleNode methodNode, HashMap<String, String> varsTable){
         generateMethodHeader((ASTMethodDeclaration) methodNode, varsTable);
         generateMethodStatments((ASTMethodDeclaration) methodNode, varsTable);
     } 
@@ -149,7 +149,7 @@ public class CodeGenerator {
         this.printWriterFile.println(".method public " + methodNode.name + "(" + methodArgs + ")" + methodType);
     }
 
-    private void generateMethodStatments(SimpleNode methodNode) {
+    private void generateMethodStatments(SimpleNode methodNode, HashMap<String, String> varsTable) {
         
         printWriterFile.println(".limit stack 99");//TO-DO calculate stack and locals, just for ckpt3
         printWriterFile.println(".limit locals 99\n");
