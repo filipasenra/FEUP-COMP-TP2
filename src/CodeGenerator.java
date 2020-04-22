@@ -120,7 +120,7 @@ public class CodeGenerator {
         printWriterFile.println("\taload_0");
         printWriterFile.println("\tinvokenonvirtual java/lang/Object<init>()V");//TO-DO if the class extends, we need to change "Object" with extended class name
         printWriterFile.println("\treturn");
-        printWriterFile.println(".end method\n\n");
+        printWriterFile.println(".end method\n");
 
     }
 
@@ -130,7 +130,8 @@ public class CodeGenerator {
     }
         
     private void generateMethod(SimpleNode methodNode, HashMap<String, String> varsTable){
-        generateMethodHeader((ASTMethodDeclaration) methodNode, varsTable);
+        generateMethodHeader((ASTMethodDeclaration) methodNode, varsTable);//parametros de entrada colocados em varsTable
+        printWriterFile.println(varsTable.toString());
         printWriterFile.println("\t.limit stack 99");//TO-DO calculate stack and locals, just for ckpt3
         printWriterFile.println("\t.limit locals 99\n");
         generateMethodStatments((ASTMethodDeclaration) methodNode, varsTable);
@@ -142,22 +143,23 @@ public class CodeGenerator {
         String methodType="";
         String type = "";
 
-        if (methodNode.jjtGetNumChildren() == 0)
-            this.printWriterFile.println("()");
-
-        else {
-            for (int i = 0; i < methodNode.jjtGetNumChildren(); i++) {
-                SimpleNode child = (SimpleNode) methodNode.jjtGetChild(i);
-                if (child instanceof ASTArg){
-                    if(child.jjtGetChild(0) instanceof ASTType){
-                        methodArgs+=generateMethodArgument((ASTArg)child);
-
-                    }
+        for (int i = 0; i < methodNode.jjtGetNumChildren(); i++) {
+            SimpleNode child = (SimpleNode) methodNode.jjtGetChild(i);
+            if (child instanceof ASTArg){
+                ASTArg argument = (ASTArg) methodNode.jjtGetChild(i);
+                arg = argument.val;
+                if(child.jjtGetChild(0) instanceof ASTType){
+                    methodArgs+=generateMethodArgument((ASTArg)child);
+                    type = generateMethodArgument((ASTArg)child);
                 }
-                if (child instanceof ASTType) {
-                    methodType+=getType((ASTType) child);
-                }
+                varsTable.put(arg, type);
             }
+            if (child instanceof ASTType) {
+                methodType+=getType((ASTType) child);
+                ASTType returnType = (ASTType) methodNode.jjtGetChild(0);
+                varsTable.put("return", returnType.type); 
+            }
+            
         }
         this.printWriterFile.println(".method public " + methodNode.name + "(" + methodArgs + ")" + methodType);
     }
