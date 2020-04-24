@@ -30,7 +30,7 @@ public class CodeGenerator {
 
         this.printWriterFile = getFile(classNode.name);
         this.printWriterFile.println(".class public " + classNode.name);
-        this.printWriterFile.println(".super java/lang/Object\n"); //falta a possibilidadae de ser implements!!!!!
+        this.printWriterFile.println(".super java/lang/Object\n"); //falta a possibilidadae de ser extends!!
         
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {//Global Variables
                 SimpleNode child = (SimpleNode) node.jjtGetChild(i);
@@ -135,6 +135,7 @@ public class CodeGenerator {
         printWriterFile.println("\t.limit stack 99");//TO-DO calculate stack and locals, just for ckpt3
         printWriterFile.println("\t.limit locals 99\n");
         generateMethodStatments((ASTMethodDeclaration) methodNode, varsTable);
+        generateMethodBody(methodNode);
     } 
     
     private void generateMethodHeader(ASTMethodDeclaration methodNode, HashMap<String, String> varsTable) {
@@ -164,6 +165,14 @@ public class CodeGenerator {
         this.printWriterFile.println(".method public " + methodNode.name + "(" + methodArgs + ")" + methodType);
     }
 
+    private String generateMethodArgument(ASTArg argNode) {
+        String argType="";
+        if(argNode.jjtGetChild(0) instanceof ASTType)
+           argType = getType((ASTType) argNode.jjtGetChild(0));
+
+        return argType;
+    }
+
     private void generateMethodStatments(SimpleNode methodNode, HashMap<String, String> varsTable) {
 
         for (int i = 0; i < methodNode.jjtGetNumChildren(); i++){
@@ -173,6 +182,67 @@ public class CodeGenerator {
                 generateVar(varDeclaration, varsTable);
             }
         }
+    }
+
+    private void generateMethodBody(SimpleNode method) {
+        for (int i = 0; i < method.jjtGetNumChildren(); i++) {
+            SimpleNode method_child = (SimpleNode) method.jjtGetChild(i);
+            generateBody(method_child);
+        }
+    }
+
+    private void generateBody(SimpleNode node) {
+        if(node instanceof ASTEquality){
+            //System.out.println("equality");
+            //System.out.println("nr filhos equality: " + node.jjtGetNumChildren());
+            generateEquality(node);
+        }
+
+        //TODO -> complete with return, dought expressions, if, while...
+    }
+
+    private void generateEquality(SimpleNode node) {
+        ASTIdentifier lhs = (ASTIdentifier) node.jjtGetChild(0);  //left identifier
+        SimpleNode rhs = (SimpleNode) node.jjtGetChild(1);  //right side 
+
+//        System.out.println("lhs: " + lhs.toString());
+//        System.out.println("Nr filhos direita: " + rhs.jjtGetNumChildren());
+
+        generateRhs(rhs);
+
+        //TODO -> parse left side of expression
+    }
+
+
+    private void generateRhs(SimpleNode rhs) {
+        if (rhs.jjtGetNumChildren() == 2) {
+            generateOperation(rhs);
+        }
+
+        //TODO -> nrChildren != 2 
+    }
+
+    private void generateOperation(SimpleNode operation) {
+
+        //System.out.println("filhos operation: " + operation.jjtGetNumChildren());
+        //System.out.println("operation: " + operation.toString());
+        
+        SimpleNode lhs = (SimpleNode) operation.jjtGetChild(0);
+        SimpleNode rhs = (SimpleNode) operation.jjtGetChild(1);
+
+
+        if(operation instanceof ASTSUM)
+            this.printWriterFile.println("\tiadd");
+        if(operation instanceof ASTSUB)
+            this.printWriterFile.println("\tisub");
+        if(operation instanceof ASTMUL)
+            this.printWriterFile.println("\timul");
+        if(operation instanceof ASTDIV)
+            this.printWriterFile.println("\tidiv");
+        /*  if(operation instanceof ASTLESSTHAN)
+            //TODO
+        if(operation instanceof ASTAND)
+            //TODO*/
     }
 
     // private void generateBlock(ASTStatementBlock block) {
@@ -187,13 +257,6 @@ public class CodeGenerator {
     //     }
     // }
 
-    private String generateMethodArgument(ASTArg argNode) {
-        String argType="";
-        if(argNode.jjtGetChild(0) instanceof ASTType)
-           argType = getType((ASTType) argNode.jjtGetChild(0));
-
-        return argType;
-    }
 
     private PrintWriter getFile(String className) {
         try {

@@ -7,7 +7,8 @@ public class jmm {
     // or
     // gradle test
     // to run:
-    //
+        
+    // java -jar comp2020-3a.jar test/fixtures/public/Simple.jmm
     // java -jar comp2020-3a.jar test/fixtures/public/fail/syntactical/MultipleSequential.jmm
     //java -jar comp2020-3a.jar test/fixtures/public/fail/semantic/binop_incomp.jmm
 
