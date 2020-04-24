@@ -1,25 +1,26 @@
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-
-import symbolTable.Symbol;
-import symbolTable.SymbolClass;
+import java.util.List;
+import symbolTable.*;
 
 
 public class CodeGenerator {
 
-    private HashMap<String, Symbol> symbolTable = new HashMap<>();
     private PrintWriter printWriterFile;
+    private HashMap<String, Symbol> symbolTable = new HashMap<>();
 
-    public CodeGenerator(){}
+    public CodeGenerator(SemanticAnalysis semanticAnalysis ){
+        symbolTable = semanticAnalysis.getSymbolTable();
+    }
 
 
 	public void generate(SimpleNode node) {
 
         System.out.println("Starting creating jasmin code");
-
+        System.out.println(this.symbolTable.toString());
         ASTClassDeclaration classNode = null;
 
         for(int i=0;i<node.jjtGetNumChildren();i++){
@@ -29,6 +30,7 @@ public class CodeGenerator {
         }
 
         this.printWriterFile = getFile(classNode.name);
+
         this.printWriterFile.println(".class public " + classNode.name);
         this.printWriterFile.println(".super java/lang/Object\n"); //falta a possibilidadae de ser extends!!
         
@@ -54,12 +56,6 @@ public class CodeGenerator {
         String finalType = getType(nodeType);
 
         printWriterFile.println(".field public " + var.name + " " + finalType + "\n");
-    }
-
-    private void generateVar(ASTVarDeclaration var, HashMap<String, String> varTable){
-        ASTType nodeType=null;
-
-         
     }
 
     private String getType(ASTType nodeType){
@@ -100,45 +96,41 @@ public class CodeGenerator {
      private void generateMethods(SimpleNode node) {
         generateConstructor();
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
-            HashMap<String, String> varsTable = new HashMap<String, String>();
             SimpleNode child = (SimpleNode) node.jjtGetChild(i);
 
             if (child instanceof ASTMainDeclaration){
-                generateMainMethod(child, varsTable);
+                generateMainMethod(child);
                 printWriterFile.write(".endMethod\n\n");
             }
             if(child instanceof ASTMethodDeclaration){
-                generateMethod(child, varsTable);
+                generateMethod(child);
                 printWriterFile.write(".endMethod\n\n");
             }   
         }
     }
 
     private void generateConstructor() {
-        
         printWriterFile.println(".method public<init>()V");
         printWriterFile.println("\taload_0");
         printWriterFile.println("\tinvokenonvirtual java/lang/Object<init>()V");//TO-DO if the class extends, we need to change "Object" with extended class name
         printWriterFile.println("\treturn");
         printWriterFile.println(".end method\n");
-
     }
 
-    private void generateMainMethod(SimpleNode mainNode, HashMap<String, String> varsTable) {
+    private void generateMainMethod(SimpleNode mainNode) {
         this.printWriterFile.println(".method public static main([Ljava/lang/String;)V");
-        generateMethodStatments(mainNode, varsTable);
+        generateMethodStatments(mainNode);
     }
         
-    private void generateMethod(SimpleNode methodNode, HashMap<String, String> varsTable){
-        generateMethodHeader((ASTMethodDeclaration) methodNode, varsTable);//parametros de entrada colocados em varsTable
-        printWriterFile.println(varsTable.toString());
+    private void generateMethod(SimpleNode methodNode){
+        generateMethodHeader((ASTMethodDeclaration) methodNode);//parametros de entrada colocados em varsTable
         printWriterFile.println("\t.limit stack 99");//TO-DO calculate stack and locals, just for ckpt3
         printWriterFile.println("\t.limit locals 99\n");
-        generateMethodStatments((ASTMethodDeclaration) methodNode, varsTable);
+        generateMethodStatments((ASTMethodDeclaration) methodNode);
         generateMethodBody(methodNode);
     } 
     
-    private void generateMethodHeader(ASTMethodDeclaration methodNode, HashMap<String, String> varsTable) {
+    private void generateMethodHeader(ASTMethodDeclaration methodNode) {
         String methodArgs="";
         String arg = "";
         String methodType="";
@@ -153,12 +145,9 @@ public class CodeGenerator {
                     methodArgs+=generateMethodArgument((ASTArg)child);
                     type = generateMethodArgument((ASTArg)child);
                 }
-                varsTable.put(arg, type);
             }
             if (child instanceof ASTType) {
                 methodType+=getType((ASTType) child);
-                ASTType returnType = (ASTType) methodNode.jjtGetChild(0);
-                varsTable.put("return", returnType.type); 
             }
             
         }
@@ -173,13 +162,13 @@ public class CodeGenerator {
         return argType;
     }
 
-    private void generateMethodStatments(SimpleNode methodNode, HashMap<String, String> varsTable) {
+    private void generateMethodStatments(SimpleNode methodNode) {
 
         for (int i = 0; i < methodNode.jjtGetNumChildren(); i++){
             
             if(methodNode.jjtGetChild(i) instanceof ASTVarDeclaration){
                 ASTVarDeclaration varDeclaration = (ASTVarDeclaration) methodNode.jjtGetChild(i);
-                generateVar(varDeclaration, varsTable);
+               // generateVar(varDeclaration);
             }
         }
     }

@@ -8,8 +8,7 @@ public class SemanticAnalysis {
     private HashMap<String, Symbol> symbolTable = new HashMap<>();
     private int nErrors = 0;
 
-    public SemanticAnalysis() {
-    }
+    public SemanticAnalysis() {}
 
     public int getNerros() {
         return nErrors;
@@ -24,6 +23,9 @@ public class SemanticAnalysis {
                 startAnalysingClass((ASTClassDeclaration) node.jjtGetChild(i));
         }
     }
+
+    public HashMap<String, Symbol> getSymbolTable() {return this.symbolTable;}
+
 
     private void getInfo(SimpleNode node) {
         System.out.println("Getting classes, methods and respective info");
@@ -291,7 +293,7 @@ public class SemanticAnalysis {
         return null;
     }
 
-    private Type analysingDotExpression(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node) {
+    private Type analysingDotExpression(SymbolClass F, SymbolMethod symbolMethod, SimpleNode node) {
         if (node.jjtGetNumChildren() != 2)
             return null;
 
