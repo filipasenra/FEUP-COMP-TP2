@@ -1,6 +1,5 @@
 .class public Lazysort
-.super java/lang/Object
-
+.super Quicksort
 .method public<init>()V
 	aload_0
 	invokenonvirtual java/lang/Object<init>()V

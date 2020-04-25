@@ -20,24 +20,15 @@ public class CodeGenerator {
         System.out.println("Starting creating jasmin code");
         System.out.println(this.symbolTable.toString());
 
+        ASTClassDeclaration classNode=null;
+
         for(int i=0;i<node.jjtGetNumChildren();i++){
             if(node.jjtGetChild(i) instanceof ASTClassDeclaration){
-
-                ASTClassDeclaration classNode = (ASTClassDeclaration) node.jjtGetChild(i);
-
-                this.printWriterFile = createOutputFile(classNode.name);
-                this.generateClass(classNode);
+                classNode = (ASTClassDeclaration) node.jjtGetChild(i);
             }
         }
-
-        //There are no global variables. what do you mean by this? this should be where the imports are translated to jasmin.
-        for (int i = 0; i < node.jjtGetNumChildren(); i++) {//Global Variables
-                SimpleNode child = (SimpleNode) node.jjtGetChild(i);
-                if (child instanceof ASTVarDeclaration) {
-                    generateGlobalVar((ASTVarDeclaration) child);
-                }
-        }
-
+        this.printWriterFile = createOutputFile(classNode.name);
+        this.generateClass(classNode);
         System.out.println("Jasmin code generated");
         this.printWriterFile.close();
     }
@@ -52,18 +43,32 @@ public class CodeGenerator {
             this.printWriterFile.println(".super java/lang/Object");
 
         SymbolClass symbolClass = (SymbolClass) symbolTable.get(classNode.name);
+        generateGlobalVariables(classNode);
+
         generateMethods(classNode, symbolClass);
     }
 
+
+    private void generateGlobalVariables(SimpleNode node) {
+        for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+            SimpleNode child = (SimpleNode) node.jjtGetChild(i);
+            if (child instanceof ASTVarDeclaration) {
+                generateGlobalVar((ASTVarDeclaration) child);
+            }
+        }
+    }
+
     private void generateGlobalVar(ASTVarDeclaration var){
+        String finalType = "";
         ASTType nodeType=null;
 
-        if(var.jjtGetChild(0) instanceof ASTType)
+        if(var.jjtGetChild(0) instanceof ASTType){
             nodeType = (ASTType) var.jjtGetChild(0);
+        }
 
-        String finalType = getType(nodeType);
+        finalType = getType((ASTType) nodeType);
 
-        printWriterFile.println(".field public " + var.name + " " + finalType + "\n");
+        printWriterFile.println(".field public " + var.name + " " + finalType);
     }
 
     private String getType(ASTType nodeType){
