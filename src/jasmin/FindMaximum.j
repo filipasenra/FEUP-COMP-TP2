@@ -7,19 +7,19 @@
 	return
 .end method
 
-.method public find_maximum(null[I)nullI
+.method public find_maximum([I)I
 	.limit stack 99
 	.limit locals 99
 
 .endMethod
 
-.method public build_test_arr(null)nullI
+.method public build_test_arr()I
 	.limit stack 99
 	.limit locals 99
 
 .endMethod
 
-.method public get_array(null)null[I
+.method public get_array()[I
 	.limit stack 99
 	.limit locals 99
 
