@@ -4,11 +4,10 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import symbolTable.*;
 
-
 public class CodeGenerator {
 
     private PrintWriter printWriterFile;
-    private HashMap<String, Symbol> symbolTable;
+    private final HashMap<String, Symbol> symbolTable;
 
     public CodeGenerator(SemanticAnalysis semanticAnalysis ){
         symbolTable = semanticAnalysis.getSymbolTable();
@@ -20,24 +19,16 @@ public class CodeGenerator {
         System.out.println("Starting creating jasmin code");
         System.out.println(this.symbolTable.toString());
 
+        ASTClassDeclaration classNode=null;
+
         for(int i=0;i<node.jjtGetNumChildren();i++){
             if(node.jjtGetChild(i) instanceof ASTClassDeclaration){
-
-                ASTClassDeclaration classNode = (ASTClassDeclaration) node.jjtGetChild(i);
-
-                this.printWriterFile = createOutputFile(classNode.name);
-                this.generateClass(classNode);
+                classNode = (ASTClassDeclaration) node.jjtGetChild(i);
             }
         }
 
-        //There are no global variables. what do you mean by this? this should be where the imports are translated to jasmin.
-        for (int i = 0; i < node.jjtGetNumChildren(); i++) {//Global Variables
-                SimpleNode child = (SimpleNode) node.jjtGetChild(i);
-                if (child instanceof ASTVarDeclaration) {
-                    generateGlobalVar((ASTVarDeclaration) child);
-                }
-        }
-
+        this.printWriterFile = createOutputFile(classNode.name);
+        this.generateClass(classNode);
         System.out.println("Jasmin code generated");
         this.printWriterFile.close();
     }
@@ -51,53 +42,46 @@ public class CodeGenerator {
         else
             this.printWriterFile.println(".super java/lang/Object");
 
+        generateGlobalVariables(classNode);
         generateMethods(classNode);
     }
 
-    private void generateGlobalVar(ASTVarDeclaration var){
-        ASTType nodeType=null;
 
-        if(var.jjtGetChild(0) instanceof ASTType)
-            nodeType = (ASTType) var.jjtGetChild(0);
-
-        String finalType = getType(nodeType);
-
-        printWriterFile.println(".field public " + var.name + " " + finalType + "\n");
-    }
-
-    private String getType(ASTType nodeType){
-        String vType = nodeType.type;
-        String finalType="";
-
-        if(nodeType.isArray)
-            finalType="[I";
-
-        else{
-            switch (vType) {
-                case "int":
-                    finalType = "I";
-                    break;
-                case "String":
-                    finalType = "Ljava/lang/String";
-                    break;
-                case "boolean":
-                    finalType = "B";
-                    break;
-                case "void":
-                    finalType = "V";
-                    break;
-                case "double":
-                    finalType = "D";
-                case "byte":
-                    finalType = "B";
-                case "short":
-                    finalType = "S"; 
-                default:
-                    finalType="";
-                    break;
+    private void generateGlobalVariables(SimpleNode node) {
+        for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+            SimpleNode child = (SimpleNode) node.jjtGetChild(i);
+            if (child instanceof ASTVarDeclaration) {
+                generateGlobalVar((ASTVarDeclaration) child);
             }
         }
-        return finalType;
+    }
+
+    private void generateGlobalVar(ASTVarDeclaration var){
+
+        if(var.jjtGetChild(0) instanceof ASTType){
+            ASTType nodeType = (ASTType) var.jjtGetChild(0);
+            printWriterFile.println(".field public " + var.name + " " + getType(nodeType));
+        }
+    }
+
+    private String getType(ASTType nodeType) {
+
+        if (nodeType.isArray) {
+            return "[I";
+        }
+
+        switch (nodeType.type) {
+            case "int":
+                return "I";
+            case "String":
+                return "Ljava/lang/String";
+            case "boolean":
+                return "B";
+            case "void":
+                return "V";
+        }
+
+        return "";
     }
 
      private void generateMethods(SimpleNode node) {
@@ -136,7 +120,7 @@ public class CodeGenerator {
         generateMethodHeader((ASTMethodDeclaration) methodNode);//parametros de entrada colocados em varsTable
         printWriterFile.println("\t.limit stack 99");//TO-DO calculate stack and locals, just for ckpt3
         printWriterFile.println("\t.limit locals 99\n");
-        generateMethodStatments((ASTMethodDeclaration) methodNode);
+        generateMethodStatments(methodNode);
         printWriterFile.write(".endMethod\n\n");
     }
     
@@ -265,8 +249,8 @@ public class CodeGenerator {
             if (!file.exists())
                 file.createNewFile();
 
-            PrintWriter writer = new PrintWriter(file);
-            return writer;
+            return new PrintWriter(file);
+
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
