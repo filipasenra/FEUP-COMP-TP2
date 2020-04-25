@@ -6,6 +6,7 @@ import java.util.HashMap;
 public class SymbolClass extends Symbol {
 
     public HashMap<String, ArrayList<Symbol>> symbolTable = new HashMap<>();
+    public String superClass;
 
     public SymbolClass(String name) {
         super(name);

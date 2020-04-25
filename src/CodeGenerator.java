@@ -1,16 +1,14 @@
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import symbolTable.*;
 
 
 public class CodeGenerator {
 
     private PrintWriter printWriterFile;
-    private HashMap<String, Symbol> symbolTable = new HashMap<>();
+    private HashMap<String, Symbol> symbolTable;
 
     public CodeGenerator(SemanticAnalysis semanticAnalysis ){
         symbolTable = semanticAnalysis.getSymbolTable();
@@ -21,19 +19,18 @@ public class CodeGenerator {
 
         System.out.println("Starting creating jasmin code");
         System.out.println(this.symbolTable.toString());
-        ASTClassDeclaration classNode = null;
 
         for(int i=0;i<node.jjtGetNumChildren();i++){
             if(node.jjtGetChild(i) instanceof ASTClassDeclaration){
-                classNode = (ASTClassDeclaration) node.jjtGetChild(i);
+
+                ASTClassDeclaration classNode = (ASTClassDeclaration) node.jjtGetChild(i);
+
+                this.printWriterFile = createOutputFile(classNode.name);
+                this.generateClass(classNode);
             }
         }
 
-        this.printWriterFile = getFile(classNode.name);
-
-        this.printWriterFile.println(".class public " + classNode.name);
-        this.printWriterFile.println(".super java/lang/Object\n"); //falta a possibilidadae de ser extends!!
-        
+        //There are no global variables. what do you mean by this? this should be where the imports are translated to jasmin.
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {//Global Variables
                 SimpleNode child = (SimpleNode) node.jjtGetChild(i);
                 if (child instanceof ASTVarDeclaration) {
@@ -41,10 +38,21 @@ public class CodeGenerator {
                 }
         }
 
-        generateMethods(classNode);
-
         System.out.println("Jasmin code generated");
         this.printWriterFile.close();
+    }
+
+    private void generateClass(ASTClassDeclaration classNode) {
+
+        this.printWriterFile.println(".class public " + classNode.name);
+
+        if(classNode.ext != null)
+            this.printWriterFile.println(".super " + classNode.ext);
+        else
+            this.printWriterFile.println(".super java/lang/Object");
+
+        SymbolClass symbolClass = (SymbolClass) symbolTable.get(classNode.name);
+        generateMethods(classNode, symbolClass);
     }
 
     private void generateGlobalVar(ASTVarDeclaration var){
@@ -93,18 +101,20 @@ public class CodeGenerator {
         return finalType;
     }
 
-     private void generateMethods(SimpleNode node) {
-        generateConstructor();
+     private void generateMethods(SimpleNode node, SymbolClass symbolClass) {
+
+        //Should it be here? i don't think so? check this out: http://www.cs.sjsu.edu/faculty/pearce/modules/lectures/co/jvm/jasmin/instructions.html
+        //There is no declaration of a constructor so there is no jasmin code for a constructor made
+         generateConstructor();
+
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             SimpleNode child = (SimpleNode) node.jjtGetChild(i);
 
             if (child instanceof ASTMainDeclaration){
-                generateMainMethod(child);
-                printWriterFile.write(".endMethod\n\n");
+                generateMainMethod(child, symbolClass);
             }
             if(child instanceof ASTMethodDeclaration){
-                generateMethod(child);
-                printWriterFile.write(".endMethod\n\n");
+                generateMethod(child, symbolClass);
             }   
         }
     }
@@ -117,20 +127,23 @@ public class CodeGenerator {
         printWriterFile.println(".end method\n");
     }
 
-    private void generateMainMethod(SimpleNode mainNode) {
+    private void generateMainMethod(SimpleNode mainNode, SymbolClass symbolClass) {
         this.printWriterFile.println(".method public static main([Ljava/lang/String;)V");
         generateMethodStatments(mainNode);
+        printWriterFile.write(".endMethod\n\n");
     }
         
-    private void generateMethod(SimpleNode methodNode){
-        generateMethodHeader((ASTMethodDeclaration) methodNode);//parametros de entrada colocados em varsTable
+    private void generateMethod(SimpleNode methodNode,  SymbolClass symbolClass){
+        generateMethodHeader((ASTMethodDeclaration) methodNode, symbolClass);//parametros de entrada colocados em varsTable
         printWriterFile.println("\t.limit stack 99");//TO-DO calculate stack and locals, just for ckpt3
         printWriterFile.println("\t.limit locals 99\n");
         generateMethodStatments((ASTMethodDeclaration) methodNode);
-        generateMethodBody(methodNode);
-    } 
+        printWriterFile.write(".endMethod\n\n");
+    }
     
-    private void generateMethodHeader(ASTMethodDeclaration methodNode) {
+    private void generateMethodHeader(ASTMethodDeclaration methodNode, SymbolClass symbolClass) {
+
+        //no need to do this: you have the symbol table
         String methodArgs="";
         String arg = "";
         String methodType="";
@@ -151,6 +164,7 @@ public class CodeGenerator {
             }
             
         }
+
         this.printWriterFile.println(".method public " + methodNode.name + "(" + methodArgs + ")" + methodType);
     }
 
@@ -247,7 +261,7 @@ public class CodeGenerator {
     // }
 
 
-    private PrintWriter getFile(String className) {
+    private PrintWriter createOutputFile(String className) {
         try {
             File dir = new File("src/jasmin/");
             if (!dir.exists())
