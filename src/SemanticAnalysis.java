@@ -134,6 +134,7 @@ public class SemanticAnalysis {
     private void startAnalysingClass(ASTClassDeclaration classNode) {
 
         SymbolClass symbolClass = (SymbolClass) this.symbolTable.get(classNode.name);
+        symbolClass.superClass = classNode.ext;
 
         for (int i = 0; i < classNode.jjtGetNumChildren(); i++) {
 

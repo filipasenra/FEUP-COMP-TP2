@@ -1,16 +1,13 @@
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import symbolTable.*;
-
 
 public class CodeGenerator {
 
     private PrintWriter printWriterFile;
-    private HashMap<String, Symbol> symbolTable = new HashMap<>();
+    private final HashMap<String, Symbol> symbolTable;
 
     public CodeGenerator(SemanticAnalysis semanticAnalysis ){
         symbolTable = semanticAnalysis.getSymbolTable();
@@ -21,7 +18,8 @@ public class CodeGenerator {
 
         System.out.println("Starting creating jasmin code");
         System.out.println(this.symbolTable.toString());
-        ASTClassDeclaration classNode = null;
+
+        ASTClassDeclaration classNode=null;
 
         for(int i=0;i<node.jjtGetNumChildren();i++){
             if(node.jjtGetChild(i) instanceof ASTClassDeclaration){
@@ -29,82 +27,77 @@ public class CodeGenerator {
             }
         }
 
-        this.printWriterFile = getFile(classNode.name);
-
-        this.printWriterFile.println(".class public " + classNode.name);
-        this.printWriterFile.println(".super java/lang/Object\n"); //falta a possibilidadae de ser extends!!
-        
-        for (int i = 0; i < node.jjtGetNumChildren(); i++) {//Global Variables
-                SimpleNode child = (SimpleNode) node.jjtGetChild(i);
-                if (child instanceof ASTVarDeclaration) {
-                    generateGlobalVar((ASTVarDeclaration) child);
-                }
-        }
-
-        generateMethods(classNode);
-
+        this.printWriterFile = createOutputFile(classNode.name);
+        this.generateClass(classNode);
         System.out.println("Jasmin code generated");
         this.printWriterFile.close();
     }
 
-    private void generateGlobalVar(ASTVarDeclaration var){
-        ASTType nodeType=null;
+    private void generateClass(ASTClassDeclaration classNode) {
 
-        if(var.jjtGetChild(0) instanceof ASTType)
-            nodeType = (ASTType) var.jjtGetChild(0);
+        this.printWriterFile.println(".class public " + classNode.name);
 
-        String finalType = getType(nodeType);
+        if(classNode.ext != null)
+            this.printWriterFile.println(".super " + classNode.ext);
+        else
+            this.printWriterFile.println(".super java/lang/Object");
 
-        printWriterFile.println(".field public " + var.name + " " + finalType + "\n");
+        generateGlobalVariables(classNode);
+        generateMethods(classNode);
     }
 
-    private String getType(ASTType nodeType){
-        String vType = nodeType.type;
-        String finalType="";
 
-        if(nodeType.isArray)
-            finalType="[I";
-
-        else{
-            switch (vType) {
-                case "int":
-                    finalType = "I";
-                    break;
-                case "String":
-                    finalType = "Ljava/lang/String";
-                    break;
-                case "boolean":
-                    finalType = "B";
-                    break;
-                case "void":
-                    finalType = "V";
-                    break;
-                case "double":
-                    finalType = "D";
-                case "byte":
-                    finalType = "B";
-                case "short":
-                    finalType = "S"; 
-                default:
-                    finalType="";
-                    break;
+    private void generateGlobalVariables(SimpleNode node) {
+        for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+            SimpleNode child = (SimpleNode) node.jjtGetChild(i);
+            if (child instanceof ASTVarDeclaration) {
+                generateGlobalVar((ASTVarDeclaration) child);
             }
         }
-        return finalType;
+    }
+
+    private void generateGlobalVar(ASTVarDeclaration var){
+
+        if(var.jjtGetChild(0) instanceof ASTType){
+            ASTType nodeType = (ASTType) var.jjtGetChild(0);
+            printWriterFile.println(".field public " + var.name + " " + getType(nodeType));
+        }
+    }
+
+    private String getType(ASTType nodeType) {
+
+        if (nodeType.isArray) {
+            return "[I";
+        }
+
+        switch (nodeType.type) {
+            case "int":
+                return "I";
+            case "String":
+                return "Ljava/lang/String";
+            case "boolean":
+                return "B";
+            case "void":
+                return "V";
+        }
+
+        return "";
     }
 
      private void generateMethods(SimpleNode node) {
-        generateConstructor();
+
+        //Should it be here? i don't think so? check this out: http://www.cs.sjsu.edu/faculty/pearce/modules/lectures/co/jvm/jasmin/instructions.html
+        //There is no declaration of a constructor so there is no jasmin code for a constructor made
+         generateConstructor();
+
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             SimpleNode child = (SimpleNode) node.jjtGetChild(i);
 
             if (child instanceof ASTMainDeclaration){
                 generateMainMethod(child);
-                printWriterFile.write(".endMethod\n\n");
             }
             if(child instanceof ASTMethodDeclaration){
                 generateMethod(child);
-                printWriterFile.write(".endMethod\n\n");
             }   
         }
     }
@@ -120,30 +113,27 @@ public class CodeGenerator {
     private void generateMainMethod(SimpleNode mainNode) {
         this.printWriterFile.println(".method public static main([Ljava/lang/String;)V");
         generateMethodStatments(mainNode);
+        printWriterFile.write(".endMethod\n\n");
     }
         
     private void generateMethod(SimpleNode methodNode){
         generateMethodHeader((ASTMethodDeclaration) methodNode);//parametros de entrada colocados em varsTable
         printWriterFile.println("\t.limit stack 99");//TO-DO calculate stack and locals, just for ckpt3
         printWriterFile.println("\t.limit locals 99\n");
-        generateMethodStatments((ASTMethodDeclaration) methodNode);
-        generateMethodBody(methodNode);
-    } 
+        generateMethodStatments(methodNode);
+        printWriterFile.write(".endMethod\n\n");
+    }
     
     private void generateMethodHeader(ASTMethodDeclaration methodNode) {
-        String methodArgs="";
-        String arg = "";
-        String methodType="";
-        String type = "";
+
+        String methodArgs = "";
+        String methodType = "";
 
         for (int i = 0; i < methodNode.jjtGetNumChildren(); i++) {
             SimpleNode child = (SimpleNode) methodNode.jjtGetChild(i);
             if (child instanceof ASTArg){
-                ASTArg argument = (ASTArg) methodNode.jjtGetChild(i);
-                arg = argument.val;
                 if(child.jjtGetChild(0) instanceof ASTType){
                     methodArgs+=generateMethodArgument((ASTArg)child);
-                    type = generateMethodArgument((ASTArg)child);
                 }
             }
             if (child instanceof ASTType) {
@@ -151,11 +141,13 @@ public class CodeGenerator {
             }
             
         }
+
         this.printWriterFile.println(".method public " + methodNode.name + "(" + methodArgs + ")" + methodType);
     }
 
     private String generateMethodArgument(ASTArg argNode) {
         String argType="";
+
         if(argNode.jjtGetChild(0) instanceof ASTType)
            argType = getType((ASTType) argNode.jjtGetChild(0));
 
@@ -247,7 +239,7 @@ public class CodeGenerator {
     // }
 
 
-    private PrintWriter getFile(String className) {
+    private PrintWriter createOutputFile(String className) {
         try {
             File dir = new File("src/jasmin/");
             if (!dir.exists())
@@ -257,8 +249,8 @@ public class CodeGenerator {
             if (!file.exists())
                 file.createNewFile();
 
-            PrintWriter writer = new PrintWriter(file);
-            return writer;
+            return new PrintWriter(file);
+
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
