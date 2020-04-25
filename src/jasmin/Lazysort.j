@@ -9,13 +9,13 @@
 .method public static main([Ljava/lang/String;)V
 .endMethod
 
-.method public quicksort(null[I)nullB
+.method public quicksort([I)B
 	.limit stack 99
 	.limit locals 99
 
 .endMethod
 
-.method public beLazy(null[I)nullB
+.method public beLazy([I)B
 	.limit stack 99
 	.limit locals 99
 
