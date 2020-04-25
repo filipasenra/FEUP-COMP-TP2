@@ -8,7 +8,8 @@ public class SemanticAnalysis {
     private HashMap<String, Symbol> symbolTable = new HashMap<>();
     private int nErrors = 0;
 
-    public SemanticAnalysis() {}
+    public SemanticAnalysis() {
+    }
 
     public int getNerros() {
         return nErrors;
@@ -24,7 +25,9 @@ public class SemanticAnalysis {
         }
     }
 
-    public HashMap<String, Symbol> getSymbolTable() {return this.symbolTable;}
+    public HashMap<String, Symbol> getSymbolTable() {
+        return this.symbolTable;
+    }
 
 
     private void getInfo(SimpleNode node) {
@@ -32,7 +35,42 @@ public class SemanticAnalysis {
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             if (node.jjtGetChild(i) instanceof ASTClassDeclaration)
                 addClassInfo((ASTClassDeclaration) node.jjtGetChild(i));
+            else if (node.jjtGetChild(i) instanceof ASTImport)
+                addImport((ASTImport) node.jjtGetChild(i));
         }
+    }
+
+    private void addImport(ASTImport importNode) {
+        SymbolClass symbolClass;
+
+        if (!this.symbolTable.containsKey(importNode.className)) {
+            symbolClass = new SymbolClass(importNode.className);
+            this.symbolTable.put(importNode.className, symbolClass);
+        }
+        else
+            symbolClass = (SymbolClass) this.symbolTable.get(importNode.className);
+
+        SymbolMethod sm = new SymbolMethod(importNode.methodName);
+
+        for (int i = 0; i < importNode.jjtGetNumChildren(); i++) {
+            if (importNode.jjtGetChild(i) instanceof ASTParamList) {
+                ASTParamList astParamList = (ASTParamList) importNode.jjtGetChild(i);
+
+                if (astParamList.children != null) {
+                    for (int j = 0; j < astParamList.children.length; j++) {
+                        if (astParamList.children[i] instanceof ASTType) {
+                            ASTType astType = (ASTType) astParamList.children[i];
+                            sm.addType(getType(astType));
+                        }
+                    }
+                }
+            } else if (importNode.jjtGetChild(i) instanceof ASTType) {
+                ASTType astType = (ASTType) importNode.jjtGetChild(i);
+                sm.returnType = analysingType(sm, astType);
+            }
+        }
+
+        symbolClass.addSymbol(importNode.methodName, sm);
     }
 
     private void addClassInfo(ASTClassDeclaration classNode) {
@@ -327,8 +365,7 @@ public class SemanticAnalysis {
                 types.add(Type.INT);
             } else if (node2.jjtGetChild(i) instanceof ASTBoolean) {
                 types.add(Type.BOOLEAN);
-            }
-            else if(node2.jjtGetChild(i) instanceof ASTDotExpression){
+            } else if (node2.jjtGetChild(i) instanceof ASTDotExpression) {
                 types.add(analysingDotExpression(symbolClass, symbolMethod, (SimpleNode) node2.jjtGetChild(i)));
             }
         }
@@ -374,7 +411,7 @@ public class SemanticAnalysis {
 
         if (type == null)
             this.errorMessage(node2.val + " is being called with the wrong number or type of args");
-        
+
         return type;
     }
 
@@ -456,6 +493,22 @@ public class SemanticAnalysis {
         if (nodeVarDeclaration.jjtGetChild(0) instanceof ASTType)
             analysingType(symbolVar, (ASTType) nodeVarDeclaration.jjtGetChild(0));
 
+    }
+
+    private Type getType(ASTType nodeType) {
+        if (nodeType.isArray) {
+            return Type.INT_ARRAY;
+        } else if (nodeType.type.equals("int")) {
+            return Type.INT;
+        } else if (nodeType.type.equals("boolean")) {
+            return Type.BOOLEAN;
+        } else if (nodeType.type.equals("String")) {
+            return Type.STRING;
+        } else if (nodeType.type.equals("void")) {
+            return Type.VOID;
+        } else {
+            return Type.OBJECT;
+        }
     }
 
     private Type analysingType(Symbol parentSymbol, ASTType nodeType) {

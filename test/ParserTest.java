@@ -92,10 +92,10 @@ public class ParserTest {
         test("fixtures/public/Simple.jmm", false);
     }
 
-   /* @Test
+    @Test
     public void testTicTacToe() {
         test("fixtures/public/TicTacToe.jmm", false);
-    }*/
+    }
 
     @Test
     public void testWhileAndIF() {
