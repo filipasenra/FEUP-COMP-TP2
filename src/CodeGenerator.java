@@ -45,7 +45,7 @@ public class CodeGenerator {
         SymbolClass symbolClass = (SymbolClass) symbolTable.get(classNode.name);
         generateGlobalVariables(classNode);
 
-        generateMethods(classNode, symbolClass);
+        generateMethods(classNode);
     }
 
 
@@ -106,7 +106,7 @@ public class CodeGenerator {
         return finalType;
     }
 
-     private void generateMethods(SimpleNode node, SymbolClass symbolClass) {
+     private void generateMethods(SimpleNode node) {
 
         //Should it be here? i don't think so? check this out: http://www.cs.sjsu.edu/faculty/pearce/modules/lectures/co/jvm/jasmin/instructions.html
         //There is no declaration of a constructor so there is no jasmin code for a constructor made
@@ -116,10 +116,10 @@ public class CodeGenerator {
             SimpleNode child = (SimpleNode) node.jjtGetChild(i);
 
             if (child instanceof ASTMainDeclaration){
-                generateMainMethod(child, symbolClass);
+                generateMainMethod(child);
             }
             if(child instanceof ASTMethodDeclaration){
-                generateMethod(child, symbolClass);
+                generateMethod(child);
             }   
         }
     }
@@ -132,27 +132,27 @@ public class CodeGenerator {
         printWriterFile.println(".end method\n");
     }
 
-    private void generateMainMethod(SimpleNode mainNode, SymbolClass symbolClass) {
+    private void generateMainMethod(SimpleNode mainNode) {
         this.printWriterFile.println(".method public static main([Ljava/lang/String;)V");
         generateMethodStatments(mainNode);
         printWriterFile.write(".endMethod\n\n");
     }
         
-    private void generateMethod(SimpleNode methodNode,  SymbolClass symbolClass){
-        generateMethodHeader((ASTMethodDeclaration) methodNode, symbolClass);//parametros de entrada colocados em varsTable
+    private void generateMethod(SimpleNode methodNode){
+        generateMethodHeader((ASTMethodDeclaration) methodNode);//parametros de entrada colocados em varsTable
         printWriterFile.println("\t.limit stack 99");//TO-DO calculate stack and locals, just for ckpt3
         printWriterFile.println("\t.limit locals 99\n");
         generateMethodStatments((ASTMethodDeclaration) methodNode);
         printWriterFile.write(".endMethod\n\n");
     }
     
-    private void generateMethodHeader(ASTMethodDeclaration methodNode, SymbolClass symbolClass) {
+    private void generateMethodHeader(ASTMethodDeclaration methodNode) {
 
         //no need to do this: you have the symbol table
-        String methodArgs="";
-        String arg = "";
-        String methodType="";
-        String type = "";
+        String methodArgs = null;
+        String arg;
+        String methodType = null;
+        String type;
 
         for (int i = 0; i < methodNode.jjtGetNumChildren(); i++) {
             SimpleNode child = (SimpleNode) methodNode.jjtGetChild(i);

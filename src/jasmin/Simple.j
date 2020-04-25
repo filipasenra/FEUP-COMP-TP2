@@ -6,7 +6,7 @@
 	return
 .end method
 
-.method public add(II)I
+.method public add(nullII)nullI
 	.limit stack 99
 	.limit locals 99
 
@@ -15,7 +15,7 @@
 .method public static main([Ljava/lang/String;)V
 .endMethod
 
-.method public constInstr()I
+.method public constInstr(null)nullI
 	.limit stack 99
 	.limit locals 99
 

@@ -9,25 +9,25 @@
 .method public static main([Ljava/lang/String;)V
 .endMethod
 
-.method public printL([I)B
+.method public printL(null[I)nullB
 	.limit stack 99
 	.limit locals 99
 
 .endMethod
 
-.method public quicksort([I)B
+.method public quicksort(null[I)nullB
 	.limit stack 99
 	.limit locals 99
 
 .endMethod
 
-.method public quicksort([III)B
+.method public quicksort(null[III)nullB
 	.limit stack 99
 	.limit locals 99
 
 .endMethod
 
-.method public partition([III)I
+.method public partition(null[III)nullI
 	.limit stack 99
 	.limit locals 99
 
