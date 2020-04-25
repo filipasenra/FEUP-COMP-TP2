@@ -142,20 +142,14 @@ public class CodeGenerator {
     
     private void generateMethodHeader(ASTMethodDeclaration methodNode) {
 
-        //no need to do this: you have the symbol table
-        String methodArgs = null;
-        String arg;
-        String methodType = null;
-        String type;
+        String methodArgs = "";
+        String methodType = "";
 
         for (int i = 0; i < methodNode.jjtGetNumChildren(); i++) {
             SimpleNode child = (SimpleNode) methodNode.jjtGetChild(i);
             if (child instanceof ASTArg){
-                ASTArg argument = (ASTArg) methodNode.jjtGetChild(i);
-                arg = argument.val;
                 if(child.jjtGetChild(0) instanceof ASTType){
                     methodArgs+=generateMethodArgument((ASTArg)child);
-                    type = generateMethodArgument((ASTArg)child);
                 }
             }
             if (child instanceof ASTType) {
@@ -169,6 +163,7 @@ public class CodeGenerator {
 
     private String generateMethodArgument(ASTArg argNode) {
         String argType="";
+
         if(argNode.jjtGetChild(0) instanceof ASTType)
            argType = getType((ASTType) argNode.jjtGetChild(0));
 
