@@ -42,12 +42,12 @@ public class CodeGenerator {
         else
             this.printWriterFile.println(".super java/lang/Object");
 
-        generateGlobalVariables(classNode);
+        generateClassVariables(classNode);
         generateMethods(classNode);
     }
 
 
-    private void generateGlobalVariables(SimpleNode node) {
+    private void generateClassVariables(SimpleNode node) {
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             SimpleNode child = (SimpleNode) node.jjtGetChild(i);
             if (child instanceof ASTVarDeclaration) {
@@ -81,6 +81,7 @@ public class CodeGenerator {
                 return "V";
         }
 
+        //TODO: this return
         return "";
     }
 
