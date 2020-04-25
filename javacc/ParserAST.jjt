@@ -203,27 +203,6 @@ void ParamList(): {} {
     [(Type()  (<COLON> Type())*) | <VOID>]
 }
 
-/*void Import() : {} {
-    <IMPORT> (<STATIC> {jjtThis.isStatic = true; })? (IdentifierFromImport() (<DOT> IdentifierFromImport())? )
-    (ImportMethod())? 
-    <SEMICOLON>
-}
-
-void IdentifierFromImport() #Identifier : {Token t;} {
-
-    t = <IDENTIFIER> {jjtThis.val = t.image;}
-}
-
-void ImportMethod() : {} {
-
-    <LEFT_PARENTESIS> (ImportMethodArgs())? <RIGHT_PARENTESIS> ImportType()
-}
-
-void ImportMethodArgs() : {} {
-
-    ImportType() (<COLON> ImportType())*
-}*/
-
 void ImportType() #Type : {Token t;} {
    ((t = <INT> (<LEFT_BRACKET> <RIGHT_BRACKET> {jjtThis.isArray = true;})? )
    | t = <BOOLEAN> | t = <IDENTIFIER> | t = <STRING> | t=<VOID>)
