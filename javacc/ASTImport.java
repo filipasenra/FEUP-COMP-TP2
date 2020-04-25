@@ -4,6 +4,8 @@ public
 class ASTImport extends SimpleNode {
 
   boolean isStatic = false;
+  String className;
+  String methodName;
 
   public ASTImport(int id) {
     super(id);

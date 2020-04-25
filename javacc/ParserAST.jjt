@@ -193,12 +193,20 @@ void ClassDeclaration(): {Token className; Token extendsClass;} {
 
 }
 
-void Import() : {} {
+void Import(): {Token t;}{
+  "import" ["static" {jjtThis.isStatic=true; }] t=<IDENTIFIER>{jjtThis.className=t.image;}
+      [<DOT> t=<IDENTIFIER> {jjtThis.methodName=t.image; }] [<LEFT_PARENTESIS> ParamList() <RIGHT_PARENTESIS>
+      [ImportType()]] <SEMICOLON>
+}
 
+void ParamList(): {} {
+    [(Type()  (<COLON> Type())*) | <VOID>]
+}
+
+/*void Import() : {} {
     <IMPORT> (<STATIC> {jjtThis.isStatic = true; })? (IdentifierFromImport() (<DOT> IdentifierFromImport())? )
     (ImportMethod())? 
     <SEMICOLON>
-
 }
 
 void IdentifierFromImport() #Identifier : {Token t;} {
@@ -214,7 +222,7 @@ void ImportMethod() : {} {
 void ImportMethodArgs() : {} {
 
     ImportType() (<COLON> ImportType())*
-}
+}*/
 
 void ImportType() #Type : {Token t;} {
    ((t = <INT> (<LEFT_BRACKET> <RIGHT_BRACKET> {jjtThis.isArray = true;})? )

@@ -293,7 +293,7 @@ public class SemanticAnalysis {
         return null;
     }
 
-    private Type analysingDotExpression(SymbolClass F, SymbolMethod symbolMethod, SimpleNode node) {
+    private Type analysingDotExpression(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node) {
         if (node.jjtGetNumChildren() != 2)
             return null;
 

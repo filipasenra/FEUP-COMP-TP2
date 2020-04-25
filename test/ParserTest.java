@@ -92,10 +92,10 @@ public class ParserTest {
         test("fixtures/public/Simple.jmm", false);
     }
 
-    @Test
+   /* @Test
     public void testTicTacToe() {
         test("fixtures/public/TicTacToe.jmm", false);
-    }
+    }*/
 
     @Test
     public void testWhileAndIF() {
@@ -116,22 +116,22 @@ public class ParserTest {
     public void testarr_size_not_int() {
         test("fixtures/public/fail/semantic/arr_size_not_int.jmm", true);
     }
-/*
+
     @Test
     public void testbadArguments() {
         test("fixtures/public/fail/semantic/badArguments.jmm", true);
     }
-*/
+
     @Test
     public void testbinop_incomp() {
         test("fixtures/public/fail/semantic/binop_incomp.jmm", true);
     }
-/*
+
     @Test
     public void testfuncNotFound() {
         test("fixtures/public/fail/semantic/funcNotFound.jmm", true);
     }
-*/
+
     @Test
     public void testsimple_length() {
         test("fixtures/public/fail/semantic/simple_length.jmm", true);

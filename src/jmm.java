@@ -1,7 +1,5 @@
 public class jmm {
 
-
-
     // When in root folder (comp2020-3a)
     // gradle build
     // or
