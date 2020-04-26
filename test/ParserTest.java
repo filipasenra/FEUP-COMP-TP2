@@ -53,10 +53,10 @@ public class ParserTest {
         }
     }
 
-    @Test
+    /*@Test
     public void testFindMaximum() {
         test("fixtures/public/FindMaximum.jmm", false);
-    }
+    }*/
 
 
     @Test
@@ -77,10 +77,10 @@ public class ParserTest {
     }
     */
 
-    @Test
+    /*@Test
     public void testMonteCarloPi() {
         test("fixtures/public/MonteCarloPi.jmm", false);
-    }
+    }*/
 
     @Test
     public void testQuickSort() {
@@ -92,10 +92,10 @@ public class ParserTest {
         test("fixtures/public/Simple.jmm", false);
     }
 
-    @Test
+    /*@Test
     public void testTicTacToe() {
         test("fixtures/public/TicTacToe.jmm", false);
-    }
+    }*/
 
     @Test
     public void testWhileAndIF() {

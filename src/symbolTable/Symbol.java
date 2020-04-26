@@ -1,6 +1,9 @@
 package symbolTable;
 
 public abstract class Symbol {
+    String name; //Name of the variable
+    Type type;
+    String object_name;
 
     public void setType(Type type) {
         this.type = type;
@@ -10,9 +13,13 @@ public abstract class Symbol {
         return type;
     }
 
-    String name; //Name of the variable
-    Type type;
+    public void setObject_name(String object_name) {
+        this.object_name = object_name;
+    }
 
+    public String getObject_name() {
+        return object_name;
+    }
 
     public Symbol(String name, Type type) {
         this.name = name;

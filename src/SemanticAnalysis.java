@@ -338,6 +338,7 @@ public class SemanticAnalysis {
     }
 
     private Type analysingDotExpression(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node) {
+
         if (node.jjtGetNumChildren() != 2)
             return null;
 
@@ -348,22 +349,58 @@ public class SemanticAnalysis {
             if (node1.val.equals("this")) {
                 return analyseThisStatement(symbolClass, symbolMethod, node2);
             } else {
-                /*if (symbolTable.containsKey(node1.val)) {
-                    if (symbolTable.get(node1.val) instanceof SymbolClass) {
-                        SymbolClass sc = (SymbolClass) symbolTable.get(node1.val);
-
-                        // Dessa classe poderão ser importados métodos ou variáveis
-                        /*if (sc.symbolTable.get(node2.val) instanceof SymbolMethod) {
-                            System.out.println("aqui e metodo.");
-                        } else if (sc.symbolTable.get(node2.val) instanceof SymbolVar) {
-                            System.out.println("aqui e var.");
-                        }
-                    }
-                }*/
-                return null;
+                return analyseComplexStatement(symbolClass, symbolMethod, node1, node2);
             }
         } else
             return null;
+    }
+
+    private Type analyseComplexStatement(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node1, ASTIdentifier node2) {
+        if (symbolTable.containsKey(node1.val)) {
+            if (symbolTable.get(node1.val) instanceof SymbolClass) {
+                SymbolClass sc = (SymbolClass) symbolTable.get(node1.val);
+
+                for (int i=0; i<sc.symbolTable.get(node2.val).size(); i++) {
+                    SymbolMethod sm = (SymbolMethod) sc.symbolTable.get(node2.val).get(i);
+                    ArrayList<Type> curr_types = getMethodCallTypes(symbolMethod, symbolClass, node2);
+
+                    if (node2.jjtGetNumChildren() == sm.types.size()) {
+                        if (sm.types.equals(curr_types))
+                            return sm.returnType;
+                    }
+                }
+
+                this.errorMessage(node2.val + " is undefined!");
+                return null;
+            }
+        }
+        else if (symbolMethod.symbolTable.containsKey(node1.val)) {
+            if (symbolMethod.symbolTable.get(node1.val).getType().equals(Type.OBJECT)) {
+                if (symbolTable.containsKey(symbolMethod.symbolTable.get(node1.val).getObject_name())) {
+                    SymbolClass sc = (SymbolClass) symbolTable.get(symbolMethod.symbolTable.get(node1.val).getObject_name());
+
+                    if (sc.symbolTable.containsKey(node2.val))
+                        System.out.println("Confirmar se a chamada ao metodo esta certa");
+                    else if (sc.superClass != null) {
+                        SymbolClass ssc = (SymbolClass) symbolTable.get(sc.superClass);
+                        if (ssc.symbolTable.containsKey(node2.val))
+                            System.out.println("Confirmar se a chamada ao metodo da classe extendida esta certo");
+                    }
+                    else {
+                        this.errorMessage("Cannnot resolve method " + node2.val + " in the object " + symbolMethod.symbolTable.get(node1.val).getObject_name());
+                        return null;
+                    }
+                }
+                else {
+                    this.errorMessage("Cannnot resolve symbol " + symbolMethod.symbolTable.get(node1.val).getObject_name());
+                    return null;
+                }
+            }
+
+        }
+        //TODO: ver se há mais declarações possiveis
+
+        return null;
     }
 
     private Type analyseThisStatement(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node2) {
@@ -546,6 +583,7 @@ public class SemanticAnalysis {
             parentSymbol.setType(Type.VOID);
             return Type.VOID;
         } else {
+            parentSymbol.setObject_name(nodeType.type);
             parentSymbol.setType(Type.OBJECT);
             return Type.OBJECT;
         }

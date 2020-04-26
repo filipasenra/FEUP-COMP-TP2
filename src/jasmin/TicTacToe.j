@@ -58,6 +58,7 @@
 	.limit stack 99
 	.limit locals 99
 
+	isub
 .endMethod
 
 .method public getCurrentPlayer()I
@@ -70,6 +71,7 @@
 	.limit stack 99
 	.limit locals 99
 
+	isub
 .endMethod
 
 .method public static main([Ljava/lang/String;)V
