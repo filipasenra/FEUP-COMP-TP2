@@ -255,14 +255,6 @@ public class CodeGenerator {
 
         //System.out.println("Nr filhos direita: " + rhs.jjtGetNumChildren());
 
-        if(lhs.jjtGetNumChildren() != 0 && lhs.jjtGetChild(0) instanceof ASTaccessToArray)
-        {
-            //access to array
-        } else {
-
-            //not access to array
-        }
-
         generateLhs(lhs);
         generateRhs(rhs);
 
@@ -275,6 +267,15 @@ public class CodeGenerator {
 
         //storeLocalVariable(lhs, varName);
         //System.out.println("varname: " + varName);
+
+        if(lhs.jjtGetNumChildren() != 0 && lhs.jjtGetChild(0) instanceof ASTaccessToArray)
+        {
+            //access to array
+        } else {
+
+            //not access to array
+        }
+
     }
 
     private void generateRhs(SimpleNode rhs) {
