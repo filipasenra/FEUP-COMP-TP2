@@ -70,17 +70,15 @@ public class ParserTest {
         test("fixtures/public/Lazysort.jmm", false);
     }
 
-    /*
     @Test
     public void testLife() {
         test("fixtures/public/Life.jmm", false);
     }
-    */
 
-    /*@Test
+    @Test
     public void testMonteCarloPi() {
         test("fixtures/public/MonteCarloPi.jmm", false);
-    }*/
+    }
 
     @Test
     public void testQuickSort() {
