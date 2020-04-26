@@ -1,5 +1,4 @@
 import symbolTable.*;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -181,10 +180,11 @@ public class SemanticAnalysis {
     }
 
     private void startAnalysingMethod(SymbolClass symbolClass, ASTMethodDeclaration methodNode, int num) {
+
         for (int j = 0; j < symbolClass.getSymbol(methodNode.name).size(); j++) {
+
             if (symbolClass.getSymbol(methodNode.name).get(j) instanceof SymbolMethod) {
                 SymbolMethod symbolMethod = (SymbolMethod) symbolClass.getSymbol(methodNode.name).get(j);
-
 
                 if (num == symbolMethod.num) {
 
@@ -215,7 +215,7 @@ public class SemanticAnalysis {
     private void analysingStatement(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node) {
 
         if (node instanceof ASTStatementBlock) {
-            //TODO: maybe verify if return expression matches the function's return type
+            //TODO what to do with this?
             return;
         }
 
@@ -277,7 +277,8 @@ public class SemanticAnalysis {
         }
 
         if (node instanceof ASTLESSTHAN) {
-            return analysingOperation(symbolClass, symbolMethod, node);
+            analysingOperation(symbolClass, symbolMethod, node);
+            return Type.BOOLEAN;
         }
 
         if (node instanceof ASTSUM) {
