@@ -1,4 +1,5 @@
 import symbolTable.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
@@ -49,8 +50,8 @@ public class SemanticAnalysis {
 
                 if (astParamList.children != null) {
                     for (int j = 0; j < astParamList.children.length; j++) {
-                        if (astParamList.children[i] instanceof ASTType) {
-                            ASTType astType = (ASTType) astParamList.children[i];
+                        if (astParamList.children[j] instanceof ASTType) {
+                            ASTType astType = (ASTType) astParamList.children[j];
                             sm.addType(getType(astType));
                         }
                     }
@@ -208,7 +209,7 @@ public class SemanticAnalysis {
 
     private void analysingReturnExpression(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node) {
 
-        if(node.jjtGetNumChildren() != 1)
+        if (node.jjtGetNumChildren() != 1)
             return;
 
         if (symbolMethod.returnType != this.analysingExpression(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(0)))
@@ -221,7 +222,7 @@ public class SemanticAnalysis {
 
         if (node instanceof ASTStatementBlock) {
 
-            for(int i = 0; i < node.jjtGetNumChildren(); i++)
+            for (int i = 0; i < node.jjtGetNumChildren(); i++)
                 analysingStatement(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(i));
         }
 
@@ -247,16 +248,14 @@ public class SemanticAnalysis {
 
     private void analysingConditional(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node, String type) {
 
-        if(node.jjtGetNumChildren() < 2)
+        if (node.jjtGetNumChildren() < 2)
             return;
 
-        if(analysingExpression(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(0)) != Type.BOOLEAN)
-        {
+        if (analysingExpression(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(0)) != Type.BOOLEAN) {
             this.errorMessage("Conditional expression of " + type + " must be boolean");
         }
 
-        for(int i = 1; i < node.jjtGetNumChildren(); i++)
-        {
+        for (int i = 1; i < node.jjtGetNumChildren(); i++) {
             this.analysingStatement(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(i));
         }
 
@@ -538,30 +537,47 @@ public class SemanticAnalysis {
     private Type analyseThisStatement(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node2) {
         Type type = null;
 
-        if (symbolClass.symbolTable.containsKey(node2.val)) {
-            // Analysing this statement for variables
-            if (!node2.method) {
-                for (int j = 0; j < symbolClass.symbolTable.get(node2.val).size(); j++) {
-                    if (symbolClass.symbolTable.get(node2.val).get(j) instanceof SymbolVar) {
-                        SymbolVar sv = (SymbolVar) symbolClass.symbolTable.get(node2.val).get(j);
-                        return sv.getType();
-                    }
+        if (symbolTable.containsKey(symbolClass.superClass) || symbolClass.symbolTable.containsKey(node2.val)) {
+            if (symbolClass.symbolTable.containsKey(node2.val)) {
+                // Analysing this statement for variables
+                if (!node2.method) {
+                    for (int j = 0; j < symbolClass.symbolTable.get(node2.val).size(); j++) {
+                        if (symbolClass.symbolTable.get(node2.val).get(j) instanceof SymbolVar) {
+                            SymbolVar sv = (SymbolVar) symbolClass.symbolTable.get(node2.val).get(j);
+                            return sv.getType();
+                        }
 
-                    if (j == symbolClass.symbolTable.get(node2.val).size() - 1) {
-                        this.errorMessage(node2.val + " is undefined!");
-                        return null;
+                        if (j == symbolClass.symbolTable.get(node2.val).size() - 1) {
+                            this.errorMessage(node2.val + " is undefined!");
+                            return null;
+                        }
+                    }
+                }
+                // Analysing this statement for methods
+                else {
+                    ArrayList<Type> curr_types = getMethodCallTypes(symbolMethod, symbolClass, node2);
+                    for (int j = 0; j < symbolClass.symbolTable.get(node2.val).size(); j++) {
+                        if (symbolClass.symbolTable.get(node2.val).get(j) instanceof SymbolMethod) {
+                            SymbolMethod sm = (SymbolMethod) symbolClass.symbolTable.get(node2.val).get(j);
+                            if (node2.jjtGetNumChildren() == sm.types.size()) {
+                                if (sm.types.equals(curr_types))
+                                    type = sm.returnType;
+                            }
+                        }
                     }
                 }
             }
-            // Analysing this statement for methods
-            else {
+            if (symbolTable.containsKey(symbolClass.superClass) && type == null) {
+                SymbolClass sc = (SymbolClass) symbolTable.get(symbolClass.superClass);
+
                 ArrayList<Type> curr_types = getMethodCallTypes(symbolMethod, symbolClass, node2);
-                for (int j = 0; j < symbolClass.symbolTable.get(node2.val).size(); j++) {
-                    if (symbolClass.symbolTable.get(node2.val).get(j) instanceof SymbolMethod) {
-                        SymbolMethod sm = (SymbolMethod) symbolClass.symbolTable.get(node2.val).get(j);
+                for (int j = 0; j < sc.symbolTable.get(node2.val).size(); j++) {
+                    if (sc.symbolTable.get(node2.val).get(j) instanceof SymbolMethod) {
+                        SymbolMethod sm = (SymbolMethod) sc.symbolTable.get(node2.val).get(j);
                         if (node2.jjtGetNumChildren() == sm.types.size()) {
-                            if (sm.types.equals(curr_types))
+                            if (sm.types.equals(curr_types)) {
                                 type = sm.returnType;
+                            }
                         }
                     }
                 }
