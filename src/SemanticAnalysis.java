@@ -379,12 +379,34 @@ public class SemanticAnalysis {
                 if (symbolTable.containsKey(symbolMethod.symbolTable.get(node1.val).getObject_name())) {
                     SymbolClass sc = (SymbolClass) symbolTable.get(symbolMethod.symbolTable.get(node1.val).getObject_name());
 
-                    if (sc.symbolTable.containsKey(node2.val))
-                        System.out.println("Confirmar se a chamada ao metodo esta certa");
+                    if (sc.symbolTable.containsKey(node2.val)) {
+                        for (int i=0; i<sc.symbolTable.get(node2.val).size(); i++) {
+                            SymbolMethod sm = (SymbolMethod) sc.symbolTable.get(node2.val).get(i);
+                            ArrayList<Type> curr_types = getMethodCallTypes(symbolMethod, symbolClass, node2);
+
+                            if (node2.jjtGetNumChildren() == sm.types.size()) {
+                                if (sm.types.equals(curr_types))
+                                    return sm.returnType;
+                            }
+                        }
+
+                        this.errorMessage(node2.val + " is undefined!");
+                        return null;
+                    }
                     else if (sc.superClass != null) {
                         SymbolClass ssc = (SymbolClass) symbolTable.get(sc.superClass);
-                        if (ssc.symbolTable.containsKey(node2.val))
-                            System.out.println("Confirmar se a chamada ao metodo da classe extendida esta certo");
+                        for (int i=0; i<ssc.symbolTable.get(node2.val).size(); i++) {
+                            SymbolMethod sm = (SymbolMethod) ssc.symbolTable.get(node2.val).get(i);
+                            ArrayList<Type> curr_types = getMethodCallTypes(symbolMethod, symbolClass, node2);
+
+                            if (node2.jjtGetNumChildren() == sm.types.size()) {
+                                if (sm.types.equals(curr_types))
+                                    return sm.returnType;
+                            }
+                        }
+
+                        this.errorMessage(node2.val + " is undefined!");
+                        return null;
                     }
                     else {
                         this.errorMessage("Cannnot resolve method " + node2.val + " in the object " + symbolMethod.symbolTable.get(node1.val).getObject_name());
