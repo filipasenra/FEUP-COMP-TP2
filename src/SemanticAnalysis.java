@@ -732,7 +732,6 @@ public class SemanticAnalysis {
             if (type == Type.OBJECT)
                 if (!symbolTable.containsKey(symbolVar.getObject_name())) {
                     this.errorMessage("Missing type");
-                    return;
             }
 
         }
