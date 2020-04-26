@@ -46,8 +46,7 @@ public class SemanticAnalysis {
         if (!this.symbolTable.containsKey(importNode.className)) {
             symbolClass = new SymbolClass(importNode.className);
             this.symbolTable.put(importNode.className, symbolClass);
-        }
-        else
+        } else
             symbolClass = (SymbolClass) this.symbolTable.get(importNode.className);
 
         SymbolMethod sm = new SymbolMethod(importNode.methodName);
@@ -71,6 +70,8 @@ public class SemanticAnalysis {
         }
 
         symbolClass.addSymbol(importNode.methodName, sm);
+
+        //TODO: Imports repetidos não devem ser adicionados.
     }
 
     private void addClassInfo(ASTClassDeclaration classNode) {
@@ -81,7 +82,7 @@ public class SemanticAnalysis {
             if (classNode.jjtGetChild(i) instanceof ASTVarDeclaration) {
                 addVarDeclarationClassInfo(symbolClass, (ASTVarDeclaration) classNode.jjtGetChild(i));
             } else if (classNode.jjtGetChild(i) instanceof ASTMethodDeclaration) {
-                addMethod(symbolClass, (ASTMethodDeclaration) classNode.jjtGetChild(i));
+                addMethod(symbolClass, (ASTMethodDeclaration) classNode.jjtGetChild(i), i);
             }
         }
     }
@@ -91,8 +92,9 @@ public class SemanticAnalysis {
         symbolClass.addSymbol(nodeVarDeclaration.name, symbolVar);
     }
 
-    private void addMethod(SymbolClass symbolClass, ASTMethodDeclaration methodNode) {
+    private void addMethod(SymbolClass symbolClass, ASTMethodDeclaration methodNode, int num) {
         SymbolMethod symbolMethod = new SymbolMethod(methodNode.name);
+        symbolMethod.num = num;
 
         for (int i = 0; i < methodNode.jjtGetNumChildren(); i++) {
             if (methodNode.jjtGetChild(i) instanceof ASTArg) {
@@ -144,7 +146,7 @@ public class SemanticAnalysis {
 
             } else if (classNode.jjtGetChild(i) instanceof ASTMethodDeclaration) {
 
-                startAnalysingMethod(symbolClass, (ASTMethodDeclaration) classNode.jjtGetChild(i));
+                startAnalysingMethod(symbolClass, (ASTMethodDeclaration) classNode.jjtGetChild(i), i);
 
             } else if (classNode.jjtGetChild(i) instanceof ASTMainDeclaration)
                 startAnalysingMainDeclaration(symbolClass, (ASTMainDeclaration) classNode.jjtGetChild(i));
@@ -175,34 +177,37 @@ public class SemanticAnalysis {
             }
 
             analysingStatement(symbolClass, symbolMethod, (SimpleNode) methodNode.jjtGetChild(i));
-
         }
-
     }
 
-    private void startAnalysingMethod(SymbolClass symbolClass, ASTMethodDeclaration methodNode) {
+    private void startAnalysingMethod(SymbolClass symbolClass, ASTMethodDeclaration methodNode, int num) {
         for (int j = 0; j < symbolClass.getSymbol(methodNode.name).size(); j++) {
             if (symbolClass.getSymbol(methodNode.name).get(j) instanceof SymbolMethod) {
                 SymbolMethod symbolMethod = (SymbolMethod) symbolClass.getSymbol(methodNode.name).get(j);
 
-                for (int i = 0; i < methodNode.jjtGetNumChildren(); i++) {
-                    if (methodNode.jjtGetChild(i) instanceof ASTType) {
-                        analysingType(symbolMethod, (ASTType) methodNode.jjtGetChild(i));
-                        continue;
-                    }
 
-                    if (methodNode.jjtGetChild(i) instanceof ASTVarDeclaration) {
-                        analysingVarDeclaration(symbolMethod, (ASTVarDeclaration) methodNode.jjtGetChild(i));
-                        continue;
-                    }
+                if (num == symbolMethod.num) {
 
-                    if (methodNode.jjtGetChild(i) instanceof ASTReturn) {
-                        //TODO: maybe verify if return expression matches the function's return type
-                        continue;
-                    }
+                    for (int i = 0; i < methodNode.jjtGetNumChildren(); i++) {
+                        if (methodNode.jjtGetChild(i) instanceof ASTType) {
+                            analysingType(symbolMethod, (ASTType) methodNode.jjtGetChild(i));
+                            continue;
+                        }
 
-                    analysingStatement(symbolClass, symbolMethod, (SimpleNode) methodNode.jjtGetChild(i));
+                        if (methodNode.jjtGetChild(i) instanceof ASTVarDeclaration) {
+                            analysingVarDeclaration(symbolMethod, (ASTVarDeclaration) methodNode.jjtGetChild(i));
+                            continue;
+                        }
+
+                        if (methodNode.jjtGetChild(i) instanceof ASTReturn) {
+                            //TODO: maybe verify if return expression matches the function's return type
+                            continue;
+                        }
+
+                        analysingStatement(symbolClass, symbolMethod, (SimpleNode) methodNode.jjtGetChild(i));
+                    }
                 }
+
             }
         }
     }
@@ -342,35 +347,23 @@ public class SemanticAnalysis {
 
             if (node1.val.equals("this")) {
                 return analyseThisStatement(symbolClass, symbolMethod, node2);
-            } else
+            } else {
+                /*if (symbolTable.containsKey(node1.val)) {
+                    if (symbolTable.get(node1.val) instanceof SymbolClass) {
+                        SymbolClass sc = (SymbolClass) symbolTable.get(node1.val);
+
+                        // Dessa classe poderão ser importados métodos ou variáveis
+                        /*if (sc.symbolTable.get(node2.val) instanceof SymbolMethod) {
+                            System.out.println("aqui e metodo.");
+                        } else if (sc.symbolTable.get(node2.val) instanceof SymbolVar) {
+                            System.out.println("aqui e var.");
+                        }
+                    }
+                }*/
                 return null;
+            }
         } else
             return null;
-    }
-
-    private ArrayList<Type> getMethodCallTypes(SymbolMethod symbolMethod, SymbolClass symbolClass, ASTIdentifier node2) {
-        ArrayList<Type> types = new ArrayList<>();
-        for (int i = 0; i < node2.jjtGetNumChildren(); i++) {
-            if (node2.jjtGetChild(i) instanceof ASTIdentifier) {
-                ASTIdentifier identifier = (ASTIdentifier) node2.jjtGetChild(i);
-
-                if (symbolMethod.symbolTable.containsKey(identifier.val)) {
-                    types.add(symbolMethod.symbolTable.get(identifier.val).getType());
-                } else if (symbolClass.symbolTable.containsKey(identifier.val)) {
-                    types.add(symbolClass.symbolTable.get(identifier.val).get(0).getType());
-                } else {
-                    types.add(null);
-                }
-            } else if (node2.jjtGetChild(i) instanceof ASTLiteral) {
-                types.add(Type.INT);
-            } else if (node2.jjtGetChild(i) instanceof ASTBoolean) {
-                types.add(Type.BOOLEAN);
-            } else if (node2.jjtGetChild(i) instanceof ASTDotExpression) {
-                types.add(analysingDotExpression(symbolClass, symbolMethod, (SimpleNode) node2.jjtGetChild(i)));
-            }
-        }
-
-        return types;
     }
 
     private Type analyseThisStatement(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node2) {
@@ -413,6 +406,31 @@ public class SemanticAnalysis {
             this.errorMessage(node2.val + " is being called with the wrong number or type of args");
 
         return type;
+    }
+
+    private ArrayList<Type> getMethodCallTypes(SymbolMethod symbolMethod, SymbolClass symbolClass, ASTIdentifier node2) {
+        ArrayList<Type> types = new ArrayList<>();
+        for (int i = 0; i < node2.jjtGetNumChildren(); i++) {
+            if (node2.jjtGetChild(i) instanceof ASTIdentifier) {
+                ASTIdentifier identifier = (ASTIdentifier) node2.jjtGetChild(i);
+
+                if (symbolMethod.symbolTable.containsKey(identifier.val)) {
+                    types.add(symbolMethod.symbolTable.get(identifier.val).getType());
+                } else if (symbolClass.symbolTable.containsKey(identifier.val)) {
+                    types.add(symbolClass.symbolTable.get(identifier.val).get(0).getType());
+                } else {
+                    types.add(null);
+                }
+            } else if (node2.jjtGetChild(i) instanceof ASTLiteral) {
+                types.add(Type.INT);
+            } else if (node2.jjtGetChild(i) instanceof ASTBoolean) {
+                types.add(Type.BOOLEAN);
+            } else if (node2.jjtGetChild(i) instanceof ASTDotExpression) {
+                types.add(analysingDotExpression(symbolClass, symbolMethod, (SimpleNode) node2.jjtGetChild(i)));
+            }
+        }
+
+        return types;
     }
 
     private Type analysingIdentifier(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node) {
