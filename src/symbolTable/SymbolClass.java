@@ -23,6 +23,4 @@ public class SymbolClass extends Symbol {
             this.symbolTable.put(name, first);
         }
     }
-
-    public ArrayList<Symbol> getSymbol(String name) {return this.symbolTable.get(name);}
 }

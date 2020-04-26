@@ -98,12 +98,12 @@ public class CodeGenerator {
             SimpleNode child = (SimpleNode) node.jjtGetChild(i);
 
             if (child instanceof ASTMainDeclaration){
-                SymbolMethod symbolMethod = getSymbolMethod(symbolClass.getSymbol("main"), i);
+                SymbolMethod symbolMethod = getSymbolMethod(symbolClass.symbolTable.get("main"), i);
                 generateMainMethod(child, symbolClass, symbolMethod);
             }
             if(child instanceof ASTMethodDeclaration){
                 ASTMethodDeclaration methodDeclaration = (ASTMethodDeclaration) child;
-                SymbolMethod symbolMethod = getSymbolMethod(symbolClass.getSymbol(methodDeclaration.name), i);
+                SymbolMethod symbolMethod = getSymbolMethod(symbolClass.symbolTable.get(methodDeclaration.name), i);
 
                 if(symbolMethod == null) {
                     System.err.println("ERROR generating code for method " + methodDeclaration.name);
@@ -172,7 +172,7 @@ public class CodeGenerator {
 
 
     private SymbolMethod getMethod(ASTMethodDeclaration methodNode, SymbolClass symbolClass) {
-        ArrayList<Symbol> possibleMethods = symbolClass.getSymbol(methodNode.name);
+        ArrayList<Symbol> possibleMethods = symbolClass.symbolTable.get(methodNode.name);
 
         if(possibleMethods.size() == 1)
             return (SymbolMethod) possibleMethods.get(0);

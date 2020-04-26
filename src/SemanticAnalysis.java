@@ -61,9 +61,9 @@ public class SemanticAnalysis {
             }
         }
 
-        if (symbolClass.getSymbol(importNode.methodName) != null) {
-            for (int i = 0; i < symbolClass.getSymbol(importNode.methodName).size(); i++) {
-                SymbolMethod smCheck = (SymbolMethod) symbolClass.getSymbol(importNode.methodName).get(i);
+        if (symbolClass.symbolTable.get(importNode.methodName) != null) {
+            for (int i = 0; i < symbolClass.symbolTable.get(importNode.methodName).size(); i++) {
+                SymbolMethod smCheck = (SymbolMethod) symbolClass.symbolTable.get(importNode.methodName).get(i);
 
                 if (sm.types.equals(smCheck.types)) {
                     return;
@@ -183,10 +183,10 @@ public class SemanticAnalysis {
 
     private void startAnalysingMethod(SymbolClass symbolClass, ASTMethodDeclaration methodNode, int num) {
 
-        for (int j = 0; j < symbolClass.getSymbol(methodNode.name).size(); j++) {
+        for (int j = 0; j < symbolClass.symbolTable.get(methodNode.name).size(); j++) {
 
-            if (symbolClass.getSymbol(methodNode.name).get(j) instanceof SymbolMethod) {
-                SymbolMethod symbolMethod = (SymbolMethod) symbolClass.getSymbol(methodNode.name).get(j);
+            if (symbolClass.symbolTable.get(methodNode.name).get(j) instanceof SymbolMethod) {
+                SymbolMethod symbolMethod = (SymbolMethod) symbolClass.symbolTable.get(methodNode.name).get(j);
 
                 if (num == symbolMethod.num) {
 
@@ -747,7 +747,7 @@ public class SemanticAnalysis {
 
     private void analysingVarDeclarationClass(SymbolClass symbolClass, ASTVarDeclaration nodeVarDeclaration) {
 
-        SymbolVar symbolVar = (SymbolVar) symbolClass.getSymbol(nodeVarDeclaration.name).get(0);
+        SymbolVar symbolVar = (SymbolVar) symbolClass.symbolTable.get(nodeVarDeclaration.name).get(0);
 
         if (nodeVarDeclaration.jjtGetNumChildren() != 1)
             return;
