@@ -17,6 +17,7 @@
 	.limit stack 99
 	.limit locals 99
 
+	isub
 .endMethod
 
 .method public get_array()[I

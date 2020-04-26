@@ -10,12 +10,14 @@
 	.limit stack 99
 	.limit locals 99
 
+	idiv
 .endMethod
 
 .method public estimatePi100(I)I
 	.limit stack 99
 	.limit locals 99
 
+	imul
 .endMethod
 
 .method public static main([Ljava/lang/String;)V

@@ -42,12 +42,12 @@ public class CodeGenerator {
         else
             this.printWriterFile.println(".super java/lang/Object");
 
-        generateGlobalVariables(classNode);
+        generateClassVariables(classNode);
         generateMethods(classNode);
     }
 
 
-    private void generateGlobalVariables(SimpleNode node) {
+    private void generateClassVariables(SimpleNode node) {
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             SimpleNode child = (SimpleNode) node.jjtGetChild(i);
             if (child instanceof ASTVarDeclaration) {
@@ -81,7 +81,8 @@ public class CodeGenerator {
                 return "V";
         }
 
-        return "";
+        //TODO: make sure this is correct
+        return "L" + nodeType.type+";";
     }
 
      private void generateMethods(SimpleNode node) {
@@ -113,6 +114,7 @@ public class CodeGenerator {
     private void generateMainMethod(SimpleNode mainNode) {
         this.printWriterFile.println(".method public static main([Ljava/lang/String;)V");
         generateMethodStatments(mainNode);
+        generateMethodBody(mainNode);
         printWriterFile.write(".endMethod\n\n");
     }
         
@@ -121,6 +123,7 @@ public class CodeGenerator {
         printWriterFile.println("\t.limit stack 99");//TO-DO calculate stack and locals, just for ckpt3
         printWriterFile.println("\t.limit locals 99\n");
         generateMethodStatments(methodNode);
+        generateMethodBody(methodNode);
         printWriterFile.write(".endMethod\n\n");
     }
     
@@ -173,7 +176,10 @@ public class CodeGenerator {
     }
 
     private void generateBody(SimpleNode node) {
+        int i=1;
         if(node instanceof ASTEquality){
+            System.out.println("equality: " + i); 
+            i++;
             //System.out.println("equality");
             //System.out.println("nr filhos equality: " + node.jjtGetNumChildren());
             generateEquality(node);
@@ -186,14 +192,24 @@ public class CodeGenerator {
         ASTIdentifier lhs = (ASTIdentifier) node.jjtGetChild(0);  //left identifier
         SimpleNode rhs = (SimpleNode) node.jjtGetChild(1);  //right side 
 
-//        System.out.println("lhs: " + lhs.toString());
 //        System.out.println("Nr filhos direita: " + rhs.jjtGetNumChildren());
-
+        generateLhs(lhs);
         generateRhs(rhs);
 
         //TODO -> parse left side of expression
     }
 
+    private void generateLhs(SimpleNode lhs){
+        String varName ="";
+        ASTIdentifier lhsIdentifier=null;
+        if(lhs instanceof ASTIdentifier){
+            lhsIdentifier = (ASTIdentifier) lhs;
+            varName = lhsIdentifier.val;
+        }
+
+        //storeLocalVariable(lhs, varName);
+        //System.out.println("varname: " + varName);
+    }
 
     private void generateRhs(SimpleNode rhs) {
         if (rhs.jjtGetNumChildren() == 2) {
@@ -226,6 +242,18 @@ public class CodeGenerator {
             //TODO*/
     }
 
+/*
+    private void storeLocalVariable(SimpleNode node, String varName){
+		int index = node.getSymbolIndex(varName);
+		String store = "";
+		
+		if(index<=3)
+			store="store_";
+		else store="store ";
+		
+		System.out.println("i"+store+varIndex);	
+    }
+*/
     // private void generateBlock(ASTStatementBlock block) {
     //     for (int i = 0; i < block.jjtGetNumChildren(); i++) {
     //         System.out.println("blockchildren");
