@@ -215,17 +215,18 @@ public class SemanticAnalysis {
     private void analysingStatement(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node) {
 
         if (node instanceof ASTStatementBlock) {
-            //TODO what to do with this?
-            return;
+
+            for(int i = 0; i < node.jjtGetNumChildren(); i++)
+                analysingStatement(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(i));
         }
 
         if (node instanceof ASTIf) {
-            //TODO
+            analysingConditional(symbolClass, symbolMethod, node, "if");
             return;
         }
 
         if (node instanceof ASTWhile) {
-            //TODO
+            analysingConditional(symbolClass, symbolMethod, node, "while");
             return;
         }
 
@@ -236,6 +237,23 @@ public class SemanticAnalysis {
 
         analysingExpression(symbolClass, symbolMethod, node);
 
+
+    }
+
+    private void analysingConditional(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node, String type) {
+
+        if(node.jjtGetNumChildren() < 2)
+            return;
+
+        if(analysingExpression(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(0)) != Type.BOOLEAN)
+        {
+            this.errorMessage("Conditional expression of " + type + " must be boolean");
+        }
+
+        for(int i = 1; i < node.jjtGetNumChildren(); i++)
+        {
+            this.analysingStatement(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(i));
+        }
 
     }
 
@@ -273,7 +291,8 @@ public class SemanticAnalysis {
     private Type analysingExpression(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node) {
 
         if (node instanceof ASTAND) {
-            return analysingOperation(symbolClass, symbolMethod, node);
+            analysingOperation(symbolClass, symbolMethod, node);
+            return Type.BOOLEAN;
         }
 
         if (node instanceof ASTLESSTHAN) {
@@ -470,24 +489,10 @@ public class SemanticAnalysis {
 
     private ArrayList<Type> getMethodCallTypes(SymbolMethod symbolMethod, SymbolClass symbolClass, ASTIdentifier node2) {
         ArrayList<Type> types = new ArrayList<>();
-        for (int i = 0; i < node2.jjtGetNumChildren(); i++) {
-            if (node2.jjtGetChild(i) instanceof ASTIdentifier) {
-                ASTIdentifier identifier = (ASTIdentifier) node2.jjtGetChild(i);
 
-                if (symbolMethod.symbolTable.containsKey(identifier.val)) {
-                    types.add(symbolMethod.symbolTable.get(identifier.val).getType());
-                } else if (symbolClass.symbolTable.containsKey(identifier.val)) {
-                    types.add(symbolClass.symbolTable.get(identifier.val).get(0).getType());
-                } else {
-                    types.add(null);
-                }
-            } else if (node2.jjtGetChild(i) instanceof ASTLiteral) {
-                types.add(Type.INT);
-            } else if (node2.jjtGetChild(i) instanceof ASTBoolean) {
-                types.add(Type.BOOLEAN);
-            } else if (node2.jjtGetChild(i) instanceof ASTDotExpression) {
-                types.add(analysingDotExpression(symbolClass, symbolMethod, (SimpleNode) node2.jjtGetChild(i)));
-            }
+        for (int i = 0; i < node2.jjtGetNumChildren(); i++) {
+
+            types.add(this.analysingExpression(symbolClass, symbolMethod, (SimpleNode) node2.jjtGetChild(i)));
         }
 
         return types;
