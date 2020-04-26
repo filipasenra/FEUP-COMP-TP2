@@ -192,7 +192,7 @@ public class SemanticAnalysis {
                         }
 
                         if (methodNode.jjtGetChild(i) instanceof ASTReturn) {
-                            //TODO: maybe verify if return expression matches the function's return type
+                            analysingReturnExpression(symbolClass, symbolMethod, (SimpleNode) methodNode.jjtGetChild(i));
                             continue;
                         }
 
@@ -202,6 +202,17 @@ public class SemanticAnalysis {
 
             }
         }
+    }
+
+    private void analysingReturnExpression(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node) {
+
+        if(node.jjtGetNumChildren() != 1)
+            return;
+
+        if (symbolMethod.returnType != this.analysingExpression(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(0)))
+            this.errorMessage("Return expression doesn't coincide with return type of function " + symbolMethod.name);
+
+
     }
 
     private void analysingStatement(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node) {

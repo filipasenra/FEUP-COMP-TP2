@@ -1,7 +1,7 @@
 package symbolTable;
 
 public abstract class Symbol {
-    String name; //Name of the variable
+    public String name; //Name of the variable
     Type type;
     String object_name;
     int register;
