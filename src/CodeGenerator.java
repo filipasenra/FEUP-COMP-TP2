@@ -81,8 +81,8 @@ public class CodeGenerator {
                 return "V";
         }
 
-        //TODO: this return
-        return "";
+        //TODO: make sure this is correct
+        return "L" + nodeType.type+";";
     }
 
      private void generateMethods(SimpleNode node) {
