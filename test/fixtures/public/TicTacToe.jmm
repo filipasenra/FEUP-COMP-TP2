@@ -168,32 +168,32 @@ class TicTacToe {
       done = false;
       // Read in a move & check if it's valid.
       while(!done){
-	
-        BoardBase.printBoard(mygame.getRow0(), 
-          mygame.getRow1(), 
+
+        BoardBase.printBoard(mygame.getRow0(),
+          mygame.getRow1(),
           mygame.getRow2());
 
-        player = mygame.getCurrentPlayer();            
+        player = mygame.getCurrentPlayer();
         move = BoardBase.playerTurn(player);
-	    
-      		
-        if (!mygame.inbounds(move[0],move[1])) 
+
+
+        if (!mygame.inbounds(move[0],move[1]))
           BoardBase.wrongMove();
         else {
           if (!mygame.Move(move[0],move[1]))
              BoardBase.placeTaken();
           else
             done = true;
-       } 
+       }
       }
-	
+
       // Change who's turn it is.
       mygame.changeturn();
     }
 
     // Print out a message with the winner.
-    BoardBase.printBoard(mygame.getRow0(), 
-          mygame.getRow1(), 
+    BoardBase.printBoard(mygame.getRow0(),
+          mygame.getRow1(),
           mygame.getRow2());
     win = mygame.winner();
 
