@@ -1,6 +1,11 @@
 .class public TicTacToe
 .super java/lang/Object
-
+.field public row0 [I
+.field public row1 [I
+.field public row2 [I
+.field public whoseturn I
+.field public movesmade I
+.field public pieces [I
 .method public<init>()V
 	aload_0
 	invokenonvirtual java/lang/Object<init>()V

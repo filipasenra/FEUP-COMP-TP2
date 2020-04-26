@@ -10,6 +10,7 @@
 	.limit stack 99
 	.limit locals 99
 
+	iadd
 .endMethod
 
 .method public static main([Ljava/lang/String;)V
