@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import symbolTable.*;
 
@@ -42,8 +43,10 @@ public class CodeGenerator {
         else
             this.printWriterFile.println(".super java/lang/Object");
 
+        SymbolClass symbolClass = (SymbolClass) this.symbolTable.get(classNode.name);
+
         generateClassVariables(classNode);
-        generateMethods(classNode);
+        generateMethods(classNode, symbolClass);
     }
 
 
@@ -85,7 +88,7 @@ public class CodeGenerator {
         return "L" + nodeType.type+";";
     }
 
-     private void generateMethods(SimpleNode node) {
+     private void generateMethods(SimpleNode node, SymbolClass symbolClass) {
 
         //Should it be here? i don't think so? check this out: http://www.cs.sjsu.edu/faculty/pearce/modules/lectures/co/jvm/jasmin/instructions.html
         //There is no declaration of a constructor so there is no jasmin code for a constructor made
@@ -95,10 +98,11 @@ public class CodeGenerator {
             SimpleNode child = (SimpleNode) node.jjtGetChild(i);
 
             if (child instanceof ASTMainDeclaration){
-                generateMainMethod(child);
+                generateMainMethod(child, symbolClass);
             }
             if(child instanceof ASTMethodDeclaration){
-                generateMethod(child);
+                ASTMethodDeclaration methodDeclaration = (ASTMethodDeclaration) child;
+                generateMethod(methodDeclaration, (SymbolMethod) symbolClass.getSymbol(methodDeclaration.name).get(i));
             }   
         }
     }
@@ -111,20 +115,35 @@ public class CodeGenerator {
         printWriterFile.println(".end method\n");
     }
 
-    private void generateMainMethod(SimpleNode mainNode) {
+    private void generateMainMethod(SimpleNode mainNode, SymbolClass symbolClass) {
         this.printWriterFile.println(".method public static main([Ljava/lang/String;)V");
-        generateMethodStatments(mainNode);
-        generateMethodBody(mainNode);
+
+        //generateMethodDeclarations(mainNode);
+        generateMethodBody(mainNode, symbolClass);
+
         printWriterFile.write(".endMethod\n\n");
     }
         
-    private void generateMethod(SimpleNode methodNode){
-        generateMethodHeader((ASTMethodDeclaration) methodNode);//parametros de entrada colocados em varsTable
-        printWriterFile.println("\t.limit stack 99");//TO-DO calculate stack and locals, just for ckpt3
+    private void generateMethod(ASTMethodDeclaration methodNode, SymbolMethod symbolMethod){
+        //Header for method
+        generateMethodHeader((ASTMethodDeclaration) methodNode);
+
+        printWriterFile.println("\t.limit stack 99");//TODO calculate stack and locals, just for ckpt3
         printWriterFile.println("\t.limit locals 99\n");
-        generateMethodStatments(methodNode);
-        generateMethodBody(methodNode);
+
+       /* generateMethodDeclarations(methodNode, symbolMethod);
+        generateMethodBody(methodNode, symbolMethod);
+*/
         printWriterFile.write(".endMethod\n\n");
+    }
+
+    private SymbolMethod getMethod(ASTMethodDeclaration methodNode, SymbolClass symbolClass) {
+        ArrayList<Symbol> possibleMethods = symbolClass.getSymbol(methodNode.name);
+
+        if(possibleMethods.size() == 1)
+            return (SymbolMethod) possibleMethods.get(0);
+
+        return null;
     }
     
     private void generateMethodHeader(ASTMethodDeclaration methodNode) {
@@ -149,63 +168,76 @@ public class CodeGenerator {
     }
 
     private String generateMethodArgument(ASTArg argNode) {
-        String argType="";
 
         if(argNode.jjtGetChild(0) instanceof ASTType)
-           argType = getType((ASTType) argNode.jjtGetChild(0));
+           return getType((ASTType) argNode.jjtGetChild(0));
 
-        return argType;
+        return "";
     }
 
-    private void generateMethodStatments(SimpleNode methodNode) {
+    private void generateRegisters(SimpleNode methodNode, SymbolMethod symbolMethod) {
+
+        int registerCounter = 1;
 
         for (int i = 0; i < methodNode.jjtGetNumChildren(); i++){
-            
+
+            if (methodNode.jjtGetChild(i) instanceof ASTArg){
+                symbolMethod.symbolTable.get(((ASTArg) methodNode.jjtGetChild(i)).val).setRegister(registerCounter);
+                registerCounter++;
+                continue;
+            }
+
             if(methodNode.jjtGetChild(i) instanceof ASTVarDeclaration){
                 ASTVarDeclaration varDeclaration = (ASTVarDeclaration) methodNode.jjtGetChild(i);
-               // generateVar(varDeclaration);
+                symbolMethod.symbolTable.get(varDeclaration.name).setRegister(registerCounter);
+                registerCounter++;
+                continue;
             }
         }
     }
 
-    private void generateMethodBody(SimpleNode method) {
+    private void generateMethodBody(SimpleNode method, SymbolClass symbolClass) {
         for (int i = 0; i < method.jjtGetNumChildren(); i++) {
-            SimpleNode method_child = (SimpleNode) method.jjtGetChild(i);
-            generateBody(method_child);
+            generateBody((SimpleNode) method.jjtGetChild(i), symbolClass);
         }
     }
 
-    private void generateBody(SimpleNode node) {
+    private void generateBody(SimpleNode node, SymbolClass symbolClass) {
         int i=1;
         if(node instanceof ASTEquality){
             System.out.println("equality: " + i); 
             i++;
             //System.out.println("equality");
             //System.out.println("nr filhos equality: " + node.jjtGetNumChildren());
-            generateEquality(node);
+            generateEquality((ASTEquality) node, symbolClass);
         }
 
         //TODO -> complete with return, dought expressions, if, while...
     }
 
-    private void generateEquality(SimpleNode node) {
+    private void generateEquality(ASTEquality node, SymbolClass symbolClass) {
         ASTIdentifier lhs = (ASTIdentifier) node.jjtGetChild(0);  //left identifier
         SimpleNode rhs = (SimpleNode) node.jjtGetChild(1);  //right side 
 
 //        System.out.println("Nr filhos direita: " + rhs.jjtGetNumChildren());
+
+        if(lhs.jjtGetNumChildren() != 0 && lhs.jjtGetChild(1) instanceof ASTaccessToArray)
+        {
+            //access to array
+        } else {
+
+            //not access to array
+        }
+
         generateLhs(lhs);
         generateRhs(rhs);
 
         //TODO -> parse left side of expression
     }
 
-    private void generateLhs(SimpleNode lhs){
-        String varName ="";
-        ASTIdentifier lhsIdentifier=null;
-        if(lhs instanceof ASTIdentifier){
-            lhsIdentifier = (ASTIdentifier) lhs;
-            varName = lhsIdentifier.val;
-        }
+    private void generateLhs(ASTIdentifier lhs){
+
+        String varName = lhs.val;
 
         //storeLocalVariable(lhs, varName);
         //System.out.println("varname: " + varName);
