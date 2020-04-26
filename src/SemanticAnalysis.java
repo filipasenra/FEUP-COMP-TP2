@@ -73,14 +73,14 @@ public class SemanticAnalysis {
 
         for (int i = 0; i < classNode.jjtGetNumChildren(); i++) {
             if (classNode.jjtGetChild(i) instanceof ASTVarDeclaration) {
-                addVarDeclarationClassInfo(symbolClass, (ASTVarDeclaration) classNode.jjtGetChild(i));
+                addVarDeclarationInfo(symbolClass, (ASTVarDeclaration) classNode.jjtGetChild(i));
             } else if (classNode.jjtGetChild(i) instanceof ASTMethodDeclaration) {
                 addMethod(symbolClass, (ASTMethodDeclaration) classNode.jjtGetChild(i), i);
             }
         }
     }
 
-    private void addVarDeclarationClassInfo(SymbolClass symbolClass, ASTVarDeclaration nodeVarDeclaration) {
+    private void addVarDeclarationInfo(SymbolClass symbolClass, ASTVarDeclaration nodeVarDeclaration) {
         SymbolVar symbolVar = new SymbolVar(nodeVarDeclaration.name);
         symbolClass.addSymbol(nodeVarDeclaration.name, symbolVar);
     }
@@ -288,10 +288,10 @@ public class SemanticAnalysis {
 
             ArrayList<Symbol> symbolArrayList =  symbolClass.symbolTable.get(node.val);
 
-            for(int i = 0; i < symbolArrayList.size(); i++){
+            for (Symbol symbol : symbolArrayList) {
 
-                if(symbolArrayList.get(i) instanceof SymbolVar) {
-                    ((SymbolVar) symbolArrayList.get(i)).setInitialize();
+                if (symbol instanceof SymbolVar) {
+                    ((SymbolVar) symbol).setInitialize();
                     return;
                 }
             }
@@ -618,10 +618,10 @@ public class SemanticAnalysis {
         }else if (symbolClass.symbolTable.containsKey(node.val)) {
             ArrayList<Symbol> symbolArrayList =  symbolClass.symbolTable.get(node.val);
 
-            for(int i = 0; i < symbolArrayList.size(); i++){
+            for (Symbol symbol : symbolArrayList) {
 
                 //It means it is a variable
-                if(symbolArrayList.get(i) instanceof SymbolVar) {
+                if (symbol instanceof SymbolVar) {
                     type = symbolClass.symbolTable.get(node.val).get(0).getType();
                     found = true;
                 }
@@ -687,15 +687,15 @@ public class SemanticAnalysis {
 
             ArrayList<Symbol> symbolArrayList =  symbolClass.symbolTable.get(node.val);
 
-            for(int i = 0; i < symbolArrayList.size(); i++){
+            for (Symbol symbol : symbolArrayList) {
 
-                if(symbolArrayList.get(i) instanceof SymbolVar) {
-                    SymbolVar symbolVar = (SymbolVar) symbolArrayList.get(i);
+                if (symbol instanceof SymbolVar) {
+                    SymbolVar symbolVar = (SymbolVar) symbol;
 
-                    if(symbolVar.getType() == Type.INT_ARRAY)
+                    if (symbolVar.getType() == Type.INT_ARRAY)
                         return;
 
-                    if(! symbolVar.isInitialize())
+                    if (!symbolVar.isInitialize())
                         this.errorMessage(node.val + " is not initialize!");
 
                     return;
@@ -720,15 +720,22 @@ public class SemanticAnalysis {
 
 
     private void analysingVarDeclaration(SymbolMethod symbolMethod, ASTVarDeclaration nodeVarDeclaration) {
-
         SymbolVar symbolVar = new SymbolVar(nodeVarDeclaration.name);
         symbolMethod.addSymbol(nodeVarDeclaration.name, symbolVar);
 
         if (nodeVarDeclaration.jjtGetNumChildren() != 1)
             return;
 
-        if (nodeVarDeclaration.jjtGetChild(0) instanceof ASTType)
-            analysingType(symbolVar, (ASTType) nodeVarDeclaration.jjtGetChild(0));
+        if (nodeVarDeclaration.jjtGetChild(0) instanceof ASTType) {
+            Type type = analysingType(symbolVar, (ASTType) nodeVarDeclaration.jjtGetChild(0));
+
+            if (type == Type.OBJECT)
+                if (!symbolTable.containsKey(symbolVar.getObject_name())) {
+                    this.errorMessage("Missing type");
+                    return;
+            }
+
+        }
 
     }
 

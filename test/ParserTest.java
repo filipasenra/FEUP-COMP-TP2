@@ -58,12 +58,10 @@ public class ParserTest {
         test("fixtures/public/FindMaximum.jmm", false);
     }
 
-
     @Test
     public void testHelloWorld() {
         test("fixtures/public/HelloWorld.jmm", false);
     }
-
 
     @Test
     public void testLazysort() {
@@ -155,7 +153,7 @@ public class ParserTest {
         test("fixtures/public/fail/semantic/varNotInit.jmm", true);
     }
 
-    @Test
+   @Test
     public void testmiss_type() {
         test("fixtures/public/fail/semantic/extra/miss_type.jmm", true);
     }
