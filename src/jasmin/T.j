@@ -1,5 +1,6 @@
-.class public Lazysort
-.super Quicksort
+.class public T
+.super java/lang/Object
+.field public ola I
 .method public<init>()V
 	aload_0
 	invokenonvirtual java/lang/Object<init>()V
@@ -9,13 +10,19 @@
 .method public static main([Ljava/lang/String;)V
 .endMethod
 
-.method public quicksort([I)B
+.method public foo(BI)I
 	.limit stack 99
 	.limit locals 99
 
 .endMethod
 
-.method public beLazy([I)B
+.method public foo()I
+	.limit stack 99
+	.limit locals 99
+
+.endMethod
+
+.method public foo(BB)I
 	.limit stack 99
 	.limit locals 99
 

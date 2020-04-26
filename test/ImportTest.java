@@ -7,13 +7,13 @@ import org.junit.Test;
 
 public class ImportTest {
 
-    private static String CLASS_WITH_MAIN = "Main";
+    private static String CLASS_WITH_MAIN = "jmm";
 
 
-   /* @Test
+    @Test
     public void testImports() {
         CompUtils.testParser("fixtures/public/ImportStressTest.jmm", false, CLASS_WITH_MAIN);
-    }*/
+    }
 
 
 }

@@ -5,6 +5,8 @@ import java.util.HashMap;
 
 public class SymbolMethod extends Symbol {
 
+    public int num;
+
     public HashMap<String, Symbol> symbolTable = new HashMap<>();
 
     public Type returnType;

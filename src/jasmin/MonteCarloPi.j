@@ -6,13 +6,13 @@
 	return
 .end method
 
-.method public performSingleEstimate(null)nullB
+.method public performSingleEstimate()B
 	.limit stack 99
 	.limit locals 99
 
 .endMethod
 
-.method public estimatePi100(nullI)nullI
+.method public estimatePi100(I)I
 	.limit stack 99
 	.limit locals 99
 
