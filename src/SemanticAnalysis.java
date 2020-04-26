@@ -2,7 +2,6 @@ import symbolTable.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
 
 public class SemanticAnalysis {
 
@@ -62,9 +61,17 @@ public class SemanticAnalysis {
             }
         }
 
-        symbolClass.addSymbol(importNode.methodName, sm);
+        if (symbolClass.getSymbol(importNode.methodName) != null) {
+            for (int i = 0; i < symbolClass.getSymbol(importNode.methodName).size(); i++) {
+                SymbolMethod smCheck = (SymbolMethod) symbolClass.getSymbol(importNode.methodName).get(i);
 
-        //TODO: Imports repetidos não devem ser adicionados.
+                if (sm.types.equals(smCheck.types)) {
+                    return;
+                }
+            }
+        }
+
+        symbolClass.addSymbol(importNode.methodName, sm);
     }
 
     private void addClassInfo(ASTClassDeclaration classNode) {
@@ -282,11 +289,11 @@ public class SemanticAnalysis {
 
     }
 
-    private void setInitialize(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node){
+    private void setInitialize(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node) {
 
         if (symbolClass.symbolTable.containsKey(node.val)) {
 
-            ArrayList<Symbol> symbolArrayList =  symbolClass.symbolTable.get(node.val);
+            ArrayList<Symbol> symbolArrayList = symbolClass.symbolTable.get(node.val);
 
             for (Symbol symbol : symbolArrayList) {
 
@@ -299,7 +306,7 @@ public class SemanticAnalysis {
 
         if (symbolMethod.symbolTable.containsKey(node.val)) {
 
-            if(symbolMethod.symbolTable.get(node.val) instanceof SymbolVar)
+            if (symbolMethod.symbolTable.get(node.val) instanceof SymbolVar)
                 ((SymbolVar) symbolMethod.symbolTable.get(node.val)).setInitialize();
         }
     }
@@ -615,8 +622,8 @@ public class SemanticAnalysis {
             type = symbolMethod.symbolTable.get(node.val).getType();
             found = true;
 
-        }else if (symbolClass.symbolTable.containsKey(node.val)) {
-            ArrayList<Symbol> symbolArrayList =  symbolClass.symbolTable.get(node.val);
+        } else if (symbolClass.symbolTable.containsKey(node.val)) {
+            ArrayList<Symbol> symbolArrayList = symbolClass.symbolTable.get(node.val);
 
             for (Symbol symbol : symbolArrayList) {
 
@@ -628,7 +635,7 @@ public class SemanticAnalysis {
             }
         }
 
-        if(!found) {
+        if (!found) {
             this.errorMessage(node.val + " is undefined!");
             return null;
         }
@@ -663,10 +670,10 @@ public class SemanticAnalysis {
         Type type1 = analysingExpression(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(0));
         Type type2 = analysingExpression(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(1));
 
-        if(node.jjtGetChild(0) instanceof ASTIdentifier)
-           checkIfInitialize(symbolClass, symbolMethod, (ASTIdentifier) node.jjtGetChild(0));
+        if (node.jjtGetChild(0) instanceof ASTIdentifier)
+            checkIfInitialize(symbolClass, symbolMethod, (ASTIdentifier) node.jjtGetChild(0));
 
-        if(node.jjtGetChild(1) instanceof ASTIdentifier)
+        if (node.jjtGetChild(1) instanceof ASTIdentifier)
             checkIfInitialize(symbolClass, symbolMethod, (ASTIdentifier) node.jjtGetChild(1));
 
         if (type1 == null || type2 == null)
@@ -681,11 +688,11 @@ public class SemanticAnalysis {
 
     }
 
-    private void checkIfInitialize(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node){
+    private void checkIfInitialize(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node) {
 
         if (symbolClass.symbolTable.containsKey(node.val)) {
 
-            ArrayList<Symbol> symbolArrayList =  symbolClass.symbolTable.get(node.val);
+            ArrayList<Symbol> symbolArrayList = symbolClass.symbolTable.get(node.val);
 
             for (Symbol symbol : symbolArrayList) {
 
@@ -703,17 +710,17 @@ public class SemanticAnalysis {
             }
         }
 
-        if (symbolMethod.symbolTable.containsKey(node.val)){
+        if (symbolMethod.symbolTable.containsKey(node.val)) {
 
-            if(! (symbolMethod.symbolTable.get(node.val) instanceof SymbolVar))
+            if (!(symbolMethod.symbolTable.get(node.val) instanceof SymbolVar))
                 return;
 
             SymbolVar symbolVar = (SymbolVar) symbolMethod.symbolTable.get(node.val);
 
-            if(symbolVar.getType() == Type.INT_ARRAY)
+            if (symbolVar.getType() == Type.INT_ARRAY)
                 return;
 
-            if(! symbolVar.isInitialize())
+            if (!symbolVar.isInitialize())
                 this.errorMessage(node.val + " is not initialize!");
         }
     }
@@ -732,7 +739,7 @@ public class SemanticAnalysis {
             if (type == Type.OBJECT)
                 if (!symbolTable.containsKey(symbolVar.getObject_name())) {
                     this.errorMessage("Missing type");
-            }
+                }
 
         }
 

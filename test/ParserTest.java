@@ -25,8 +25,8 @@ public class ParserTest {
             Method mainMethod = mainClass.getMethod("main", String[].class);
 
             // Invoke main method with file as argument
-            String[] mainArgs = { testFile.getAbsolutePath() };
-            Object[] invokeArgs = { mainArgs };
+            String[] mainArgs = {testFile.getAbsolutePath()};
+            Object[] invokeArgs = {mainArgs};
             mainMethod.invoke(null, invokeArgs);
 
         } catch (Exception e) {
@@ -153,7 +153,7 @@ public class ParserTest {
         test("fixtures/public/fail/semantic/varNotInit.jmm", true);
     }
 
-   @Test
+    @Test
     public void testmiss_type() {
         test("fixtures/public/fail/semantic/extra/miss_type.jmm", true);
     }
