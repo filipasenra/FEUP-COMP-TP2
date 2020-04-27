@@ -7,6 +7,7 @@ public class SemanticAnalysis {
 
     private HashMap<String, Symbol> symbolTable = new HashMap<>();
     private int nErrors = 0;
+    private int nWarnings = 0;
 
     public SemanticAnalysis() {
     }
@@ -14,6 +15,8 @@ public class SemanticAnalysis {
     public int getNerros() {
         return nErrors;
     }
+
+    public int getNwarnings() { return nWarnings; }
 
     public void startAnalysing(SimpleNode node) {
 
@@ -679,6 +682,11 @@ public class SemanticAnalysis {
         if (type1 == null || type2 == null)
             return null;
 
+        if(type1 == Type.INT_ARRAY || type1 == Type.STRING_ARRAY || type2 == Type.INT_ARRAY || type2 == Type.STRING_ARRAY) {
+            this.errorMessage("It is not possible to use arrays directly for arithmetic operations!");
+            return null;
+        }
+
         if (type1 != type2) {
             this.errorMessage("Operands are not of the same type");
             return null;
@@ -703,7 +711,7 @@ public class SemanticAnalysis {
                         return;
 
                     if (!symbolVar.isInitialize())
-                        this.errorMessage(node.val + " is not initialize!");
+                        this.warningMessage(node.val + " is not initialize!");
 
                     return;
                 }
@@ -721,7 +729,7 @@ public class SemanticAnalysis {
                 return;
 
             if (!symbolVar.isInitialize())
-                this.errorMessage(node.val + " is not initialize!");
+                this.warningMessage(node.val + " is not initialize!");
         }
     }
 
@@ -799,6 +807,11 @@ public class SemanticAnalysis {
 
     private void errorMessage(String message) {
         nErrors++;
+        System.err.println(message);
+    }
+
+    private void warningMessage(String message) {
+        nWarnings++;
         System.err.println(message);
     }
 

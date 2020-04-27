@@ -61,11 +61,11 @@ todas as verificações feitas na análise semantica devem reportar erro excepto
     
     . verificar se operações são efetuadas com o mesmo tipo (e.g. int + boolean tem de dar erro) [DONE]
 
-    . não é possível utilizar arrays diretamente para operações aritmeticas (e.g. array1 + array2)
+    . não é possível utilizar arrays diretamente para operações aritmeticas (e.g. array1 + array2) [DONE]
     
-    . verificar se um array access é de facto feito sobre um array
+    . verificar se um array access é de facto feito sobre um array [DONE]
     
-    . verificar se o indice do array access é um inteiro
+    . verificar se o indice do array access é um inteiro [DONE]
     
     . verificar se valor do assignee é igual ao do assigned (a_int = b_boolean não é permitido!) [DONE]
     
