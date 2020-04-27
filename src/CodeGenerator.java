@@ -458,10 +458,10 @@ public class CodeGenerator {
         Type type=null; 
         String methodType="";
         boolean declaredInClass=false;
+        SymbolClass sc = null;
 
-        SymbolClass sc = (SymbolClass) symbolTable.get(symbolMethod.symbolTable.get(identifier1.val).getObject_name());
-
-
+        if(symbolTable.get(symbolMethod.symbolTable.get(identifier1.val))!=null)
+            sc = (SymbolClass) symbolTable.get(symbolMethod.symbolTable.get(identifier1.val).getObject_name());
 
         if (symbolMethod.symbolTable.containsKey(identifier1.val) || symbolClass.symbolTableFields.containsKey(identifier1.val)) 
             declaredInClass=true;
@@ -473,12 +473,13 @@ public class CodeGenerator {
                 //get return type and type of arguments
                 System.out.println("id2 é metodo");
                 System.out.println("nome metodo: " + identifier2.val);
+                if(sc!=null){
+                    if (sc.symbolTableMethods.containsKey(identifier2.val)) {
 
-                if (sc.symbolTableMethods.containsKey(identifier2.val)) {
-
-                    //check for a method with the same signature
-                    type = checkIfMethodExists(sc.symbolTableMethods.get(identifier2.val), getMethodCallTypes(symbolMethod, symbolClass, identifier2));
-                    methodType += getSymbolType(type);
+                        //check for a method with the same signature
+                        type = checkIfMethodExists(sc.symbolTableMethods.get(identifier2.val), getMethodCallTypes(symbolMethod, symbolClass, identifier2));
+                        methodType += getSymbolType(type);
+                    }
                 }
                 System.out.println("tipo metodo: " + methodType);
 
@@ -488,9 +489,9 @@ public class CodeGenerator {
 
 
         if (declaredInClass)
-            System.out.println("\t" + "invokevirtual " + methodName + "(" + ")" + type);
+            this.printWriterFile.println("\t" + "invokevirtual " + methodName + "(" + ")" + methodType);
         else
-            System.out.println("\t" + "invokestatic " + methodName + "(" + ")" + type);
+            this.printWriterFile.println("\t" + "invokestatic " + methodName + "(" + ")" + methodType);
 
     }
 
