@@ -246,7 +246,7 @@ public class CodeGenerator {
 
                 }
                 else{
-                    if(symbolMethod.returnType == Type.INT){
+                    if(symbolMethod.getType() == Type.INT){
                     printWriterFile.println("\tireturn");
                     return;
                     }
