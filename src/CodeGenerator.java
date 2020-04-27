@@ -18,7 +18,7 @@ public class CodeGenerator {
 	public void generate(SimpleNode node) {
 
         System.out.println("Starting creating jasmin code");
-        System.out.println(this.symbolTable.toString());
+        //System.out.println(this.symbolTable.toString());
 
         ASTClassDeclaration classNode=null;
 
@@ -253,9 +253,8 @@ public class CodeGenerator {
         //System.out.println("Nr filhos direita: " + rhs.jjtGetNumChildren());
 
         generateLhs(lhs, symbolMethod);
-        generateRhs(rhs);
-
-        //TODO -> parse left side of expression
+        //System.out.println(((ASTIdentifier) lhs).val);
+        generateRhs(rhs, symbolMethod);
     }
 
     private void generateLhs(ASTIdentifier lhs, SymbolMethod symbolMethod){
@@ -275,13 +274,27 @@ public class CodeGenerator {
 
     }
 
-    private void generateRhs(SimpleNode rhs) {
-        if (rhs.jjtGetNumChildren() == 2) {
-            generateOperation(rhs);
-        }
+    private void generateRhs(SimpleNode rhs, SymbolMethod symbolMethod) {
+        //System.out.println("nr children rhs: " + rhs.jjtGetNumChildren());
 
-        //TODO -> nrChildren != 2 
+        if (rhs != null) {
+            if (rhs.jjtGetNumChildren() > 1) {            
+                generateOperation(rhs);
+            }
+            else if (rhs instanceof ASTIdentifier) {
+                // System.out.println("identifier");
+                ASTIdentifier identifier = (ASTIdentifier) rhs;
+                this.loadLocalVariable(identifier, symbolMethod);
+            }
+            else if(rhs instanceof ASTLiteral){
+                //System.out.println("literal");
+                ASTLiteral literal = (ASTLiteral) rhs;
+                loadIntLiteral(literal.val);
+            }   
+        }
     }
+
+    
 
     private void generateOperation(SimpleNode operation) {
 
@@ -306,7 +319,6 @@ public class CodeGenerator {
             //TODO*/
     }
 
-
     private void storeLocalVariable(ASTIdentifier identifier, SymbolMethod symbolMethod){
         int index = symbolMethod.symbolTable.get(identifier.val).getIndex();
 		String store = "";
@@ -328,6 +340,48 @@ public class CodeGenerator {
 
         this.printWriterFile.println("\t" + type + store + index);
     }
+
+    private void loadLocalVariable(ASTIdentifier identifier, SymbolMethod symbolMethod){
+        int index = symbolMethod.symbolTable.get(identifier.val).getIndex();
+        //System.out.println("Var: " + identifier.val + "\nIndex: " + index);
+		String store = "";
+        String type="";
+
+        //System.out.println("Var: " + identifier.val + "\nIndex: " + index);
+		
+		Type varType = symbolMethod.symbolTable.get(identifier.val).getType();
+
+        if (varType == Type.INT || varType == Type.BOOLEAN)
+            type = "i";
+        else
+            type = "a";
+
+        if (index <= 3)
+            store = "load_";
+        else
+            store = "load ";
+
+        this.printWriterFile.println("\t" + type + store + index);
+    }
+
+    private void loadIntLiteral(String val) {
+        String output = "";
+        int value = Integer.parseInt(val);
+
+        if ((value >= 0) && (value <= 5)) {
+            output += "\ticonst_" + value;
+        } else if (value == -1) {
+            output += "\ticonst_m1";
+        } else if (value > -129 && value < 128) {
+            output += "\tbipush " + value;
+        } else if (value > -32769 && value < 32768) {
+            output += "\tsipush " + value;
+        } else {
+            output += "\tldc " + value;
+        }
+        this.printWriterFile.println(output);
+    }
+
 
     // private void generateBlock(ASTStatementBlock block) {
     //     for (int i = 0; i < block.jjtGetNumChildren(); i++) {

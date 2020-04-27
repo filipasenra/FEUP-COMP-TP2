@@ -10,6 +10,9 @@
 	.limit stack 99
 	.limit locals 99
 
+	istore_1
+	istore_2
+	istore 4
 	idiv
 .endMethod
 
@@ -17,9 +20,14 @@
 	.limit stack 99
 	.limit locals 99
 
+	istore_3
+	istore_2
+	istore 4
 	imul
 .endMethod
 
 .method public static main([Ljava/lang/String;)V
+	istore_2
+	istore_1
 .endMethod
 

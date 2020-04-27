@@ -6,32 +6,18 @@
 	return
 .end method
 
+.method public static main([Ljava/lang/String;)V
+	istore_1
+	bipush 30
+	istore_2
+	isub
+	astore_3
+	istore 4
+.endMethod
+
 .method public add(II)I
 	.limit stack 99
 	.limit locals 99
 
-	istore_3
-	iadd
-.endMethod
-
-.method public static main([Ljava/lang/String;)V
-	istore_1
-	istore_2
-	astore 4
-	istore_3
-.endMethod
-
-.method public constInstr()I
-	.limit stack 99
-	.limit locals 99
-
-	istore_1
-	istore_1
-	istore_1
-	istore_1
-	istore_1
-	istore_1
-	istore_1
-	istore_1
 .endMethod
 

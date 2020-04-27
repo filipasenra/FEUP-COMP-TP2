@@ -7,12 +7,16 @@
 .end method
 
 .method public static main([Ljava/lang/String;)V
+	astore_1
+	istore_2
+	astore_3
 .endMethod
 
 .method public printL([I)B
 	.limit stack 99
 	.limit locals 99
 
+	istore_2
 .endMethod
 
 .method public quicksort([I)B
@@ -31,5 +35,11 @@
 	.limit stack 99
 	.limit locals 99
 
+	istore 4
+	istore 5
+	istore 6
+	istore 7
+	astore_1
+	astore_1
 .endMethod
 

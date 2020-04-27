@@ -7,5 +7,9 @@
 .end method
 
 .method public static main([Ljava/lang/String;)V
+	istore_1
+	istore_2
+	astore 4
+	istore_3
 .endMethod
 
