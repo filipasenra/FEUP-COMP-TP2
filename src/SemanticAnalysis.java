@@ -446,11 +446,6 @@ public class SemanticAnalysis {
                             return sm.returnType;
                     }
                 }
-            } else {
-
-                //TODO: do nothing?
-                /*if(sc.symbolTableFields.containsKey(node2.val))
-                    return sc.symbolTableFields.get(node2.val).getType();*/
             }
         }
 
@@ -512,40 +507,7 @@ public class SemanticAnalysis {
                 return null;
 
 
-            } else {
-
-                //TODO: do nothing?
-/*
-
-                //if import has a method with the same name
-                if (sc.symbolTableFields.containsKey(node2.val)) {
-
-                    return sc.symbolTableFields.get(node2.val).getType();
-
-                }
-
-                //check if the object has a super class
-                if (sc.superClass != null) {
-
-                    SymbolClass ssc = (SymbolClass) symbolTable.get(sc.superClass);
-
-                    //if class has a method with the same name
-                    if(ssc.symbolTableFields.containsKey(node2.val)) {
-
-                        return ssc.symbolTableFields.get(node2.val).getType();
-
-                    }
-
-                    this.errorMessage(node2.val + " is undefined!");
-                    return null;
-                }
-
-
-                this.errorMessage("Cannnot resolve method " + node2.val + " in the object " + symbolMethod.symbolTable.get(node1.val).getObject_name());
-                return null;
-*/
             }
-
 
         } else if (symbolMethod.symbolTable.get(node1.val).getType().equals(Type.INT_ARRAY)) {
             if (node2.val.equals("length"))
@@ -558,9 +520,7 @@ public class SemanticAnalysis {
 
     private Type checkIfMethodExists(ArrayList<SymbolMethod> methodArrayList, ArrayList<Type> methodSignature) {
 
-        for (int i = 0; i < methodArrayList.size(); i++) {
-
-            SymbolMethod sm = methodArrayList.get(i);
+        for (SymbolMethod sm : methodArrayList) {
 
             //If it has the same signature
             if (methodSignature.size() == sm.types.size()) {
