@@ -91,10 +91,10 @@ todas as verificações feitas na análise semantica devem reportar erro excepto
 
 = Code Generation =    
 
-    * estrutura básica de classe (incluindo construtor <init>)
-	* estrutura básica de fields
+    * estrutura básica de classe (incluindo construtor <init>) [DONE]
+	* estrutura básica de fields [DONE]
 	* estrutura básica de métodos (podem desconsiderar os limites neste checkpoint: limit_stack 99, limit_locals 99)
-	* assignments
+	* assignments [DONE]
 	* operações aritméticas (com prioridade de operações correta)
 		- neste checkpoint não é necessário a seleção das operações mais eficientes mas isto será considerado no CP3 e versão final
 	* invocação de métodos

@@ -2,6 +2,8 @@
 /build/
 /generated/
 *.jar
+/src/jasmin/*
+!src/jasmin/.maintainfolder
 
 # Ignore Gradle GUI config
 gradle-app.setting

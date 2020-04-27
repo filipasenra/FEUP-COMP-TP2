@@ -259,102 +259,46 @@ void ClassDeclaration(): {/*@bgen(jjtree) ClassDeclaration */
 
 }
 
-void Import() : {/*@bgen(jjtree) Import */
-  ASTImport jjtn000 = new ASTImport(JJTIMPORT);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
-/*@egen*/} {/*@bgen(jjtree) Import */
-    try {
+void Import(): {/*@bgen(jjtree) Import */
+                ASTImport jjtn000 = new ASTImport(JJTIMPORT);
+                boolean jjtc000 = true;
+                jjtree.openNodeScope(jjtn000);
+/*@egen*/Token t;}{/*@bgen(jjtree) Import */
+  try {
 /*@egen*/
-
-    <IMPORT> (<STATIC> {jjtn000.isStatic = true; })? (IdentifierFromImport() (<DOT> IdentifierFromImport())? )
-    (ImportMethod())? 
-    <SEMICOLON>/*@bgen(jjtree)*/
-    } catch (Throwable jjte000) {
-      if (jjtc000) {
-        jjtree.clearNodeScope(jjtn000);
-        jjtc000 = false;
-      } else {
-        jjtree.popNode();
-      }
-      if (jjte000 instanceof RuntimeException) {
-        throw (RuntimeException)jjte000;
-      }
-      if (jjte000 instanceof ParseException) {
-        throw (ParseException)jjte000;
-      }
-      throw (Error)jjte000;
-    } finally {
-      if (jjtc000) {
-        jjtree.closeNodeScope(jjtn000, true);
-      }
+  "import" ["static" {jjtn000.isStatic=true; }] t=<IDENTIFIER>{jjtn000.className=t.image;}
+      [<DOT> t=<IDENTIFIER> {jjtn000.methodName=t.image; }] [<LEFT_PARENTESIS> ParamList() <RIGHT_PARENTESIS>
+      [ImportType()]] <SEMICOLON>/*@bgen(jjtree)*/
+  } catch (Throwable jjte000) {
+    if (jjtc000) {
+      jjtree.clearNodeScope(jjtn000);
+      jjtc000 = false;
+    } else {
+      jjtree.popNode();
     }
-/*@egen*/
-
-}
-
-void IdentifierFromImport()             : {/*@bgen(jjtree) Identifier */
-                                           ASTIdentifier jjtn000 = new ASTIdentifier(JJTIDENTIFIER);
-                                           boolean jjtc000 = true;
-                                           jjtree.openNodeScope(jjtn000);
-/*@egen*/Token t;} {/*@bgen(jjtree) Identifier */
-    try {
-/*@egen*/
-
-    t = <IDENTIFIER>/*@bgen(jjtree)*/
-                     {
-                       jjtree.closeNodeScope(jjtn000, true);
-                       jjtc000 = false;
-                     }
-/*@egen*/ {jjtn000.val = t.image;}/*@bgen(jjtree)*/
-    } finally {
-      if (jjtc000) {
-        jjtree.closeNodeScope(jjtn000, true);
-      }
+    if (jjte000 instanceof RuntimeException) {
+      throw (RuntimeException)jjte000;
     }
+    if (jjte000 instanceof ParseException) {
+      throw (ParseException)jjte000;
+    }
+    throw (Error)jjte000;
+  } finally {
+    if (jjtc000) {
+      jjtree.closeNodeScope(jjtn000, true);
+    }
+  }
 /*@egen*/
 }
 
-void ImportMethod() : {/*@bgen(jjtree) ImportMethod */
-  ASTImportMethod jjtn000 = new ASTImportMethod(JJTIMPORTMETHOD);
+void ParamList(): {/*@bgen(jjtree) ParamList */
+  ASTParamList jjtn000 = new ASTParamList(JJTPARAMLIST);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
-/*@egen*/} {/*@bgen(jjtree) ImportMethod */
+/*@egen*/} {/*@bgen(jjtree) ParamList */
     try {
 /*@egen*/
-
-    <LEFT_PARENTESIS> (ImportMethodArgs())? <RIGHT_PARENTESIS> ImportType()/*@bgen(jjtree)*/
-    } catch (Throwable jjte000) {
-      if (jjtc000) {
-        jjtree.clearNodeScope(jjtn000);
-        jjtc000 = false;
-      } else {
-        jjtree.popNode();
-      }
-      if (jjte000 instanceof RuntimeException) {
-        throw (RuntimeException)jjte000;
-      }
-      if (jjte000 instanceof ParseException) {
-        throw (ParseException)jjte000;
-      }
-      throw (Error)jjte000;
-    } finally {
-      if (jjtc000) {
-        jjtree.closeNodeScope(jjtn000, true);
-      }
-    }
-/*@egen*/
-}
-
-void ImportMethodArgs() : {/*@bgen(jjtree) ImportMethodArgs */
-  ASTImportMethodArgs jjtn000 = new ASTImportMethodArgs(JJTIMPORTMETHODARGS);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
-/*@egen*/} {/*@bgen(jjtree) ImportMethodArgs */
-    try {
-/*@egen*/
-
-    ImportType() (<COLON> ImportType())*/*@bgen(jjtree)*/
+    [(Type()  (<COLON> Type())*) | <VOID>]/*@bgen(jjtree)*/
     } catch (Throwable jjte000) {
       if (jjtc000) {
         jjtree.clearNodeScope(jjtn000);

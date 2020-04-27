@@ -117,7 +117,7 @@ public class CodeGenerator {
     }
 
     private void generateConstructor() {
-        printWriterFile.println(".method public<init>()V");
+        printWriterFile.println("\n.method public<init>()V");
         printWriterFile.println("\taload_0");
         printWriterFile.println("\tinvokenonvirtual java/lang/Object<init>()V");//TO-DO if the class extends, we need to change "Object" with extended class name
         printWriterFile.println("\treturn");
@@ -234,8 +234,22 @@ public class CodeGenerator {
             SimpleNode node = (SimpleNode) method.jjtGetChild(i);
             if(node instanceof ASTEquality){
                 generateEquality((ASTEquality) node, symbolClass, symbolMethod);
+            }            
+            //Return
+            if(node instanceof ASTReturn){
+                if(node.jjtGetNumChildren() != 1){//expression
+
+                }
+                else{
+                    if(symbolMethod.returnType == Type.INT){
+                    printWriterFile.println("\tireturn");
+                    return;
+                    }
+                    else printWriterFile.println("\treturn");//void
+                }
             }
-            //TODO -> complete with return, dot expressions, if, while...
+            //TODO -> complete with, dot expressions, if, while...
+
         }
 
     }

@@ -67,7 +67,7 @@ public class SemanticAnalysis {
                 }
             } else if (importNode.jjtGetChild(i) instanceof ASTType) {
                 ASTType astType = (ASTType) importNode.jjtGetChild(i);
-                sm.returnType = analysingType(sm, astType);
+                sm.setType(analysingType(sm, astType));
             }
         }
 
@@ -117,7 +117,7 @@ public class SemanticAnalysis {
                 addMethodArg(symbolMethod, (ASTArg) methodNode.jjtGetChild(i));
             }
             if (methodNode.jjtGetChild(i) instanceof ASTType) {
-                symbolMethod.returnType = analysingType(symbolMethod, (ASTType) methodNode.jjtGetChild(i));
+                symbolMethod.setType(analysingType(symbolMethod, (ASTType) methodNode.jjtGetChild(i)));
             }
         }
 
@@ -228,7 +228,7 @@ public class SemanticAnalysis {
         if (node.jjtGetNumChildren() != 1)
             return;
 
-        if (symbolMethod.returnType != this.analysingExpression(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(0)))
+        if (symbolMethod.getType() != this.analysingExpression(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(0)))
             this.errorMessage("Return expression doesn't coincide with return type of function " + symbolMethod.name);
 
 
@@ -429,6 +429,20 @@ public class SemanticAnalysis {
         }
     }
 
+    private Type checkIfMethodExists(ArrayList<SymbolMethod> methodArrayList, ArrayList<Type> methodSignature) {
+
+        for (SymbolMethod sm : methodArrayList) {
+
+            //If it has the same signature
+            if (methodSignature.size() == sm.types.size()) {
+                if (sm.types.equals(methodSignature))
+                    return sm.getType();
+            }
+        }
+
+        return null;
+    }
+
     //From import
     private Type analyseComplexStatementST(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node1, ASTIdentifier node2) {
 
@@ -437,20 +451,14 @@ public class SemanticAnalysis {
 
             //Check for methods
             if(node2.method) {
-                for (int i = 0; i < sc.symbolTableMethods.get(node2.val).size(); i++) {
-                    SymbolMethod sm = sc.symbolTableMethods.get(node2.val).get(i);
-                    ArrayList<Type> curr_types = getMethodCallTypes(symbolMethod, symbolClass, node2);
 
-                    if (node2.jjtGetNumChildren() == sm.types.size()) {
-                        if (sm.types.equals(curr_types))
-                            return sm.returnType;
-                    }
+                if (sc.symbolTableMethods.containsKey(node2.val)) {
+
+                    Type type = checkIfMethodExists(sc.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2));
+
+                    if(type != null)
+                        return type;
                 }
-            } else {
-
-                //TODO: do nothing?
-                /*if(sc.symbolTableFields.containsKey(node2.val))
-                    return sc.symbolTableFields.get(node2.val).getType();*/
             }
         }
 
@@ -458,6 +466,7 @@ public class SemanticAnalysis {
         return null;
     }
 
+    //for method
     private Type analyseComplexStatementSM(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node1, ASTIdentifier node2) {
 
         //If it is a declared object
@@ -472,21 +481,17 @@ public class SemanticAnalysis {
             //Get the object imported
             SymbolClass sc = (SymbolClass) symbolTable.get(symbolMethod.symbolTable.get(node1.val).getObject_name());
 
+            //Check for methods
             if (node2.method) {
 
                 //if import has a method with the same name
                 if (sc.symbolTableMethods.containsKey(node2.val)) {
 
                     //check for a method with the same signature
-                    for (int i = 0; i < sc.symbolTableMethods.get(node2.val).size(); i++) {
-                        SymbolMethod sm = sc.symbolTableMethods.get(node2.val).get(i);
-                        ArrayList<Type> curr_types = getMethodCallTypes(symbolMethod, symbolClass, node2);
+                    Type type = checkIfMethodExists(sc.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2));
 
-                        if (node2.jjtGetNumChildren() == sm.types.size()) {
-                            if (sm.types.equals(curr_types))
-                                return sm.returnType;
-                        }
-                    }
+                    if(type != null)
+                        return type;
 
                     this.errorMessage(node2.val + " is undefined!");
                     return null;
@@ -502,17 +507,10 @@ public class SemanticAnalysis {
                     if(ssc.symbolTableMethods.containsKey(node2.val)) {
 
                         //check for a method with the same signature
-                        for (int i = 0; i < ssc.symbolTableMethods.get(node2.val).size(); i++) {
+                        Type type = checkIfMethodExists(ssc.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2));
 
-                            SymbolMethod sm = ssc.symbolTableMethods.get(node2.val).get(i);
-                            ArrayList<Type> curr_types = getMethodCallTypes(symbolMethod, symbolClass, node2);
-
-                            //If it has the same signature
-                            if (node2.jjtGetNumChildren() == sm.types.size()) {
-                                if (sm.types.equals(curr_types))
-                                    return sm.returnType;
-                            }
-                        }
+                        if(type != null)
+                            return type;
                     }
 
                     this.errorMessage(node2.val + " is undefined!");
@@ -524,42 +522,10 @@ public class SemanticAnalysis {
                 return null;
 
 
-            } else {
-
-                //TODO: do nothing?
-/*
-
-                //if import has a method with the same name
-                if (sc.symbolTableFields.containsKey(node2.val)) {
-
-                    return sc.symbolTableFields.get(node2.val).getType();
-
-                }
-
-                //check if the object has a super class
-                if (sc.superClass != null) {
-
-                    SymbolClass ssc = (SymbolClass) symbolTable.get(sc.superClass);
-
-                    //if class has a method with the same name
-                    if(ssc.symbolTableFields.containsKey(node2.val)) {
-
-                        return ssc.symbolTableFields.get(node2.val).getType();
-
-                    }
-
-                    this.errorMessage(node2.val + " is undefined!");
-                    return null;
-                }
-
-
-                this.errorMessage("Cannnot resolve method " + node2.val + " in the object " + symbolMethod.symbolTable.get(node1.val).getObject_name());
-                return null;
-*/
             }
 
-
-        } else if (symbolMethod.symbolTable.get(node1.val).getType().equals(Type.INT_ARRAY)) {
+        } else if (symbolMethod.symbolTable.get(node1.val).getType().equals(Type.INT_ARRAY) || symbolMethod.symbolTable.get(node1.val).getType().equals(Type.INT_ARRAY)) {
+            //if it is not an object check if it is an array, if it is, than check for length
             if (node2.val.equals("length"))
                 return Type.INT;
         }
@@ -568,11 +534,9 @@ public class SemanticAnalysis {
         return null;
     }
 
+    //for class
     private Type analyseComplexStatementSC(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node1, ASTIdentifier node2) {
 
-
-        //If it is a call for a method
-        if (node2.method) {
 
             //check if it is an object
             if (symbolClass.symbolTableFields.get(node1.val).getType().equals(Type.OBJECT)) {
@@ -588,50 +552,43 @@ public class SemanticAnalysis {
 
                 SymbolClass sc = (SymbolClass) symbolTable.get(symbolMethod.symbolTable.get(node1.val).getObject_name());
 
-                if (sc.symbolTableMethods.containsKey(node2.val)) {
-                    for (int i = 0; i < sc.symbolTableMethods.get(node2.val).size(); i++) {
-                        SymbolMethod sm = sc.symbolTableMethods.get(node2.val).get(i);
-                        ArrayList<Type> curr_types = getMethodCallTypes(symbolMethod, symbolClass, node2);
+                //If it is a call for a method
+                if (node2.method) {
 
-                        if (node2.jjtGetNumChildren() == sm.types.size()) {
-                            if (sm.types.equals(curr_types))
-                                return sm.returnType;
-                        }
+                    if (sc.symbolTableMethods.containsKey(node2.val)) {
+                        Type type = checkIfMethodExists(sc.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2));
+
+                        if (type != null)
+                            return type;
+
+                        this.errorMessage(node2.val + " is undefined!");
+                        return null;
+
                     }
 
-                    this.errorMessage(node2.val + " is undefined!");
+                    if (sc.superClass != null) {
+
+                        SymbolClass ssc = (SymbolClass) symbolTable.get(sc.superClass);
+
+                        //if class has a method with the same name
+                        if (ssc.symbolTableMethods.containsKey(node2.val)) {
+
+                            //check for a method with the same signature
+                            Type type = checkIfMethodExists(ssc.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2));
+
+                            if (type != null)
+                                return type;
+                        }
+
+                        this.errorMessage(node2.val + " is undefined!");
+                        return null;
+
+                    }
+
+                    this.errorMessage("Cannnot resolve method " + node2.val + " in the object " + symbolMethod.symbolTable.get(node1.val).getObject_name());
                     return null;
 
                 }
-
-                if (sc.superClass != null) {
-
-                    SymbolClass ssc = (SymbolClass) symbolTable.get(sc.superClass);
-
-                    //if class has a method with the same name
-                    if (ssc.symbolTableMethods.containsKey(node2.val)) {
-
-                        //check for a method with the same signature
-                        for (int i = 0; i < ssc.symbolTableMethods.get(node2.val).size(); i++) {
-                            SymbolMethod sm = ssc.symbolTableMethods.get(node2.val).get(i);
-                            ArrayList<Type> curr_types = getMethodCallTypes(symbolMethod, symbolClass, node2);
-
-                            if (node2.jjtGetNumChildren() == sm.types.size()) {
-                                if (sm.types.equals(curr_types))
-                                    return sm.returnType;
-                            }
-                        }
-                    }
-
-                    this.errorMessage(node2.val + " is undefined!");
-                    return null;
-
-                }
-
-                this.errorMessage("Cannnot resolve method " + node2.val + " in the object " + symbolMethod.symbolTable.get(node1.val).getObject_name());
-                return null;
-
-            }
         } else if (symbolClass.symbolTableFields.get(node1.val).getType().equals(Type.INT_ARRAY)) {
             if (node2.val.equals("length"))
                 return Type.INT;
@@ -645,56 +602,40 @@ public class SemanticAnalysis {
     private Type analyseThisStatement(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node2) {
         Type type = null;
 
-        if (symbolTable.containsKey(symbolClass.superClass) || symbolClass.symbolTableMethods.containsKey(node2.val) || symbolClass.symbolTableFields.containsKey(node2.val)) {
+        if (!symbolTable.containsKey(symbolClass.superClass) && !symbolClass.symbolTableMethods.containsKey(node2.val) && !symbolClass.symbolTableFields.containsKey(node2.val)) {
 
-
-            //if it is a call for variable/field
-            if (!node2.method) {
-                if (symbolClass.symbolTableFields.containsKey(node2.val)) {
-                    return symbolClass.symbolTableFields.get(node2.val).getType();
-                }
-                this.errorMessage(node2.val + " is undefined!");
-                return null;
-            }
-            // Analysing this statement for methods
-            else {
-
-                if(symbolClass.symbolTableMethods.containsKey(node2.val)) {
-
-                    ArrayList<Type> curr_types = getMethodCallTypes(symbolMethod, symbolClass, node2);
-
-                    for (int j = 0; j < symbolClass.symbolTableMethods.get(node2.val).size(); j++) {
-
-                        SymbolMethod sm = symbolClass.symbolTableMethods.get(node2.val).get(j);
-
-                        if (node2.jjtGetNumChildren() == sm.types.size()) {
-                            if (sm.types.equals(curr_types))
-                                type = sm.returnType;
-                        }
-                    }
-                }
-            }
-
-            //check if method is defined in super class
-            if (symbolTable.containsKey(symbolClass.superClass) && type == null) {
-
-                SymbolClass sc = (SymbolClass) symbolTable.get(symbolClass.superClass);
-
-                ArrayList<Type> curr_types = getMethodCallTypes(symbolMethod, symbolClass, node2);
-                for (int j = 0; j < sc.symbolTableMethods.get(node2.val).size(); j++) {
-
-                    SymbolMethod sm = sc.symbolTableMethods.get(node2.val).get(j);
-
-                    if (node2.jjtGetNumChildren() == sm.types.size()) {
-                        if (sm.types.equals(curr_types)) {
-                            type = sm.returnType;
-                        }
-                    }
-                }
-            }
-        } else {
             this.errorMessage(node2.val + " is undefined!");
             return null;
+        }
+
+
+        //if it is a call for variable/field
+        if (!node2.method) {
+            if (symbolClass.symbolTableFields.containsKey(node2.val)) {
+                return symbolClass.symbolTableFields.get(node2.val).getType();
+            }
+            this.errorMessage(node2.val + " is undefined!");
+            return null;
+        }
+        else {
+
+            //Check if current class has any method with the same signature
+            if (symbolClass.symbolTableMethods.containsKey(node2.val)) {
+
+                type = checkIfMethodExists(symbolClass.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2));
+
+            }
+        }
+
+        //check if method is defined in super class, if it is not defined in the current class
+        if (symbolTable.containsKey(symbolClass.superClass) && type == null) {
+
+            SymbolClass sc = (SymbolClass) symbolTable.get(symbolClass.superClass);
+
+            Type type1 = checkIfMethodExists(sc.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2));
+
+            if (type1 != null)
+                return type1;
         }
 
         if (type == null)
