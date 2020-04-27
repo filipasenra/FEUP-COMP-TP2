@@ -10,15 +10,28 @@
 	.limit stack 99
 	.limit locals 99
 
+	istore_3
 	iadd
 .endMethod
 
 .method public static main([Ljava/lang/String;)V
+	istore_1
+	istore_2
+	astore 4
+	istore_3
 .endMethod
 
 .method public constInstr()I
 	.limit stack 99
 	.limit locals 99
 
+	istore_1
+	istore_1
+	istore_1
+	istore_1
+	istore_1
+	istore_1
+	istore_1
+	istore_1
 .endMethod
 

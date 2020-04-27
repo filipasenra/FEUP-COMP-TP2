@@ -310,14 +310,23 @@ public class CodeGenerator {
     private void storeLocalVariable(ASTIdentifier identifier, SymbolMethod symbolMethod){
         int index = symbolMethod.symbolTable.get(identifier.val).getIndex();
 		String store = "";
+        String type="";
 
-        System.out.println("Var: " + identifier.val + "\nIndex: " + index);
+        //System.out.println("Var: " + identifier.val + "\nIndex: " + index);
 		
-		if(index<=3)
-			store="store_";
-		else store="store ";
-		
-		//System.out.println("i"+store+varIndex);	
+		Type varType = symbolMethod.symbolTable.get(identifier.val).getType();
+
+        if (varType == Type.INT || varType == Type.BOOLEAN)
+            type = "i";
+        else
+            type = "a";
+
+        if (index <= 3)
+            store = "store_";
+        else
+            store = "store ";
+
+        this.printWriterFile.println("\t" + type + store + index);
     }
 
     // private void generateBlock(ASTStatementBlock block) {
