@@ -454,7 +454,7 @@ public class CodeGenerator {
                     methodType = symbolMethod.symbolTable.get(identifier2.val).getType();
 
 
-                System.out.println("tipo metodo: " + methodType);
+                System.out.println("tipo metodo: " + methodType.toString());
 
             }
         }
