@@ -88,6 +88,27 @@ public class CodeGenerator {
         return "L" + nodeType.type+";";
     }
 
+    private String getSymbolType(Type symbolType) {
+
+        if (symbolType == Type.INT_ARRAY) {
+            return "[I";
+        }
+
+        switch (symbolType) {
+            case INT:
+                return "I";
+            case STRING:
+                return "Ljava/lang/String";
+            case BOOLEAN:
+                return "B";
+            case VOID:
+                return "V";
+        }
+        return "";
+    }
+
+
+
      private void generateMethods(SimpleNode node, SymbolClass symbolClass) {
 
         //Should it be here? i don't think so? check this out: http://www.cs.sjsu.edu/faculty/pearce/modules/lectures/co/jvm/jasmin/instructions.html
@@ -434,8 +455,11 @@ public class CodeGenerator {
 
     private void generateCall(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier identifier1, ASTIdentifier identifier2) {
         String methodName="";
-        Type methodType=null;
+        Type type=null; 
+        String methodType="";
         boolean declaredInClass=false;
+
+        SymbolClass sc = (SymbolClass) symbolTable.get(symbolMethod.symbolTable.get(identifier1.val).getObject_name());
 
 
 
@@ -450,22 +474,87 @@ public class CodeGenerator {
                 System.out.println("id2 é metodo");
                 System.out.println("nome metodo: " + identifier2.val);
 
-                if(symbolMethod.symbolTable.get(identifier2.val) != null)
-                    methodType = symbolMethod.symbolTable.get(identifier2.val).getType();
+                if (sc.symbolTableMethods.containsKey(identifier2.val)) {
 
-
-                System.out.println("tipo metodo: " + methodType.toString());
+                    //check for a method with the same signature
+                    type = checkIfMethodExists(sc.symbolTableMethods.get(identifier2.val), getMethodCallTypes(symbolMethod, symbolClass, identifier2));
+                    methodType += getSymbolType(type);
+                }
+                System.out.println("tipo metodo: " + methodType);
 
             }
         }
-/*
+        
+
 
         if (declaredInClass)
-            System.out.println("\t" + "invokevirtual " + methodName);/* + "(" + method_arg + ")" + method_ret);
+            System.out.println("\t" + "invokevirtual " + methodName + "(" + ")" + methodType);
         else
-            System.out.println("\t" + "invokestatic " + methodName);/*+ "(" + method_arg + ")" + method_ret);*/
+            System.out.println("\t" + "invokestatic " + methodName + "(" + ")" + methodType);
 
     }
+
+    private ArrayList<Type> getMethodCallTypes(SymbolMethod symbolMethod, SymbolClass symbolClass, ASTIdentifier node2) {
+        ArrayList<Type> types = new ArrayList<>();
+
+        for (int i = 0; i < node2.jjtGetNumChildren(); i++) {
+
+            types.add(this.analysingExpression(symbolClass, symbolMethod, (SimpleNode) node2.jjtGetChild(i)));
+        }
+
+        return types;
+    }
+
+
+    private Type analysingExpression(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node) {
+
+        if (node instanceof ASTAND || node instanceof ASTLESSTHAN || node instanceof ASTBoolean) {
+            return Type.BOOLEAN;
+        }
+
+        if (node instanceof ASTLiteral) {
+            return Type.INT;
+        }
+
+
+        if (node instanceof ASTNegation) {
+
+            if (node.jjtGetNumChildren() != 1)
+                return null;
+
+            return analysingExpression(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(0));
+        }
+
+        if (node instanceof ASTIdentifier) {
+            ASTIdentifier identifier = (ASTIdentifier) node;
+            return symbolMethod.symbolTable.get(identifier.val).getType();
+        }        
+
+        if (node instanceof ASTInitializeArray) {
+            return Type.INT_ARRAY;
+        }
+
+        if (node instanceof ASTNewObject) {
+            return Type.OBJECT;
+        }
+
+        return null;
+    }
+
+    private Type checkIfMethodExists(ArrayList<SymbolMethod> methodArrayList, ArrayList<Type> methodSignature) {
+
+        for (SymbolMethod sm : methodArrayList) {
+
+            //If it has the same signature
+            if (methodSignature.size() == sm.types.size()) {
+                if (sm.types.equals(methodSignature))
+                    return sm.getType();
+            }
+        }
+
+        return null;
+    }
+
 
     // private void generateBlock(ASTStatementBlock block) {
     //     for (int i = 0; i < block.jjtGetNumChildren(); i++) {
