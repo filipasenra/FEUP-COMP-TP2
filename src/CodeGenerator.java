@@ -233,13 +233,8 @@ public class CodeGenerator {
 
             SimpleNode node = (SimpleNode) method.jjtGetChild(i);
             if(node instanceof ASTEquality){
-                //System.out.println("equality");
-                //System.out.println("nr filhos equality: " + node.jjtGetNumChildren());
                 generateEquality((ASTEquality) node, symbolClass, symbolMethod);
-            }
-
-            //TODO -> complete with return, dought expressions, if, while...
-            
+            }            
             //Return
             if(node instanceof ASTReturn){
                 if(node.jjtGetNumChildren() != 1){//expression
@@ -253,6 +248,8 @@ public class CodeGenerator {
                     else printWriterFile.println("\treturn");//void
                 }
             }
+            //TODO -> complete with, dot expressions, if, while...
+
         }
 
     }
@@ -261,6 +258,8 @@ public class CodeGenerator {
         ASTIdentifier lhs = (ASTIdentifier) node.jjtGetChild(0);  //left identifier
         SimpleNode rhs = (SimpleNode) node.jjtGetChild(1);  //right side
 
+
+        System.out.println("lhs: " + lhs.val + "\n\tNr filhos direita: " + rhs.jjtGetNumChildren());
         if(lhs.jjtGetNumChildren() != 0 && lhs.jjtGetChild(0) instanceof ASTaccessToArray)
         {
             //TODO -> access to array
@@ -281,7 +280,7 @@ public class CodeGenerator {
     private void generateRhs(SimpleNode rhs, SymbolMethod symbolMethod) {
         if (rhs != null) {
             if (rhs.jjtGetNumChildren() > 1) {            
-                generateOperation(rhs);
+                generateOperation(rhs, symbolMethod);
             }
             else if (rhs instanceof ASTIdentifier) {
                 ASTIdentifier identifier = (ASTIdentifier) rhs;
@@ -296,12 +295,20 @@ public class CodeGenerator {
                 //System.out.println("object: " + object.val);
                 generateNewObject(object, symbolMethod);
             }
+            else if(rhs instanceof ASTDotExpression){
+                System.out.println("dot expression");
+            }
         }
     }
 
-    private void generateOperation(SimpleNode operation) {        
+    private void generateOperation(SimpleNode operation, SymbolMethod symbolMethod) {        
         SimpleNode lhs = (SimpleNode) operation.jjtGetChild(0);
         SimpleNode rhs = (SimpleNode) operation.jjtGetChild(1);
+
+        if(operation instanceof ASTDotExpression) {
+            System.out.println("dot expression operation");
+            generateDotExpression(operation, symbolMethod);
+        }
 
         if(operation instanceof ASTSUM)
             this.printWriterFile.println("\tiadd");
@@ -315,6 +322,7 @@ public class CodeGenerator {
             //TODO
         if(operation instanceof ASTAND)
             //TODO*/
+
     }
 
     private void storeLocalVariable(ASTIdentifier identifier, SymbolMethod symbolMethod){
@@ -393,6 +401,33 @@ public class CodeGenerator {
 
         //TODO
         this.printWriterFile.println("\tnewarray int");
+    }
+
+
+    private void generateDotExpression(SimpleNode node, SymbolMethod symbolMethod){
+        SimpleNode leftPart = (SimpleNode) node.jjtGetChild(0);
+        SimpleNode rightPart = (SimpleNode) node.jjtGetChild(1);
+
+        if (leftPart instanceof ASTIdentifier && rightPart instanceof ASTIdentifier) {
+            ASTIdentifier leftIdentifier = (ASTIdentifier) node.jjtGetChild(0);
+            ASTIdentifier rightIdentifier = (ASTIdentifier) node.jjtGetChild(1);
+
+            System.out.println("Left part dot expression: " + leftIdentifier.val);
+            System.out.println("Right part dot expression: " + rightIdentifier.val);
+
+            if (leftIdentifier.val.equals("this")) {
+                //TODO
+            }
+            else if(rightIdentifier.val.equals("length")){
+                //TODO
+            } else {
+                generateCall(symbolMethod, leftIdentifier, rightIdentifier);
+            }
+        }
+    }
+
+    private void generateCall(SymbolMethod symbolMethod, ASTIdentifier identifier1, ASTIdentifier identifier2) {
+        //Doing this
     }
 
     // private void generateBlock(ASTStatementBlock block) {
