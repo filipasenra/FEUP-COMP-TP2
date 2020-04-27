@@ -98,12 +98,12 @@ public class CodeGenerator {
             SimpleNode child = (SimpleNode) node.jjtGetChild(i);
 
             if (child instanceof ASTMainDeclaration){
-                SymbolMethod symbolMethod = getSymbolMethod(symbolClass.symbolTable.get("main"), i);
+                SymbolMethod symbolMethod = getSymbolMethod(symbolClass.symbolTableMethods.get("main"), i);
                 generateMainMethod(child, symbolClass, symbolMethod);
             }
             if(child instanceof ASTMethodDeclaration){
                 ASTMethodDeclaration methodDeclaration = (ASTMethodDeclaration) child;
-                SymbolMethod symbolMethod = getSymbolMethod(symbolClass.symbolTable.get(methodDeclaration.name), i);
+                SymbolMethod symbolMethod = getSymbolMethod(symbolClass.symbolTableMethods.get(methodDeclaration.name), i);
 
                 if(symbolMethod == null) {
                     System.err.println("ERROR generating code for method " + methodDeclaration.name);
@@ -147,22 +147,19 @@ public class CodeGenerator {
     }
 
 
-    private SymbolMethod getSymbolMethod(ArrayList<Symbol> listSymbolMethod, int num) {
+    private SymbolMethod getSymbolMethod(ArrayList<SymbolMethod> listSymbolMethod, int num) {
 
         if(listSymbolMethod.size() == 1)
             return (SymbolMethod) listSymbolMethod.get(0);
 
         for(int i = 0; i < listSymbolMethod.size(); i++) {
 
-            if (listSymbolMethod.get(i) instanceof SymbolMethod) {
+            SymbolMethod symbolMethod = listSymbolMethod.get(i);
 
-                SymbolMethod symbolMethod = (SymbolMethod) listSymbolMethod.get(i);
+            System.out.println(symbolMethod.num + " : " + num);
 
-                System.out.println(symbolMethod.num + " : " + num);
-
-                if (symbolMethod.num == num) {
-                    return symbolMethod;
-                }
+            if (symbolMethod.num == num) {
+                return symbolMethod;
             }
         }
 
@@ -172,10 +169,10 @@ public class CodeGenerator {
 
 
     private SymbolMethod getMethod(ASTMethodDeclaration methodNode, SymbolClass symbolClass) {
-        ArrayList<Symbol> possibleMethods = symbolClass.symbolTable.get(methodNode.name);
+        ArrayList<SymbolMethod> possibleMethods = symbolClass.symbolTableMethods.get(methodNode.name);
 
         if(possibleMethods.size() == 1)
-            return (SymbolMethod) possibleMethods.get(0);
+            return possibleMethods.get(0);
 
         return null;
     }

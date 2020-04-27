@@ -5,22 +5,30 @@ import java.util.HashMap;
 
 public class SymbolClass extends Symbol {
 
-    public HashMap<String, ArrayList<Symbol>> symbolTable = new HashMap<>();
+    public HashMap<String, ArrayList<SymbolMethod>> symbolTableMethods = new HashMap<>();
+
+    public HashMap<String, SymbolVar> symbolTableFields = new HashMap<>();
+
     public String superClass;
 
     public SymbolClass(String name) {
         super(name);
     }
 
-    public void addSymbol(String name, Symbol symbol) {
-        if(symbolTable.containsKey(name)) {
-            ArrayList<Symbol> curr = symbolTable.get(name);
-            curr.add(symbol);
+    public void addSymbolMethod(String name, SymbolMethod symbol) {
+        if(symbolTableMethods.containsKey(name)) {
+            symbolTableMethods.get(name).add(symbol);
         }
         else {
-            ArrayList<Symbol> first = new ArrayList<>();
+            ArrayList<SymbolMethod> first = new ArrayList<>();
             first.add(symbol);
-            this.symbolTable.put(name, first);
+            this.symbolTableMethods.put(name, first);
+        }
+    }
+
+    public void addSymbolField(String name, SymbolVar symbol) {
+        if(!symbolTableFields.containsKey(name)) {
+            symbolTableFields.put(name, symbol);
         }
     }
 }
