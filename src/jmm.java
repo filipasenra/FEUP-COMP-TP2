@@ -42,7 +42,7 @@ public class jmm {
             throw new RuntimeException("Has " + semanticAnalysis.getNwarnings() + " semantic warnings");
         }
 
-        //CodeGenerator generator = new CodeGenerator(semanticAnalysis);
-        //generator.generate(root);
+        CodeGenerator generator = new CodeGenerator(semanticAnalysis);
+        generator.generate(root);
     }
 }

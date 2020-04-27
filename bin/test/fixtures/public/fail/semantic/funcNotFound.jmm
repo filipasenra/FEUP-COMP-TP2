@@ -12,12 +12,10 @@ class T {
     }
 
     public int foo(boolean a, int b){
+                    int c;
+                    c=b;
         return 1;
     }
-
-    public int foo(int a, int b, int c){
-            return 1;
-        }
 
     public int foo(boolean c, boolean d){
         return 1;
