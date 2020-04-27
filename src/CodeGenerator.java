@@ -488,9 +488,9 @@ public class CodeGenerator {
 
 
         if (declaredInClass)
-            System.out.println("\t" + "invokevirtual " + methodName + "(" + ")" + methodType);
+            System.out.println("\t" + "invokevirtual " + methodName + "(" + ")" + type);
         else
-            System.out.println("\t" + "invokestatic " + methodName + "(" + ")" + methodType);
+            System.out.println("\t" + "invokestatic " + methodName + "(" + ")" + type);
 
     }
 
