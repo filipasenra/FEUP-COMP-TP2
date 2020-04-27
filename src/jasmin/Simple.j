@@ -12,6 +12,9 @@
 	istore_2
 	isub
 	astore_3
+	new Simple
+	dup
+	invokespecial Simple/<init>()V
 	istore 4
 .endMethod
 
