@@ -2,7 +2,7 @@ package symbolTable;
 
 public abstract class Symbol {
     public String name; //Name of the variable
-    Type type;
+    Type type = Type.VOID;
     String object_name;
     int index;
 
