@@ -249,7 +249,7 @@ public class CodeGenerator {
 
         if(lhs.jjtGetNumChildren() != 0 && lhs.jjtGetChild(0) instanceof ASTaccessToArray)
         {
-            generateAccessToArray(lhs, symbolMethod);
+            //TODO -> access to array
             generateRhs(rhs, symbolMethod);
             this.printWriterFile.println("\tiastore");
         } else {
@@ -377,27 +377,8 @@ public class CodeGenerator {
 
     private void generateArrayInitilization(ASTNewObject object) {
 
-        SimpleNode child = (SimpleNode) new_node.jjtGetChild(0);
-
-        if (child.jjtGetNumChildren() == 2)
-            generateOperation(child);
-        else {
-            switch (child.getId()) {
-            case ProgramTreeConstants.JJTTERM:
-                generateTerm(child);
-                break;
-            case ProgramTreeConstants.JJTIDENTIFIER:
-                generateLoadVariable(child);
-                break;
-            case ProgramTreeConstants.JJTPERIOD:
-                generatePeriod(child);
-                break;
-            default:
-                break;
-            }
-        }
-
-        output.println("\tnewarray int");
+        //TODO
+        this.printWriterFile.println("\tnewarray int");
     }
 
     // private void generateBlock(ASTStatementBlock block) {
