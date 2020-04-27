@@ -9,6 +9,7 @@
 .method public static main([Ljava/lang/String;)V
 	astore_1
 	istore_2
+	iconst_0
 	astore 4
 	istore_3
 .endMethod
@@ -25,5 +26,6 @@
 
 	istore_2
 	istore_3
+	iconst_0
 .endMethod
 

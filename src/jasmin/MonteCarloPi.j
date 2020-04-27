@@ -21,7 +21,9 @@
 	.limit locals 99
 
 	istore_3
+	iconst_0
 	istore_2
+	iconst_0
 	istore 4
 	imul
 .endMethod
