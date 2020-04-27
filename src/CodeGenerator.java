@@ -263,11 +263,11 @@ public class CodeGenerator {
         if(lhs.jjtGetNumChildren() != 0 && lhs.jjtGetChild(0) instanceof ASTaccessToArray)
         {
             //TODO -> access to array
-            generateRhs(rhs, symbolMethod);
+            generateRhs(rhs, symbolClass, symbolMethod);
             this.printWriterFile.println("\tiastore");
         } else {
             generateLhs(lhs, symbolMethod);
-            generateRhs(rhs, symbolMethod);
+            generateRhs(rhs, symbolClass, symbolMethod);
         }
     }
 
@@ -277,10 +277,10 @@ public class CodeGenerator {
         //TODO -> Global variable
     }
 
-    private void generateRhs(SimpleNode rhs, SymbolMethod symbolMethod) {
+    private void generateRhs(SimpleNode rhs, SymbolClass symbolClass, SymbolMethod symbolMethod) {
         if (rhs != null) {
             if (rhs.jjtGetNumChildren() > 1) {            
-                generateOperation(rhs, symbolMethod);
+                generateOperation(rhs, symbolClass, symbolMethod);
             }
             else if (rhs instanceof ASTIdentifier) {
                 ASTIdentifier identifier = (ASTIdentifier) rhs;
@@ -301,13 +301,13 @@ public class CodeGenerator {
         }
     }
 
-    private void generateOperation(SimpleNode operation, SymbolMethod symbolMethod) {        
+    private void generateOperation(SimpleNode operation,SymbolClass symbolClass, SymbolMethod symbolMethod) {        
         SimpleNode lhs = (SimpleNode) operation.jjtGetChild(0);
         SimpleNode rhs = (SimpleNode) operation.jjtGetChild(1);
 
         if(operation instanceof ASTDotExpression) {
             System.out.println("dot expression operation");
-            generateDotExpression(operation, symbolMethod);
+            generateDotExpression(operation, symbolClass, symbolMethod);
         }
 
         if(operation instanceof ASTSUM)
@@ -373,7 +373,6 @@ public class CodeGenerator {
         this.printWriterFile.println("\t" + type + store + index);
     }
 
-
     private void loadIntLiteral(String val) {
         String output = "";
         int value = Integer.parseInt(val);
@@ -411,8 +410,7 @@ public class CodeGenerator {
         this.printWriterFile.println("\tnewarray int");
     }
 
-
-    private void generateDotExpression(SimpleNode node, SymbolMethod symbolMethod){
+    private void generateDotExpression(SimpleNode node, SymbolClass symbolClass, SymbolMethod symbolMethod){
         SimpleNode leftPart = (SimpleNode) node.jjtGetChild(0);
         SimpleNode rightPart = (SimpleNode) node.jjtGetChild(1);
 
@@ -429,13 +427,44 @@ public class CodeGenerator {
             else if(rightIdentifier.val.equals("length")){
                 //TODO
             } else {
-                generateCall(symbolMethod, leftIdentifier, rightIdentifier);
+                generateCall(symbolClass, symbolMethod, leftIdentifier, rightIdentifier);
             }
         }
     }
 
-    private void generateCall(SymbolMethod symbolMethod, ASTIdentifier identifier1, ASTIdentifier identifier2) {
-        //Doing this
+    private void generateCall(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier identifier1, ASTIdentifier identifier2) {
+        String methodName="";
+        Type methodType=null;
+        boolean declaredInClass=false;
+
+
+
+        if (symbolMethod.symbolTable.containsKey(identifier1.val) || symbolClass.symbolTableFields.containsKey(identifier1.val)) 
+            declaredInClass=true;
+
+
+        if(identifier2 !=null){
+            if (identifier2.method) {
+                methodName = identifier2.val;
+                //get return type and type of arguments
+                System.out.println("id2 é metodo");
+                System.out.println("nome metodo: " + identifier2.val);
+
+                if(symbolMethod.symbolTable.get(identifier2.val) != null)
+                    methodType = symbolMethod.symbolTable.get(identifier2.val).getType();
+
+
+                System.out.println("tipo metodo: " + methodType);
+
+            }
+        }
+/*
+
+        if (declaredInClass)
+            System.out.println("\t" + "invokevirtual " + methodName);/* + "(" + method_arg + ")" + method_ret);
+        else
+            System.out.println("\t" + "invokestatic " + methodName);/*+ "(" + method_arg + ")" + method_ret);*/
+
     }
 
     // private void generateBlock(ASTStatementBlock block) {
