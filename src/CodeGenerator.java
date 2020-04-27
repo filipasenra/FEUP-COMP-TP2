@@ -326,11 +326,16 @@ public class CodeGenerator {
     }
 
     private void storeLocalVariable(ASTIdentifier identifier, SymbolMethod symbolMethod){
-        int index = symbolMethod.symbolTable.get(identifier.val).getIndex();
+        Type varType=null;
+        
+        int index = 0; 
 		String store = "";
         String type="";
 		
-		Type varType = symbolMethod.symbolTable.get(identifier.val).getType();
+        if(symbolMethod.symbolTable.get(identifier.val)!=null){
+	        varType = symbolMethod.symbolTable.get(identifier.val).getType();
+            index = symbolMethod.symbolTable.get(identifier.val).getIndex();
+        }
 
         if (varType == Type.INT || varType == Type.BOOLEAN)
             type = "i";
@@ -346,12 +351,15 @@ public class CodeGenerator {
     }
 
     private void loadLocalVariable(ASTIdentifier identifier, SymbolMethod symbolMethod){
-		String store = "";
+		Type varType=null;
+        String store = "";
         String type="";
+        int index = 0;
         
-        int index = symbolMethod.symbolTable.get(identifier.val).getIndex();
-		Type varType = symbolMethod.symbolTable.get(identifier.val).getType();
-
+		if(symbolMethod.symbolTable.get(identifier.val)!=null){
+            varType = symbolMethod.symbolTable.get(identifier.val).getType();
+            index = symbolMethod.symbolTable.get(identifier.val).getIndex();
+        }
         if (varType == Type.INT || varType == Type.BOOLEAN)
             type = "i";
         else
