@@ -4,7 +4,7 @@ public abstract class Symbol {
     public String name; //Name of the variable
     Type type;
     String object_name;
-    int register;
+    int index;
 
 
     public void setObject_name(String object_name) {
@@ -33,7 +33,11 @@ public abstract class Symbol {
         return type;
     }
 
-    public void setRegister(int register) {
-        this.register = register;
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public int getIndex(){
+        return this.index;
     }
 }

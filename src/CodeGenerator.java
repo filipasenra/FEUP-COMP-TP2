@@ -127,7 +127,7 @@ public class CodeGenerator {
     private void generateMainMethod(SimpleNode mainNode, SymbolClass symbolClass, SymbolMethod symbolMethod) {
         this.printWriterFile.println(".method public static main([Ljava/lang/String;)V");
 
-        generateRegisters(mainNode, symbolMethod);
+        generateIndexes(mainNode, symbolMethod);
         generateMethodBody(mainNode, symbolClass, symbolMethod);
 
         printWriterFile.write(".endMethod\n\n");
@@ -140,7 +140,7 @@ public class CodeGenerator {
         printWriterFile.println("\t.limit stack 99");//TODO calculate stack and locals, just for ckpt3
         printWriterFile.println("\t.limit locals 99\n");
 
-        generateRegisters(methodNode, symbolMethod);
+        generateIndexes(methodNode, symbolMethod);
         generateMethodBody(methodNode, symbolClass, symbolMethod);
 
         printWriterFile.write(".endMethod\n\n");
@@ -209,22 +209,22 @@ public class CodeGenerator {
         return "";
     }
 
-    private void generateRegisters(SimpleNode methodNode, SymbolMethod symbolMethod) {
+    private void generateIndexes(SimpleNode methodNode, SymbolMethod symbolMethod) {
 
-        int registerCounter = 1;
+        int indexCounter = 1;
 
         for (int i = 0; i < methodNode.jjtGetNumChildren(); i++){
 
             if (methodNode.jjtGetChild(i) instanceof ASTArg){
-                symbolMethod.symbolTable.get(((ASTArg) methodNode.jjtGetChild(i)).val).setRegister(registerCounter);
-                registerCounter++;
+                symbolMethod.symbolTable.get(((ASTArg) methodNode.jjtGetChild(i)).val).setIndex(indexCounter);
+                indexCounter++;
                 continue;
             }
 
             if(methodNode.jjtGetChild(i) instanceof ASTVarDeclaration){
                 ASTVarDeclaration varDeclaration = (ASTVarDeclaration) methodNode.jjtGetChild(i);
-                symbolMethod.symbolTable.get(varDeclaration.name).setRegister(registerCounter);
-                registerCounter++;
+                symbolMethod.symbolTable.get(varDeclaration.name).setIndex(indexCounter);
+                indexCounter++;
                 continue;
             }
         }
@@ -235,10 +235,7 @@ public class CodeGenerator {
         for (int i = 0; i < method.jjtGetNumChildren(); i++) {
 
             SimpleNode node = (SimpleNode) method.jjtGetChild(i);
-            int j=1;
             if(node instanceof ASTEquality){
-                System.out.println("equality: " + j);
-                i++;
                 //System.out.println("equality");
                 //System.out.println("nr filhos equality: " + node.jjtGetNumChildren());
                 generateEquality((ASTEquality) node, symbolClass, symbolMethod);
@@ -255,17 +252,17 @@ public class CodeGenerator {
 
         //System.out.println("Nr filhos direita: " + rhs.jjtGetNumChildren());
 
-        generateLhs(lhs);
+        generateLhs(lhs, symbolMethod);
         generateRhs(rhs);
 
         //TODO -> parse left side of expression
     }
 
-    private void generateLhs(ASTIdentifier lhs){
+    private void generateLhs(ASTIdentifier lhs, SymbolMethod symbolMethod){
 
         String varName = lhs.val;
 
-        //storeLocalVariable(lhs, varName);
+        storeLocalVariable(lhs, symbolMethod);
         //System.out.println("varname: " + varName);
 
         if(lhs.jjtGetNumChildren() != 0 && lhs.jjtGetChild(0) instanceof ASTaccessToArray)
@@ -309,18 +306,20 @@ public class CodeGenerator {
             //TODO*/
     }
 
-/*
-    private void storeLocalVariable(SimpleNode node, String varName){
-		int index = node.getSymbolIndex(varName);
+
+    private void storeLocalVariable(ASTIdentifier identifier, SymbolMethod symbolMethod){
+        int index = symbolMethod.symbolTable.get(identifier.val).getIndex();
 		String store = "";
+
+        System.out.println("Var: " + identifier.val + "\nIndex: " + index);
 		
 		if(index<=3)
 			store="store_";
 		else store="store ";
 		
-		System.out.println("i"+store+varIndex);	
+		//System.out.println("i"+store+varIndex);	
     }
-*/
+
     // private void generateBlock(ASTStatementBlock block) {
     //     for (int i = 0; i < block.jjtGetNumChildren(); i++) {
     //         System.out.println("blockchildren");
