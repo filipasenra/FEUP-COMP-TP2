@@ -9,8 +9,6 @@ public class SymbolMethod extends Symbol {
 
     public HashMap<String, SymbolVar> symbolTable = new HashMap<>();
 
-    public Type returnType;
-
     public ArrayList<Type> types = new ArrayList<>();
 
     public SymbolMethod(String name) {
