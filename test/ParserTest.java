@@ -99,6 +99,11 @@ public class ParserTest {
     }
 
     @Test
+    public void stringType() {
+        test("fixtures/public/fail/semantic/StringType.jmm", true);
+    }
+
+    @Test
     public void testarr_index_not_int() {
         test("fixtures/public/fail/semantic/arr_index_not_int.jmm", true);
     }
@@ -154,11 +159,6 @@ public class ParserTest {
     }
 
     //Our tests
-
-    @Test
-    public void stringType() {
-        test("fixtures/public/fail/semantic/ourTests/StringType.jmm", true);
-    }
 
     @Test
     public void testAddArrays() {

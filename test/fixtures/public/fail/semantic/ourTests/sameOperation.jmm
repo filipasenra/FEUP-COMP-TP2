@@ -1,5 +1,5 @@
 /*  REASON:
-    Cannot add arrays
+    Cannot add/subtract/multiply/divide arrays
 */
 
 class AddArrays {

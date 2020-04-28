@@ -1,5 +1,5 @@
 /*  REASON:
-    Cannot add arrays
+    Variables names cannot be repeated within their context (there can be variables with the same name in the class and a method)
 */
 
 class RepetitiveVars {
