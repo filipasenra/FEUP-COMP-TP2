@@ -312,7 +312,34 @@ public class CodeGenerator {
         if(operation instanceof ASTDotExpression) {
             generateDotExpression(operation, symbolClass, symbolMethod);
         }
+        else{
+            if(lhs.jjtGetNumChildren()==2){
+                generateOperation(lhs, symbolClass, symbolMethod);
+            } else{
+                if(lhs instanceof ASTIdentifier){
+                    ASTIdentifier identifier = (ASTIdentifier) lhs;
+                    this.loadLocalVariable(identifier, symbolMethod);
+                }
+                else if(lhs instanceof ASTLiteral){
+                    ASTLiteral literal = (ASTLiteral) lhs;
+                    loadIntLiteral(literal.val);
+                }
+            }
 
+            if(rhs.jjtGetNumChildren() == 2){
+                generateOperation(rhs, symbolClass, symbolMethod);
+            } else{
+                    if(rhs instanceof ASTIdentifier){
+                        ASTIdentifier identifier = (ASTIdentifier) rhs;
+                        this.loadLocalVariable(identifier, symbolMethod);
+                    }
+                    else if(rhs instanceof ASTLiteral){
+                        ASTLiteral literal = (ASTLiteral) rhs;
+                        loadIntLiteral(literal.val);
+                    }
+            }
+        }
+        
         if(operation instanceof ASTSUM)
             this.printWriterFile.println("\tiadd");
         if(operation instanceof ASTSUB)
@@ -327,6 +354,20 @@ public class CodeGenerator {
             //TODO*/
 
     }
+
+    // private void loadVariable(SimpleNode var){
+    //     String var_name = node.getName();
+
+    //     if (var.jjtGetNumChildren() != 0) {
+    //         generateArrayAccess(node);
+    //         output.println("\tiaload");
+    //     } else {
+    //         if (root.getSymbols().hasSymbolWithNameLocal(var_name))
+    //             loadGlobalVariable(var_name);
+    //         else
+    //             loadLocalVariable(node, var_name);
+    //     }
+    // }
 
     private void storeLocalVariable(ASTIdentifier identifier, SymbolMethod symbolMethod){
         Type varType=null;
