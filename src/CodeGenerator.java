@@ -243,6 +243,9 @@ public class CodeGenerator {
             if(node instanceof ASTEquality){
                 generateEquality((ASTEquality) node, symbolClass, symbolMethod);
             }
+            if (node instanceof ASTDotExpression){
+                generateDotExpression(node,symbolClass,symbolMethod);
+            }
             
             //Return
             if(node instanceof ASTReturn){
