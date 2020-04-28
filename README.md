@@ -56,7 +56,7 @@ todas as verificações feitas na análise semantica devem reportar erro excepto
 
        + tem de permitir method overload (i.e. métodos com mesmo nome mas assinatura de parâmetros diferente) [DONE]
        + tem de permitir consulta da tabela por parte da análise semantica (e geração de código) [DONE]
-       + tem de permitir ligar e desligar a sua impressão para fins de debug (neste caso para fins de avaliação)
+       + tem de permitir ligar e desligar a sua impressão para fins de debug (neste caso para fins de avaliação) [DONE]
 - Type Verification
     
     . verificar se operações são efetuadas com o mesmo tipo (e.g. int + boolean tem de dar erro) [DONE]
@@ -83,11 +83,11 @@ todas as verificações feitas na análise semantica devem reportar erro excepto
 			
 - Function Verification
 	* verificar se o "target" do método existe, e se este contém o método (e.g. a.foo, ver se 'a' existe e se tem um método 'foo') [DONE]
-	    - caso seja do tipo da classe declarada (e.g. a usar o this), verificar se é método do extends olhando para o que foi importado (isto se a classe fizer extends de outra classe importada)
+	    - caso seja do tipo da classe declarada (e.g. a usar o this), verificar se é método do extends olhando para o que foi importado (isto se a classe fizer extends de outra classe importada) [DONE]
 	* caso o método não seja da classe declarada, isto é importada, verificar se método foi importado [DONE]
 	* verificar se o número de argumentos na invocação é igual ao número de par âmetros da declaração [DONE]
 	* verificar se o tipo dos parâmetros coincide com o tipo dos argumentos [DONE]
-	    - não esquecer que existe method overloading
+	    - não esquecer que existe method overloading [DONE]
 
 = Code Generation =    
 
