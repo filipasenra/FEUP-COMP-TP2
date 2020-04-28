@@ -107,7 +107,7 @@ public class SemanticAnalysis {
         SymbolVar symbolVar = new SymbolVar(nodeVarDeclaration.name);
 
         if(symbolClass.symbolTableFields.containsKey(nodeVarDeclaration.name)){
-            this.errorMessage(nodeVarDeclaration.name + " variable is already defined in the class!");
+            this.errorMessage(nodeVarDeclaration.name + " variable is already defined in the class!", nodeVarDeclaration.getLine());
             return;
         }
 
@@ -132,7 +132,7 @@ public class SemanticAnalysis {
 
                 SymbolMethod sm = symbolClass.symbolTableMethods.get(methodNode.name).get(i);
                 if (symbolMethod.types.equals(sm.types)) {
-                    this.errorMessage("Method " + methodNode.name + " already exists in class with the specified arguments.");
+                    this.errorMessage("Method " + methodNode.name + " already exists in class with the specified arguments.", methodNode.getLine());
                     return;
                 }
             }
@@ -180,7 +180,7 @@ public class SemanticAnalysis {
     private void startAnalysingMainDeclaration(SymbolClass symbolClass, ASTMainDeclaration methodNode) {
 
         if (symbolClass.symbolTableMethods.containsKey("main")) {
-            this.errorMessage("Main already exists in class");
+            this.errorMessage("Main already exists in class", methodNode.getLine());
             return;
         }
 
@@ -247,7 +247,7 @@ public class SemanticAnalysis {
             return;
 
         if (symbolMethod.getType() != type)
-            this.errorMessage("Return expression doesn't coincide with return type of function " + symbolMethod.name);
+            this.errorMessage("Return expression doesn't coincide with return type of function " + symbolMethod.name, node.getLine());
 
 
     }
@@ -286,7 +286,7 @@ public class SemanticAnalysis {
             return;
 
         if (analysingExpression(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(0)) != Type.BOOLEAN) {
-            this.errorMessage("Conditional expression of " + type + " must be boolean");
+            this.errorMessage("Conditional expression of " + type + " must be boolean", node.getLine());
         }
 
         for (int i = 1; i < node.jjtGetNumChildren(); i++) {
@@ -298,7 +298,7 @@ public class SemanticAnalysis {
     private void analysingEquality(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTEquality node) {
 
         if (node.jjtGetNumChildren() != 2) {
-            this.errorMessage("Equality can only have 2 arguments!");
+            this.errorMessage("Equality can only have 2 arguments!", node.getLine());
             return;
         }
 
@@ -311,7 +311,7 @@ public class SemanticAnalysis {
             return;
 
         if (type1 != type2) {
-            this.errorMessage("Assignment between two different types!");
+            this.errorMessage("Assignment between two different types!", node.getLine());
         }
 
     }
@@ -334,7 +334,7 @@ public class SemanticAnalysis {
             return;
 
         if (analysingExpression(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(0)) != Type.INT) {
-            this.errorMessage("Array sizes must be integer");
+            this.errorMessage("Array sizes must be integer", ((SimpleNode) node.jjtGetChild(0)).getLine());
         }
 
     }
@@ -390,7 +390,7 @@ public class SemanticAnalysis {
                 return null;
 
             if (analysingExpression(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(0)) != Type.BOOLEAN){
-                this.errorMessage("Negation can only be applied to a boolean");
+                this.errorMessage("Negation can only be applied to a boolean", ((SimpleNode) node.jjtGetChild(0)).getLine());
             }
 
             return Type.BOOLEAN;
@@ -448,7 +448,7 @@ public class SemanticAnalysis {
 
             //If it none of the above, it is undefined!
         }else {
-            this.errorMessage(node1.val + " is undefined!");
+            this.errorMessage(node1.val + " is undefined!", node1.getLine());
             return null;
         }
     }
@@ -486,7 +486,7 @@ public class SemanticAnalysis {
             }
         }
 
-        this.errorMessage(node2.val + " is undefined!");
+        this.errorMessage(node2.val + " is undefined!", node2.getLine());
         return null;
     }
 
@@ -498,7 +498,7 @@ public class SemanticAnalysis {
 
             //Check if there is a object import with this name
             if (!symbolTable.containsKey(symbolMethod.symbolTable.get(node1.val).getObject_name())) {
-                this.errorMessage("SM1 Cannnot resolve symbol " + symbolMethod.symbolTable.get(node1.val).getObject_name());
+                this.errorMessage("Cannot resolve symbol " + symbolMethod.symbolTable.get(node1.val).getObject_name(), node1.getLine());
                 return null;
             }
 
@@ -517,7 +517,7 @@ public class SemanticAnalysis {
                     if(type != null)
                         return type;
 
-                    this.errorMessage(node2.val + " is undefined!");
+                    this.errorMessage(node2.val + " is undefined!", node2.getLine());
                     return null;
 
                 }
@@ -537,12 +537,12 @@ public class SemanticAnalysis {
                             return type;
                     }
 
-                    this.errorMessage(node2.val + " is undefined!");
+                    this.errorMessage(node2.val + " is undefined!", node2.getLine());
                     return null;
                 }
 
 
-                this.errorMessage("Cannnot resolve method " + node2.val + " in the object " + symbolMethod.symbolTable.get(node1.val).getObject_name());
+                this.errorMessage("Cannnot resolve method " + node2.val + " in the object " + symbolMethod.symbolTable.get(node1.val).getObject_name(), node2.getLine());
                 return null;
 
 
@@ -554,7 +554,7 @@ public class SemanticAnalysis {
                 return Type.INT;
         }
 
-        this.errorMessage("SM2 Cannnot resolve symbol " + node1.val);
+        this.errorMessage("Cannot resolve symbol " + node1.val, node1.getLine());
         return null;
     }
 
@@ -570,7 +570,7 @@ public class SemanticAnalysis {
 
                 //check if object was imported
                 if (!symbolTable.containsKey(objectName)) {
-                    this.errorMessage("SC Cannnot resolve symbol " + symbolMethod.symbolTable.get(node1.val).getObject_name());
+                    this.errorMessage("Cannot resolve symbol " + symbolMethod.symbolTable.get(node1.val).getObject_name(), node2.getLine());
                     return null;
                 }
 
@@ -585,7 +585,7 @@ public class SemanticAnalysis {
                         if (type != null)
                             return type;
 
-                        this.errorMessage(node2.val + " is undefined!");
+                        this.errorMessage(node2.val + " is undefined!", node2.getLine());
                         return null;
 
                     }
@@ -604,12 +604,12 @@ public class SemanticAnalysis {
                                 return type;
                         }
 
-                        this.errorMessage(node2.val + " is undefined!");
+                        this.errorMessage(node2.val + " is undefined!", node2.getLine());
                         return null;
 
                     }
 
-                    this.errorMessage("Cannnot resolve method " + node2.val + " in the object " + symbolMethod.symbolTable.get(node1.val).getObject_name());
+                    this.errorMessage("Cannnot resolve method " + node2.val + " in the object " + symbolMethod.symbolTable.get(node1.val).getObject_name(), node2.getLine());
                     return null;
 
                 }
@@ -618,35 +618,35 @@ public class SemanticAnalysis {
                 return Type.INT;
         }
 
-        this.errorMessage("SC2 Cannnot resolve symbol " + node1.val + "." + node2.val);
+        this.errorMessage("Cannot resolve symbol " + node1.val + "." + node2.val, node1.getLine());
         return null;
     }
 
     //current class
-    private Type analyseThisStatement(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node2) {
+    private Type analyseThisStatement(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node) {
         Type type = null;
 
-        if (!symbolTable.containsKey(symbolClass.superClass) && !symbolClass.symbolTableMethods.containsKey(node2.val) && !symbolClass.symbolTableFields.containsKey(node2.val)) {
+        if (!symbolTable.containsKey(symbolClass.superClass) && !symbolClass.symbolTableMethods.containsKey(node.val) && !symbolClass.symbolTableFields.containsKey(node.val)) {
 
-            this.errorMessage(node2.val + " is undefined!");
+            this.errorMessage(node.val + " is undefined!", node.getLine());
             return null;
         }
 
 
         //if it is a call for variable/field
-        if (!node2.method) {
-            if (symbolClass.symbolTableFields.containsKey(node2.val)) {
-                return symbolClass.symbolTableFields.get(node2.val).getType();
+        if (!node.method) {
+            if (symbolClass.symbolTableFields.containsKey(node.val)) {
+                return symbolClass.symbolTableFields.get(node.val).getType();
             }
-            this.errorMessage(node2.val + " is undefined!");
+            this.errorMessage(node.val + " is undefined!", node.getLine());
             return null;
         }
         else {
 
             //Check if current class has any method with the same signature
-            if (symbolClass.symbolTableMethods.containsKey(node2.val)) {
+            if (symbolClass.symbolTableMethods.containsKey(node.val)) {
 
-                type = checkIfMethodExists(symbolClass.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2));
+                type = checkIfMethodExists(symbolClass.symbolTableMethods.get(node.val), getMethodCallTypes(symbolMethod, symbolClass, node));
 
             }
         }
@@ -656,14 +656,14 @@ public class SemanticAnalysis {
 
             SymbolClass sc = (SymbolClass) symbolTable.get(symbolClass.superClass);
 
-            Type type1 = checkIfMethodExists(sc.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2));
+            Type type1 = checkIfMethodExists(sc.symbolTableMethods.get(node.val), getMethodCallTypes(symbolMethod, symbolClass, node));
 
             if (type1 != null)
                 return type1;
         }
 
         if (type == null)
-            this.errorMessage(node2.val + " is being called with the wrong number or type of args");
+            this.errorMessage(node.val + " is being called with the wrong number or type of args", node.getLine());
 
         return type;
     }
@@ -691,7 +691,7 @@ public class SemanticAnalysis {
             type = symbolClass.symbolTableFields.get(node.val).getType();
 
         } else {
-            this.errorMessage(node.val + " is undefined!");
+            this.errorMessage(node.val + " is undefined!", node.getLine());
             return null;
 
         }
@@ -700,14 +700,14 @@ public class SemanticAnalysis {
             if (node.jjtGetChild(0) instanceof ASTaccessToArray) {
 
                 if (analysingExpression(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(0).jjtGetChild(0)) != Type.INT)
-                    this.errorMessage("Array indices must be integer!");
+                    this.errorMessage("Array indices must be integer!", node.getLine());
 
                 if (type == Type.INT_ARRAY)
                     return Type.INT;
                 else if (type == Type.STRING_ARRAY)
                     return Type.STRING;
 
-                this.errorMessage(node.val + " is not an array!");
+                this.errorMessage(node.val + " is not an array!", node.getLine());
                 return null;
             }
         }
@@ -719,7 +719,7 @@ public class SemanticAnalysis {
     private Type analysingBooleanOperation(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node) {
 
         if (node.jjtGetNumChildren() != 2) {
-            this.errorMessage("Operation can only have 2 arguments!");
+            this.errorMessage("Operation can only have 2 arguments!", node.getLine());
             return null;
         }
 
@@ -736,7 +736,7 @@ public class SemanticAnalysis {
             return null;
 
         if (type1 != Type.BOOLEAN || type2 != Type.BOOLEAN) {
-            this.errorMessage("Operation && only accepts booleans!");
+            this.errorMessage("Operation && only accepts booleans!", node.getLine());
             return null;
         }
 
@@ -746,7 +746,7 @@ public class SemanticAnalysis {
     private Type analysingOperation(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node) {
 
         if (node.jjtGetNumChildren() != 2) {
-            this.errorMessage("Operation can only have 2 arguments!");
+            this.errorMessage("Operation can only have 2 arguments!", node.getLine());
             return null;
         }
 
@@ -763,17 +763,17 @@ public class SemanticAnalysis {
             return null;
 
         if(type1 == Type.INT_ARRAY || type1 == Type.STRING_ARRAY || type2 == Type.INT_ARRAY || type2 == Type.STRING_ARRAY) {
-            this.errorMessage("It is not possible to use arrays directly in arithmetic operations!");
+            this.errorMessage("It is not possible to use arrays directly in arithmetic operations!", node.getLine());
             return null;
         }
 
         if (type1 == Type.BOOLEAN || type2 == Type.BOOLEAN) {
-            this.errorMessage("Arithmetic Operation doesn't accept booleans!");
+            this.errorMessage("Arithmetic Operation doesn't accept booleans!", node.getLine());
             return null;
         }
 
         if (type1 != type2) {
-            this.errorMessage("Operands are not of the same type");
+            this.errorMessage("Operands are not of the same type", node.getLine());
             return null;
         }
 
@@ -791,7 +791,7 @@ public class SemanticAnalysis {
                 return;
 
             if (!symbolVar.isInitialize())
-                this.warningMessage(node.val + " is not initialize!");
+                this.warningMessage(node.val + " is not initialize!", node.getLine());
 
         }else if (symbolMethod.symbolTable.containsKey(node.val)) {
 
@@ -801,7 +801,7 @@ public class SemanticAnalysis {
                 return;
 
             if (!symbolVar.isInitialize())
-                this.warningMessage(node.val + " is not initialize!");
+                this.warningMessage(node.val + " is not initialize!", node.getLine());
         }
     }
 
@@ -809,7 +809,7 @@ public class SemanticAnalysis {
     private void analysingVarDeclaration(SymbolMethod symbolMethod, ASTVarDeclaration nodeVarDeclaration) {
 
         if(symbolMethod.symbolTable.containsKey(nodeVarDeclaration.name)){
-            this.errorMessage(nodeVarDeclaration.name + " variable is already defined in the method!");
+            this.errorMessage(nodeVarDeclaration.name + " variable is already defined in the method!", nodeVarDeclaration.getLine());
             return;
         }
 
@@ -824,7 +824,7 @@ public class SemanticAnalysis {
 
             if (type == Type.OBJECT)
                 if (!symbolTable.containsKey(symbolVar.getObject_name())) {
-                    this.errorMessage("Class " + symbolVar.getObject_name() + " doesn't exist! ");
+                    this.errorMessage("Class " + symbolVar.getObject_name() + " doesn't exist! ", nodeVarDeclaration.getLine());
                 }
 
         }
@@ -883,7 +883,17 @@ public class SemanticAnalysis {
 
     }
 
-    private void errorMessage(String message) {
+    private void errorMessage(String message, int line) {
+        nErrors++;
+        System.err.println("Near line " + line + ": " + message);
+    }
+
+    private void warningMessage(String message, int line) {
+        nWarnings++;
+        System.err.println("Near line " + line + ": " + message);
+    }
+
+   /* private void errorMessage(String message) {
         nErrors++;
         System.err.println(message);
     }
@@ -891,6 +901,6 @@ public class SemanticAnalysis {
     private void warningMessage(String message) {
         nWarnings++;
         System.err.println(message);
-    }
+    }*/
 
 }

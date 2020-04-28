@@ -3,6 +3,7 @@ options
     LOOKAHEAD=1;
     MULTI=true;
     STATIC=false;
+    NODE_SCOPE_HOOK=true;
 }
 
 PARSER_BEGIN(ParserAST)
@@ -10,6 +11,16 @@ public class ParserAST {
 
     private static final int MAX_ERRORS = 10;
     private int nErrors = 0;
+
+    void jjtreeOpenNodeScope(Node n) {
+
+        System.out.println("OLAAAAA");
+
+            ((SimpleNode)n).setLine( getToken(1).beginLine ) ;
+    }
+
+    void jjtreeCloseNodeScope(Node n) {
+    }
 
     //Used for first checkpoint (moved to jmm in src)
 /*
