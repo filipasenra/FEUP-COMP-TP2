@@ -18,8 +18,6 @@ public class CodeGenerator {
 	public void generate(SimpleNode node) {
 
         System.out.println("Starting creating jasmin code");
-        //System.out.println(this.symbolTable.toString());
-
         ASTClassDeclaration classNode=null;
 
         for(int i=0;i<node.jjtGetNumChildren();i++){
@@ -46,7 +44,7 @@ public class CodeGenerator {
         SymbolClass symbolClass = (SymbolClass) this.symbolTable.get(classNode.name);
 
         generateClassVariables(classNode);
-        generateExtend(classNode, symbolClass);
+        generateExtend(classNode);
         generateMethods(classNode, symbolClass);
     }
 
@@ -70,9 +68,8 @@ public class CodeGenerator {
 
     private String getType(ASTType nodeType) {
 
-        if (nodeType.isArray) {
+        if (nodeType.isArray)
             return "[I";
-        }
 
         switch (nodeType.type) {
             case "int":
@@ -91,9 +88,8 @@ public class CodeGenerator {
 
     private String getSymbolType(Type symbolType) {
 
-        if (symbolType == Type.INT_ARRAY) {
+        if (symbolType == Type.INT_ARRAY)
             return "[I";
-        }
 
         switch (symbolType) {
             case INT:
@@ -108,13 +104,12 @@ public class CodeGenerator {
         return "";
     }
 
-    private void generateExtend(ASTClassDeclaration node, SymbolClass symbolClass){
+    private void generateExtend(ASTClassDeclaration node){
         if(node.ext != null)
             this.printWriterFile.println("\n.method public <init>()V\n\taload_0\n\tinvokenonvirtual "
                     + node.ext + "/<init>()V\n\treturn\n.end method\n");
         else
             generateConstructor();
-
     }
 
     private void generateConstructor() {
@@ -141,13 +136,11 @@ public class CodeGenerator {
                     System.err.println("ERROR generating code for method " + methodDeclaration.name);
                     System.exit(0);
                 }
-
                 generateMethod(methodDeclaration, symbolClass, symbolMethod);
             }
         }
 
     }
-
 
     private void generateMainMethod(SimpleNode mainNode, SymbolClass symbolClass, SymbolMethod symbolMethod) {
         this.printWriterFile.println(".method public static main([Ljava/lang/String;)V");
@@ -171,7 +164,6 @@ public class CodeGenerator {
 
         printWriterFile.write(".endMethod\n\n");
     }
-
 
     private SymbolMethod getSymbolMethod(ArrayList<SymbolMethod> listSymbolMethod, int num) {
         if(listSymbolMethod.size() == 1)
@@ -251,7 +243,9 @@ public class CodeGenerator {
             if(node instanceof ASTEquality){
                 generateEquality((ASTEquality) node, symbolClass, symbolMethod);
             }
-            
+            if (node instanceof ASTDotExpression){
+                generateDotExpression(node,symbolClass,symbolMethod);
+            }
             
             //Return
             if(node instanceof ASTReturn){
@@ -494,39 +488,69 @@ public class CodeGenerator {
 
     private void generateCall(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier identifier1, ASTIdentifier identifier2) {
         String methodName=""; String objectName=""; String methodType=""; String callArgs = "";
-        Type type=null; 
+        Type type=null;
         boolean declaredInClass=false;
         ArrayList<Type> callArgsArray;
 
-        if (symbolMethod.symbolTable.containsKey(identifier1.val)) {
-            if (symbolMethod.symbolTable.get(identifier1.val).getType().equals(Type.OBJECT)) {
-                
-                SymbolClass sc = (SymbolClass) symbolTable.get(symbolMethod.symbolTable.get(identifier1.val).getObject_name());
+        //Import
+        if (symbolTable.containsKey(identifier1.val)) {
+            if (symbolTable.get(identifier1.val) instanceof SymbolClass) {
+                SymbolClass sc = (SymbolClass) symbolTable.get(identifier1.val);
 
-                //Verify if first part of dot expression was declared inside the class
-                if (symbolMethod.symbolTable.containsKey(identifier1.val) || symbolClass.symbolTableFields.containsKey(identifier1.val)) 
-                    declaredInClass=true;
-
-                if(identifier2 !=null){
-                    //Right part of dot expression is a method
+                if(identifier2!=null) {
+                    //Check for methods
                     if (identifier2.method) {
-                        methodName = identifier2.val;
-                        //Get the return type of method
+                        methodName=identifier2.val;
                         if (sc.symbolTableMethods.containsKey(identifier2.val)) {
                             type = checkIfMethodExists(sc.symbolTableMethods.get(identifier2.val), getMethodCallTypes(symbolMethod, symbolClass, identifier2));
-                            methodType += getSymbolType(type);
+                            System.out.println("type import: " + type);
+                            if(type!=null)
+                                methodType += getSymbolType(type);
                         }
-                        //Get the type of arguments of method
                         callArgsArray = getMethodCallTypes(symbolMethod, symbolClass, identifier2);
-                        for(Type t: callArgsArray){
-                            callArgs+=getSymbolType(t);
+                        if(callArgsArray.size()>0) {
+                            for (Type t : callArgsArray) {
+                                if(t!=null)
+                                    callArgs += getSymbolType(t);
+                            }
                         }
-                        objectName = sc.name;
+                        objectName=sc.name;
                     }
                 }
             }
         }
-        
+
+        //Verify if first part of dot expression was declared inside the class or method
+        else if (symbolMethod.symbolTable.containsKey(identifier1.val) || symbolClass.symbolTableFields.containsKey(identifier1.val)) {
+            declaredInClass = true;
+            if (symbolMethod.symbolTable.containsKey(identifier1.val)) {
+                if (symbolMethod.symbolTable.get(identifier1.val).getType().equals(Type.OBJECT)) {
+
+                    SymbolClass sc = (SymbolClass) symbolTable.get(symbolMethod.symbolTable.get(identifier1.val).getObject_name());
+
+
+                    if (identifier2 != null) {
+                        //Right part of dot expression is a method
+                        if (identifier2.method) {
+                            methodName = identifier2.val;
+                            //Get the return type of method
+                            if (sc.symbolTableMethods.containsKey(identifier2.val)) {
+                                type = checkIfMethodExists(sc.symbolTableMethods.get(identifier2.val), getMethodCallTypes(symbolMethod, symbolClass, identifier2));
+                                methodType += getSymbolType(type);
+                            }
+                            //Get the type of arguments of method
+                            callArgsArray = getMethodCallTypes(symbolMethod, symbolClass, identifier2);
+                            objectName = sc.name;
+                            for (Type t : callArgsArray) {
+                                callArgs += getSymbolType(t);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
         if (declaredInClass)
             this.printWriterFile.println("\t"+"invokevirtual "+objectName+"/"+methodName+"("+callArgs+")"+methodType);
         else
