@@ -151,7 +151,8 @@ public class CodeGenerator {
         generateIndexes(mainNode, symbolMethod);
         generateMethodBody(mainNode, symbolClass, symbolMethod);
 
-        printWriterFile.write(".endMethod\n\n");
+        printWriterFile.println("\treturn");
+        printWriterFile.println(".endMethod\n\n");
     }
 
     private void generateMethod(ASTMethodDeclaration methodNode, SymbolClass symbolClass, SymbolMethod symbolMethod){
@@ -245,11 +246,13 @@ public class CodeGenerator {
             SimpleNode node = (SimpleNode) method.jjtGetChild(i);
             if(node instanceof ASTEquality){
                 generateEquality((ASTEquality) node, symbolClass, symbolMethod);
-            }            
+            }
+            
+            
             //Return
             if(node instanceof ASTReturn){
-                if(node.jjtGetNumChildren() != 1){//expression
-
+                if(! (node.jjtGetChild(0) instanceof ASTLiteral)){//expression
+                    System.out.println("Entrou no literal"); //TODO parse the node!
                 }
                 else{
                     if(symbolMethod.getType() == Type.INT){

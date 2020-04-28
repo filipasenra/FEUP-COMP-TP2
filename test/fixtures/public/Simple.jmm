@@ -1,4 +1,4 @@
-import static io.println(int) void;
+/*import static io.println(int) void;
 
 class Simple {
 
@@ -35,8 +35,8 @@ class Simple {
 
 
 }
+*/
 
-/*
 import io.println(int);
 
 class Simple {
@@ -56,4 +56,4 @@ class Simple {
     public int add(int a, int b){
 		return a+b;
 	}
-}*/
+}

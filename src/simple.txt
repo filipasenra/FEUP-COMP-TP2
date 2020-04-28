@@ -2,6 +2,8 @@
 .class public Simple
 .super java/lang/Object 
 ;      ^ replace super if extends was used
+
+
 ;standard initializer
 .method public<init>()V
 	aload_0
@@ -9,6 +11,8 @@
 	;                ^ replace if super is different
 	return
 .end method
+
+
 ; main will always have this header
 .method public static main([Ljava/lang/String;)V 
 	.limit stack 99 
