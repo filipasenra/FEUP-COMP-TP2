@@ -313,7 +313,6 @@ public class CodeGenerator {
             }  
             else if (rhs instanceof ASTNewObject) {
                 ASTNewObject object = (ASTNewObject) rhs;
-                //System.out.println("object: " + object.val);
                 generateNewObject(object, symbolMethod);
             }
             else if(rhs instanceof ASTDotExpression){
@@ -454,14 +453,18 @@ public class CodeGenerator {
     }
 
     private void generateCall(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier identifier1, ASTIdentifier identifier2) {
-        String methodName="";
+        String methodName=""; String objectName="";
         Type type=null; 
         String methodType="";
         boolean declaredInClass=false;
         SymbolClass sc = null;
+        ArrayList<Type> callArgsArray;
+        String callArgs = "";
 
-        if(symbolTable.get(symbolMethod.symbolTable.get(identifier1.val))!=null)
+        //if(symbolTable.get(symbolMethod.symbolTable.get(identifier1.val))!=null)
             sc = (SymbolClass) symbolTable.get(symbolMethod.symbolTable.get(identifier1.val).getObject_name());
+        
+        objectName = sc.name;
 
         if (symbolMethod.symbolTable.containsKey(identifier1.val) || symbolClass.symbolTableFields.containsKey(identifier1.val)) 
             declaredInClass=true;
@@ -471,8 +474,8 @@ public class CodeGenerator {
             if (identifier2.method) {
                 methodName = identifier2.val;
                 //get return type and type of arguments
-                System.out.println("id2 é metodo");
-                System.out.println("nome metodo: " + identifier2.val);
+                // System.out.println("id2 é metodo");
+                // System.out.println("nome metodo: " + identifier2.val);
                 if(sc!=null){
                     if (sc.symbolTableMethods.containsKey(identifier2.val)) {
 
@@ -481,7 +484,12 @@ public class CodeGenerator {
                         methodType += getSymbolType(type);
                     }
                 }
-                System.out.println("tipo metodo: " + methodType);
+                callArgsArray = getMethodCallTypes(symbolMethod, symbolClass, identifier2);
+                for(Type t: callArgsArray){
+                    callArgs+=getSymbolType(t);
+                }
+                // System.out.println("tipo metodo: " + methodType);
+                // System.out.println("Args: " + callArgs);
 
             }
         }
@@ -489,9 +497,9 @@ public class CodeGenerator {
 
 
         if (declaredInClass)
-            this.printWriterFile.println("\t" + "invokevirtual " + methodName + "(" + ")" + methodType);
+            this.printWriterFile.println("\t"+"invokevirtual "+objectName+"/"+methodName+"("+callArgs+")"+methodType);
         else
-            this.printWriterFile.println("\t" + "invokestatic " + methodName + "(" + ")" + methodType);
+            this.printWriterFile.println("\t" + "invokestatic "+objectName+"/"+methodName+"("+callArgs+")"+methodType);
 
     }
 
@@ -508,67 +516,40 @@ public class CodeGenerator {
 
 
     private Type analysingExpression(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node) {
-
         if (node instanceof ASTAND || node instanceof ASTLESSTHAN || node instanceof ASTBoolean) {
             return Type.BOOLEAN;
         }
-
         if (node instanceof ASTLiteral) {
             return Type.INT;
         }
-
-
         if (node instanceof ASTNegation) {
-
             if (node.jjtGetNumChildren() != 1)
                 return null;
-
             return analysingExpression(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(0));
         }
-
         if (node instanceof ASTIdentifier) {
             ASTIdentifier identifier = (ASTIdentifier) node;
             return symbolMethod.symbolTable.get(identifier.val).getType();
         }        
-
         if (node instanceof ASTInitializeArray) {
             return Type.INT_ARRAY;
         }
-
         if (node instanceof ASTNewObject) {
             return Type.OBJECT;
         }
-
         return null;
     }
 
     private Type checkIfMethodExists(ArrayList<SymbolMethod> methodArrayList, ArrayList<Type> methodSignature) {
-
         for (SymbolMethod sm : methodArrayList) {
-
             //If it has the same signature
             if (methodSignature.size() == sm.types.size()) {
                 if (sm.types.equals(methodSignature))
                     return sm.getType();
             }
         }
-
         return null;
     }
-
-
-    // private void generateBlock(ASTStatementBlock block) {
-    //     for (int i = 0; i < block.jjtGetNumChildren(); i++) {
-    //         System.out.println("blockchildren");
-    //        if(block.jjtGetChild(i) instanceof ASTVarDeclaration){
-    //            ASTVarDeclaration declaration = (ASTVarDeclaration) block.jjtGetChild(i);
-    //            System.out.println(declaration.name);
-
-    //        }
-            
-    //     }
-    // }
-
 
     private PrintWriter createOutputFile(String className) {
         try {
