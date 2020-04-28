@@ -267,10 +267,10 @@ public class CodeGenerator {
         ASTIdentifier lhs = (ASTIdentifier) node.jjtGetChild(0);  //left identifier
         SimpleNode rhs = (SimpleNode) node.jjtGetChild(1);  //right side
 
-        //System.out.println("lhs: " + lhs.val + "\n\tNr filhos direita: " + rhs.jjtGetNumChildren());
         if(lhs.jjtGetNumChildren() != 0 && lhs.jjtGetChild(0) instanceof ASTaccessToArray)
         {
-            //TODO -> access to array
+            //TODO
+            //generateAccessToArray
             generateRhs(rhs, symbolClass, symbolMethod);
             this.printWriterFile.println("\tiastore");
         } else {
@@ -300,7 +300,7 @@ public class CodeGenerator {
             }  
             else if (rhs instanceof ASTNewObject) {
                 ASTNewObject object = (ASTNewObject) rhs;
-                generateNewObject(object, symbolMethod);
+                generateNewObject(object, symbolClass, symbolMethod);
             }
         }
     }
@@ -339,7 +339,7 @@ public class CodeGenerator {
                     }
             }
         }
-        
+
         if(operation instanceof ASTSUM)
             this.printWriterFile.println("\tiadd");
         if(operation instanceof ASTSUB)
@@ -355,19 +355,16 @@ public class CodeGenerator {
 
     }
 
-    // private void loadVariable(SimpleNode var){
-    //     String var_name = node.getName();
-
-    //     if (var.jjtGetNumChildren() != 0) {
-    //         generateArrayAccess(node);
-    //         output.println("\tiaload");
-    //     } else {
-    //         if (root.getSymbols().hasSymbolWithNameLocal(var_name))
-    //             loadGlobalVariable(var_name);
-    //         else
-    //             loadLocalVariable(node, var_name);
-    //     }
-    // }
+    private void loadVariable(ASTIdentifier var, SymbolMethod symbolMethod){
+        if (var.jjtGetNumChildren() != 0) {
+            //TODO
+            //generateAccessToArray
+            this.printWriterFile.println("\tiaload");
+        } else {
+            //TODO -> global variable
+            loadLocalVariable(var, symbolMethod);
+        }
+    }
 
     private void storeLocalVariable(ASTIdentifier identifier, SymbolMethod symbolMethod){
         Type varType=null;
@@ -435,22 +432,36 @@ public class CodeGenerator {
         this.printWriterFile.println(output);
     }
 
-    private void generateNewObject(ASTNewObject object, SymbolMethod symbolMethod){
+    private void generateNewObject(ASTNewObject object, SymbolClass symbolClass, SymbolMethod symbolMethod){
 		Type varType = null;
         if(symbolMethod.symbolTable.get(object.val)!=null) 
             varType = symbolMethod.symbolTable.get(object.val).getType();
 
         if (varType == Type.INT_ARRAY) {
-            generateArrayInitilization(object);
+            //TODO -> not tested
+            generateArrayInitilization(object, symbolClass, symbolMethod);
         } else {
             this.printWriterFile.println("\tnew " + object.val + "\n\tdup");
             this.printWriterFile.println("\tinvokespecial " + object.val + "/<init>()V");
         }
     }
 
-    private void generateArrayInitilization(ASTNewObject object) {
+    private void generateArrayInitilization(ASTNewObject object, SymbolClass symbolClass, SymbolMethod symbolMethod) {
+        SimpleNode child = (SimpleNode) object.jjtGetChild(0);
 
-        //TODO
+        if (child.jjtGetNumChildren() == 2)
+            generateOperation(child,symbolClass, symbolMethod);
+        else {
+            if(child instanceof ASTLiteral){
+                ASTLiteral literal = (ASTLiteral) child;
+                loadIntLiteral(literal.val);
+            }
+            else if (child instanceof ASTIdentifier){
+                ASTIdentifier identifier = (ASTIdentifier) child;
+                this.loadLocalVariable(identifier, symbolMethod);                
+            }
+        }
+        
         this.printWriterFile.println("\tnewarray int");
     }
 
@@ -462,14 +473,12 @@ public class CodeGenerator {
             ASTIdentifier leftIdentifier = (ASTIdentifier) node.jjtGetChild(0);
             ASTIdentifier rightIdentifier = (ASTIdentifier) node.jjtGetChild(1);
 
-//            System.out.println("Left part dot expression: " + leftIdentifier.val);
-//            System.out.println("Right part dot expression: " + rightIdentifier.val);
-
             if (leftIdentifier.val.equals("this")) {
                 //TODO
             }
             else if(rightIdentifier.val.equals("length")){
-                //TODO
+                loadVariable(leftIdentifier, symbolMethod);
+                this.printWriterFile.println("\tarraylength");
             } else {
                 generateCall(symbolClass, symbolMethod, leftIdentifier, rightIdentifier);
             }
