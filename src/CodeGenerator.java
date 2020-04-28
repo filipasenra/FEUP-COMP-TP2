@@ -46,6 +46,7 @@ public class CodeGenerator {
         SymbolClass symbolClass = (SymbolClass) this.symbolTable.get(classNode.name);
 
         generateClassVariables(classNode);
+        generateExtend(classNode, symbolClass);
         generateMethods(classNode, symbolClass);
     }
 
@@ -107,14 +108,24 @@ public class CodeGenerator {
         return "";
     }
 
+    private void generateExtend(ASTClassDeclaration node, SymbolClass symbolClass){
+        if(node.ext != null)
+            this.printWriterFile.println("\n.method public <init>()V\n\taload_0\n\tinvokenonvirtual "
+                    + node.ext + "/<init>()V\n\treturn\n.end method\n");
+        else
+            generateConstructor();
 
+    }
+
+    private void generateConstructor() {
+        printWriterFile.println("\n.method public<init>()V");
+        printWriterFile.println("\taload_0");
+        printWriterFile.println("\tinvokenonvirtual java/lang/Object<init>()V");
+        printWriterFile.println("\treturn");
+        printWriterFile.println(".end method\n");
+    }
 
      private void generateMethods(SimpleNode node, SymbolClass symbolClass) {
-
-        //Should it be here? i don't think so? check this out: http://www.cs.sjsu.edu/faculty/pearce/modules/lectures/co/jvm/jasmin/instructions.html
-        //There is no declaration of a constructor so there is no jasmin code for a constructor made
-         generateConstructor();
-
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             SimpleNode child = (SimpleNode) node.jjtGetChild(i);
 
@@ -137,13 +148,6 @@ public class CodeGenerator {
 
     }
 
-    private void generateConstructor() {
-        printWriterFile.println("\n.method public<init>()V");
-        printWriterFile.println("\taload_0");
-        printWriterFile.println("\tinvokenonvirtual java/lang/Object<init>()V");//TO-DO if the class extends, we need to change "Object" with extended class name
-        printWriterFile.println("\treturn");
-        printWriterFile.println(".end method\n");
-    }
 
     private void generateMainMethod(SimpleNode mainNode, SymbolClass symbolClass, SymbolMethod symbolMethod) {
         this.printWriterFile.println(".method public static main([Ljava/lang/String;)V");
@@ -534,13 +538,13 @@ public class CodeGenerator {
 
         for (int i = 0; i < node2.jjtGetNumChildren(); i++) {
 
-            types.add(getNodeType(symbolClass, symbolMethod, (SimpleNode) node2.jjtGetChild(i)));
+            types.add(getNodeType(symbolMethod, (SimpleNode) node2.jjtGetChild(i)));
         }
 
         return types;
     }
 
-    private Type getNodeType(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node) {
+    private Type getNodeType(SymbolMethod symbolMethod, SimpleNode node) {
         if (node instanceof ASTAND || node instanceof ASTLESSTHAN || node instanceof ASTBoolean) {
             return Type.BOOLEAN;
         }
@@ -550,7 +554,7 @@ public class CodeGenerator {
         if (node instanceof ASTNegation) {
             if (node.jjtGetNumChildren() != 1)
                 return null;
-            return getNodeType(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(0));
+            return getNodeType(symbolMethod, (SimpleNode) node.jjtGetChild(0));
         }
         if (node instanceof ASTIdentifier) {
             ASTIdentifier identifier = (ASTIdentifier) node;
