@@ -10,8 +10,7 @@ public class SemanticAnalysis {
     private int nErrors = 0;
     private int nWarnings = 0;
 
-    public SemanticAnalysis() {
-    }
+    public SemanticAnalysis() { }
 
     public int getNerros() {
         return nErrors;
@@ -21,12 +20,19 @@ public class SemanticAnalysis {
 
     public void startAnalysing(SimpleNode node) {
 
+        //Analysing Imports and Class
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+
             if (node.jjtGetChild(i) instanceof ASTImport)
                 addImport((ASTImport) node.jjtGetChild(i));
             else if (node.jjtGetChild(i) instanceof ASTClassDeclaration) {
+
+                //Analysis class and signature of methods only (not their core) -> because of overloading
                 addClassInfo((ASTClassDeclaration) node.jjtGetChild(i));
+
+                //Analysis core of methods
                 startAnalysingClass((ASTClassDeclaration) node.jjtGetChild(i));
+
             }
         }
     }
@@ -90,19 +96,25 @@ public class SemanticAnalysis {
         symbolClass.addSymbolMethod(importNode.methodName, sm);
     }
 
+    //Analysis class and signature of methods only (not their core) -> because of overloading
     private void addClassInfo(ASTClassDeclaration classNode) {
+
         SymbolClass symbolClass = new SymbolClass(classNode.name);
         this.symbolTable.put(classNode.name, symbolClass);
 
         for (int i = 0; i < classNode.jjtGetNumChildren(); i++) {
             if (classNode.jjtGetChild(i) instanceof ASTVarDeclaration) {
+                //Adds Vars of Class to SymbolClass
                 addVarDeclarationInfo(symbolClass, (ASTVarDeclaration) classNode.jjtGetChild(i));
+
             } else if (classNode.jjtGetChild(i) instanceof ASTMethodDeclaration) {
+                //Analysis method signature
                 addMethod(symbolClass, (ASTMethodDeclaration) classNode.jjtGetChild(i), i);
             }
         }
     }
 
+    //Adds Vars of Class to SymbolClass
     private void addVarDeclarationInfo(SymbolClass symbolClass, ASTVarDeclaration nodeVarDeclaration) {
         SymbolVar symbolVar = new SymbolVar(nodeVarDeclaration.name);
 
@@ -114,19 +126,26 @@ public class SemanticAnalysis {
         symbolClass.addSymbolField(nodeVarDeclaration.name, symbolVar);
     }
 
+    //Analysis method signature
     private void addMethod(SymbolClass symbolClass, ASTMethodDeclaration methodNode, int num) {
         SymbolMethod symbolMethod = new SymbolMethod(methodNode.name);
         symbolMethod.num = num;
 
         for (int i = 0; i < methodNode.jjtGetNumChildren(); i++) {
+
+            //Adds arguments to method
             if (methodNode.jjtGetChild(i) instanceof ASTArg) {
                 addMethodArg(symbolMethod, (ASTArg) methodNode.jjtGetChild(i));
+                continue;
             }
+
+            //Return type
             if (methodNode.jjtGetChild(i) instanceof ASTType) {
                 symbolMethod.setType(analysingType(symbolMethod, (ASTType) methodNode.jjtGetChild(i)));
             }
         }
 
+        //Checks if there isn't a method with the same name and signature
         if (symbolClass.symbolTableMethods.containsKey(methodNode.name)) {
             for (int i = 0; i < symbolClass.symbolTableMethods.get(methodNode.name).size(); i++) {
 
@@ -138,9 +157,11 @@ public class SemanticAnalysis {
             }
         }
 
+        //Adds method to its class
         symbolClass.addSymbolMethod(methodNode.name, symbolMethod);
     }
 
+    //Adds arguments to method
     private void addMethodArg(SymbolMethod symbolMethod, ASTArg nodeArg) {
         SymbolVar symbolVar = new SymbolVar(nodeArg.val);
         symbolVar.setInitialize();
@@ -154,7 +175,7 @@ public class SemanticAnalysis {
         }
     }
 
-
+    //Analysis core of methods (signature was already analyzed
     private void startAnalysingClass(ASTClassDeclaration classNode) {
 
         SymbolClass symbolClass = (SymbolClass) this.symbolTable.get(classNode.name);
@@ -162,14 +183,17 @@ public class SemanticAnalysis {
 
         for (int i = 0; i < classNode.jjtGetNumChildren(); i++) {
 
+            //Adds declared fields to class
             if (classNode.jjtGetChild(i) instanceof ASTVarDeclaration) {
 
                 analysingVarDeclarationClass(symbolClass, (ASTVarDeclaration) classNode.jjtGetChild(i));
 
+            //Analyzes core of generic methods
             } else if (classNode.jjtGetChild(i) instanceof ASTMethodDeclaration) {
 
                 startAnalysingMethod(symbolClass, (ASTMethodDeclaration) classNode.jjtGetChild(i), i);
 
+            //Analyzes core of main method
             } else if (classNode.jjtGetChild(i) instanceof ASTMainDeclaration)
                 startAnalysingMainDeclaration(symbolClass, (ASTMainDeclaration) classNode.jjtGetChild(i));
 
@@ -177,6 +201,7 @@ public class SemanticAnalysis {
 
     }
 
+    //Analyzes core of main method
     private void startAnalysingMainDeclaration(SymbolClass symbolClass, ASTMainDeclaration methodNode) {
 
         if (symbolClass.symbolTableMethods.containsKey("main")) {
@@ -197,38 +222,48 @@ public class SemanticAnalysis {
         for (int i = 0; i < methodNode.jjtGetNumChildren(); i++) {
 
             if (methodNode.jjtGetChild(i) instanceof ASTVarDeclaration) {
+
+                //Adds the var declarations to the method
                 analysingVarDeclaration(symbolMethod, (ASTVarDeclaration) methodNode.jjtGetChild(i));
                 continue;
             }
 
+            //Analysis statements
             analysingStatement(symbolClass, symbolMethod, (SimpleNode) methodNode.jjtGetChild(i));
         }
     }
 
+    //Analyzes core of generic methods
     private void startAnalysingMethod(SymbolClass symbolClass, ASTMethodDeclaration methodNode, int num) {
 
         for (int j = 0; j < symbolClass.symbolTableMethods.get(methodNode.name).size(); j++) {
 
             SymbolMethod symbolMethod = symbolClass.symbolTableMethods.get(methodNode.name).get(j);
 
+            //Getting the correct symbolMethod
             if (num == symbolMethod.num) {
 
                 for (int i = 0; i < methodNode.jjtGetNumChildren(); i++) {
+
+                    //Analysis declared return type
                     if (methodNode.jjtGetChild(i) instanceof ASTType) {
                         analysingType(symbolMethod, (ASTType) methodNode.jjtGetChild(i));
                         continue;
                     }
 
+                    //Adds the var declarations to the method
                     if (methodNode.jjtGetChild(i) instanceof ASTVarDeclaration) {
                         analysingVarDeclaration(symbolMethod, (ASTVarDeclaration) methodNode.jjtGetChild(i));
                         continue;
                     }
 
+                    //Analysis the return expression
                     if (methodNode.jjtGetChild(i) instanceof ASTReturn) {
                         analysingReturnExpression(symbolClass, symbolMethod, (SimpleNode) methodNode.jjtGetChild(i));
                         continue;
                     }
 
+                    //Analysis statement
                     analysingStatement(symbolClass, symbolMethod, (SimpleNode) methodNode.jjtGetChild(i));
                 }
             }
@@ -236,6 +271,7 @@ public class SemanticAnalysis {
         }
     }
 
+    //Analysis the return expression
     private void analysingReturnExpression(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node) {
 
         if (node.jjtGetNumChildren() != 1)
@@ -252,6 +288,7 @@ public class SemanticAnalysis {
 
     }
 
+    //Analysis statement
     private void analysingStatement(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node) {
 
         if (node instanceof ASTStatementBlock) {
@@ -316,6 +353,7 @@ public class SemanticAnalysis {
 
     }
 
+    //Flags that the a variable has been initiated
     private void setInitialize(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node) {
 
         if (symbolClass.symbolTableFields.containsKey(node.val)) {
@@ -386,12 +424,7 @@ public class SemanticAnalysis {
 
         if (node instanceof ASTNegation) {
 
-            if (node.jjtGetNumChildren() != 1)
-                return null;
-
-            if (analysingExpression(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(0)) != Type.BOOLEAN){
-                this.errorMessage("Negation can only be applied to a boolean", ((SimpleNode) node.jjtGetChild(0)).getLine());
-            }
+            analysingNegation(symbolClass, symbolMethod, (ASTNegation) node);
 
             return Type.BOOLEAN;
         }
@@ -414,6 +447,16 @@ public class SemanticAnalysis {
         return null;
     }
 
+    private void analysingNegation(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTNegation node) {
+
+        if (node.jjtGetNumChildren() != 1)
+            return;
+
+        if (analysingExpression(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(0)) != Type.BOOLEAN){
+            this.errorMessage("Negation can only be applied to a boolean", ((SimpleNode) node.jjtGetChild(0)).getLine());
+        }
+    }
+
     private Type analysingDotExpression(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node) {
 
         if (node.jjtGetNumChildren() != 2)
@@ -428,10 +471,12 @@ public class SemanticAnalysis {
             } else {
                 return analyseComplexStatement(symbolClass, symbolMethod, node1, node2);
             }
+
         } else
             return null;
     }
 
+    //Analysis expression with dot but without 'this' in the left hand side
     private Type analyseComplexStatement(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node1, ASTIdentifier node2) {
 
             //If it is an import
@@ -453,7 +498,8 @@ public class SemanticAnalysis {
         }
     }
 
-    private Type checkIfMethodExists(ArrayList<SymbolMethod> methodArrayList, ArrayList<Type> methodSignature) {
+    //Return the type of a method with the it's signature and possible candidates
+    private Type getMethodType(ArrayList<SymbolMethod> methodArrayList, ArrayList<Type> methodSignature) {
 
         for (SymbolMethod sm : methodArrayList) {
 
@@ -467,7 +513,7 @@ public class SemanticAnalysis {
         return null;
     }
 
-    //From import
+    //Analysis a complex statement present in Import
     private Type analyseComplexStatementST(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node1, ASTIdentifier node2) {
 
         if (symbolTable.get(node1.val) instanceof SymbolClass) {
@@ -478,7 +524,7 @@ public class SemanticAnalysis {
 
                 if (sc.symbolTableMethods.containsKey(node2.val)) {
 
-                    Type type = checkIfMethodExists(sc.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2));
+                    Type type = getMethodType(sc.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2));
 
                     if(type != null)
                         return type;
@@ -490,7 +536,7 @@ public class SemanticAnalysis {
         return null;
     }
 
-    //for method
+    //Analysis a complex statement from an object present in a method
     private Type analyseComplexStatementSM(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node1, ASTIdentifier node2) {
 
         //If it is a declared object
@@ -512,7 +558,7 @@ public class SemanticAnalysis {
                 if (sc.symbolTableMethods.containsKey(node2.val)) {
 
                     //check for a method with the same signature
-                    Type type = checkIfMethodExists(sc.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2));
+                    Type type = getMethodType(sc.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2));
 
                     if(type != null)
                         return type;
@@ -531,7 +577,7 @@ public class SemanticAnalysis {
                     if(ssc.symbolTableMethods.containsKey(node2.val)) {
 
                         //check for a method with the same signature
-                        Type type = checkIfMethodExists(ssc.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2));
+                        Type type = getMethodType(ssc.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2));
 
                         if(type != null)
                             return type;
@@ -558,7 +604,7 @@ public class SemanticAnalysis {
         return null;
     }
 
-    //for class
+    //Analysis a complex statement from an object present in a class
     private Type analyseComplexStatementSC(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node1, ASTIdentifier node2) {
 
 
@@ -580,7 +626,7 @@ public class SemanticAnalysis {
                 if (node2.method) {
 
                     if (sc.symbolTableMethods.containsKey(node2.val)) {
-                        Type type = checkIfMethodExists(sc.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2));
+                        Type type = getMethodType(sc.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2));
 
                         if (type != null)
                             return type;
@@ -598,7 +644,7 @@ public class SemanticAnalysis {
                         if (ssc.symbolTableMethods.containsKey(node2.val)) {
 
                             //check for a method with the same signature
-                            Type type = checkIfMethodExists(ssc.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2));
+                            Type type = getMethodType(ssc.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2));
 
                             if (type != null)
                                 return type;
@@ -622,7 +668,7 @@ public class SemanticAnalysis {
         return null;
     }
 
-    //current class
+    //Analysis a this statement
     private Type analyseThisStatement(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node) {
         Type type = null;
 
@@ -646,7 +692,7 @@ public class SemanticAnalysis {
             //Check if current class has any method with the same signature
             if (symbolClass.symbolTableMethods.containsKey(node.val)) {
 
-                type = checkIfMethodExists(symbolClass.symbolTableMethods.get(node.val), getMethodCallTypes(symbolMethod, symbolClass, node));
+                type = getMethodType(symbolClass.symbolTableMethods.get(node.val), getMethodCallTypes(symbolMethod, symbolClass, node));
 
             }
         }
@@ -656,7 +702,7 @@ public class SemanticAnalysis {
 
             SymbolClass sc = (SymbolClass) symbolTable.get(symbolClass.superClass);
 
-            Type type1 = checkIfMethodExists(sc.symbolTableMethods.get(node.val), getMethodCallTypes(symbolMethod, symbolClass, node));
+            Type type1 = getMethodType(sc.symbolTableMethods.get(node.val), getMethodCallTypes(symbolMethod, symbolClass, node));
 
             if (type1 != null)
                 return type1;
@@ -668,6 +714,7 @@ public class SemanticAnalysis {
         return type;
     }
 
+    //Returns the method signature
     private ArrayList<Type> getMethodCallTypes(SymbolMethod symbolMethod, SymbolClass symbolClass, ASTIdentifier node2) {
         ArrayList<Type> types = new ArrayList<>();
 
@@ -679,7 +726,7 @@ public class SemanticAnalysis {
         return types;
     }
 
-    //Functions cannot come through here! it will go wrong!
+    //Analysis Identifier -> node cannot be the name of a class! be careful
     private Type analysingIdentifier(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node) {
 
         Type type;
@@ -716,6 +763,7 @@ public class SemanticAnalysis {
 
     }
 
+    //Analyses a Boolean Operation
     private Type analysingBooleanOperation(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node) {
 
         if (node.jjtGetNumChildren() != 2) {
@@ -743,6 +791,7 @@ public class SemanticAnalysis {
         return type1;
     }
 
+    //Analyses a Arithmetic Operation
     private Type analysingOperation(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node) {
 
         if (node.jjtGetNumChildren() != 2) {
@@ -781,6 +830,7 @@ public class SemanticAnalysis {
 
     }
 
+    //Checks if a variable has been initialized
     private void checkIfInitialize(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node) {
 
         if (symbolClass.symbolTableFields.containsKey(node.val)) {
@@ -805,7 +855,7 @@ public class SemanticAnalysis {
         }
     }
 
-
+    //Adds the var declarations to the method
     private void analysingVarDeclaration(SymbolMethod symbolMethod, ASTVarDeclaration nodeVarDeclaration) {
 
         if(symbolMethod.symbolTable.containsKey(nodeVarDeclaration.name)){
@@ -831,6 +881,7 @@ public class SemanticAnalysis {
 
     }
 
+    //Adds declared fields to class
     private void analysingVarDeclarationClass(SymbolClass symbolClass, ASTVarDeclaration nodeVarDeclaration) {
 
         SymbolVar symbolVar = symbolClass.symbolTableFields.get(nodeVarDeclaration.name);
@@ -860,6 +911,7 @@ public class SemanticAnalysis {
         }
     }
 
+    //Analysis declared Type
     private Type analysingType(Symbol parentSymbol, ASTType nodeType) {
 
         Type type = getType(nodeType);
@@ -872,26 +924,31 @@ public class SemanticAnalysis {
 
     }
 
+    //Handles an Error
     private void errorMessage(String message, int line) {
         nErrors++;
         System.err.println("Near line " + line + ": " + message);
     }
 
+    //Handles an Warning
     private void warningMessage(String message, int line) {
         nWarnings++;
         System.err.println("Near line " + line + ": " + message);
     }
 
+    //Handles an Error
     private void errorMessage(String message) {
         nErrors++;
         System.err.println(message);
     }
 
+    //Handles an Warning
     private void warningMessage(String message) {
         nWarnings++;
         System.err.println(message);
     }
 
+    //Dumps the symbol table
     public void dump(){
 
         for(Map.Entry<String, Symbol> entry : this.symbolTable.entrySet()) {
