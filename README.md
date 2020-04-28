@@ -69,13 +69,13 @@ todas as verificações feitas na análise semantica devem reportar erro excepto
     
     . verificar se valor do assignee é igual ao do assigned (a_int = b_boolean não é permitido!) [DONE]
     
-    . verificar se operação booleana é efetuada só com booleanos
+    . verificar se operação booleana é efetuada só com booleanos [DONE]
     
     . verificar se conditional expressions (if e while) resulta num booleano [DONE]
     
     . verificar se variáveis são inicializadas, dando um WARNING em vez de ERRO
     
-       + parametros são assumidos como inicializados
+       + parametros são assumidos como inicializados [DONE]
        + devem fazer uma análise através do control flow, i.e., se há um if e a variável só é inicializada dentro de ou o then ou o else, deve-se dar um warning a indicar que poderá não estar inicializada
        + será considerado bónus a quem resolver esta verificação usando erros em vez de warning.
             - cuidado que se a analise não estiver bem feita os erros vão fazer com que o vosso compilador não passe para a geração de código!
@@ -84,7 +84,7 @@ todas as verificações feitas na análise semantica devem reportar erro excepto
 - Function Verification
 	* verificar se o "target" do método existe, e se este contém o método (e.g. a.foo, ver se 'a' existe e se tem um método 'foo') [DONE]
 	    - caso seja do tipo da classe declarada (e.g. a usar o this), verificar se é método do extends olhando para o que foi importado (isto se a classe fizer extends de outra classe importada)
-	* caso o método não seja da classe declarada, isto é importada, verificar se método foi importado
+	* caso o método não seja da classe declarada, isto é importada, verificar se método foi importado [DONE]
 	* verificar se o número de argumentos na invocação é igual ao número de par âmetros da declaração [DONE]
 	* verificar se o tipo dos parâmetros coincide com o tipo dos argumentos [DONE]
 	    - não esquecer que existe method overloading
