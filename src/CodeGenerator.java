@@ -485,44 +485,68 @@ public class CodeGenerator {
 
     private void generateCall(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier identifier1, ASTIdentifier identifier2) {
         String methodName=""; String objectName=""; String methodType=""; String callArgs = "";
-        Type type=null; 
+        Type type=null;
         boolean declaredInClass=false;
         ArrayList<Type> callArgsArray;
 
         //Import
         if (symbolTable.containsKey(identifier1.val)) {
+            if (symbolTable.get(identifier1.val) instanceof SymbolClass) {
+                SymbolClass sc = (SymbolClass) symbolTable.get(identifier1.val);
 
-        }
-
-        //Object of class / method
-        if (symbolMethod.symbolTable.containsKey(identifier1.val)) {
-            if (symbolMethod.symbolTable.get(identifier1.val).getType().equals(Type.OBJECT)) {
-                
-                SymbolClass sc = (SymbolClass) symbolTable.get(symbolMethod.symbolTable.get(identifier1.val).getObject_name());
-
-                //Verify if first part of dot expression was declared inside the class
-                if (symbolMethod.symbolTable.containsKey(identifier1.val) || symbolClass.symbolTableFields.containsKey(identifier1.val))
-                    declaredInClass=true;
-
-                if(identifier2 !=null){
-                    //Right part of dot expression is a method
+                if(identifier2!=null) {
+                    //Check for methods
                     if (identifier2.method) {
-                        methodName = identifier2.val;
-                        //Get the return type of method
+                        methodName=identifier2.val;
                         if (sc.symbolTableMethods.containsKey(identifier2.val)) {
                             type = checkIfMethodExists(sc.symbolTableMethods.get(identifier2.val), getMethodCallTypes(symbolMethod, symbolClass, identifier2));
-                            methodType += getSymbolType(type);
+                            System.out.println("type import: " + type);
+                            if(type!=null)
+                                methodType += getSymbolType(type);
                         }
-                        //Get the type of arguments of method
                         callArgsArray = getMethodCallTypes(symbolMethod, symbolClass, identifier2);
-                        for(Type t: callArgsArray){
-                            callArgs+=getSymbolType(t);
+                        if(callArgsArray.size()>0) {
+                            for (Type t : callArgsArray) {
+                                if(t!=null)
+                                    callArgs += getSymbolType(t);
+                            }
                         }
-                        objectName = sc.name;
+                        objectName=sc.name;
                     }
                 }
             }
         }
+
+        //Verify if first part of dot expression was declared inside the class or method
+        else if (symbolMethod.symbolTable.containsKey(identifier1.val) || symbolClass.symbolTableFields.containsKey(identifier1.val)) {
+            declaredInClass = true;
+            if (symbolMethod.symbolTable.containsKey(identifier1.val)) {
+                if (symbolMethod.symbolTable.get(identifier1.val).getType().equals(Type.OBJECT)) {
+
+                    SymbolClass sc = (SymbolClass) symbolTable.get(symbolMethod.symbolTable.get(identifier1.val).getObject_name());
+
+
+                    if (identifier2 != null) {
+                        //Right part of dot expression is a method
+                        if (identifier2.method) {
+                            methodName = identifier2.val;
+                            //Get the return type of method
+                            if (sc.symbolTableMethods.containsKey(identifier2.val)) {
+                                type = checkIfMethodExists(sc.symbolTableMethods.get(identifier2.val), getMethodCallTypes(symbolMethod, symbolClass, identifier2));
+                                methodType += getSymbolType(type);
+                            }
+                            //Get the type of arguments of method
+                            callArgsArray = getMethodCallTypes(symbolMethod, symbolClass, identifier2);
+                            objectName = sc.name;
+                            for (Type t : callArgsArray) {
+                                callArgs += getSymbolType(t);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
 
         if (declaredInClass)
             this.printWriterFile.println("\t"+"invokevirtual "+objectName+"/"+methodName+"("+callArgs+")"+methodType);
