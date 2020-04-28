@@ -164,7 +164,7 @@ public class SemanticAnalysis {
     //Adds arguments to method
     private void addMethodArg(SymbolMethod symbolMethod, ASTArg nodeArg) {
         SymbolVar symbolVar = new SymbolVar(nodeArg.val);
-        symbolVar.setInitialize();
+        symbolVar.setInitialized();
         symbolMethod.addSymbol(nodeArg.val, symbolVar);
 
         if (nodeArg.jjtGetNumChildren() != 1)
@@ -214,7 +214,7 @@ public class SemanticAnalysis {
         //adding parameter to main
         SymbolVar symbolVar = new SymbolVar(methodNode.parametherName);
         symbolVar.setType(Type.STRING_ARRAY);
-        symbolVar.setInitialize();
+        symbolVar.setInitialized();
         symbolMethod.addSymbol(symbolVar.name, symbolVar);
 
         symbolClass.addSymbolMethod("main", symbolMethod);
@@ -342,7 +342,7 @@ public class SemanticAnalysis {
         Type type1 = analysingIdentifier(symbolClass, symbolMethod, (ASTIdentifier) node.jjtGetChild(0));
         Type type2 = analysingExpression(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(1));
 
-        setInitialize(symbolClass, symbolMethod, (ASTIdentifier) node.jjtGetChild(0));
+        setInitialized(symbolClass, symbolMethod, (ASTIdentifier) node.jjtGetChild(0));
 
         if (type1 == null || type2 == null)
             return;
@@ -354,15 +354,15 @@ public class SemanticAnalysis {
     }
 
     //Flags that the a variable has been initiated
-    private void setInitialize(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node) {
+    private void setInitialized(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node) {
 
         if (symbolClass.symbolTableFields.containsKey(node.val)) {
 
-            symbolClass.symbolTableFields.get(node.val).setInitialize();
+            symbolClass.symbolTableFields.get(node.val).setInitialized();
 
-        }else if (symbolMethod.symbolTable.containsKey(node.val)) {
+        } else if (symbolMethod.symbolTable.containsKey(node.val)) {
 
-            symbolMethod.symbolTable.get(node.val).setInitialize();
+            symbolMethod.symbolTable.get(node.val).setInitialized();
         }
     }
 
@@ -840,8 +840,8 @@ public class SemanticAnalysis {
             if (symbolVar.getType() == Type.INT_ARRAY)
                 return;
 
-            if (!symbolVar.isInitialize())
-                this.warningMessage(node.val + " is not initialize!", node.getLine());
+            if (!symbolVar.isInitialized())
+                this.warningMessage(node.val + " is not initialized!", node.getLine());
 
         }else if (symbolMethod.symbolTable.containsKey(node.val)) {
 
@@ -850,8 +850,8 @@ public class SemanticAnalysis {
             if (symbolVar.getType() == Type.INT_ARRAY)
                 return;
 
-            if (!symbolVar.isInitialize())
-                this.warningMessage(node.val + " is not initialize!", node.getLine());
+            if (!symbolVar.isInitialized())
+                this.warningMessage(node.val + " is not initialized!", node.getLine());
         }
     }
 

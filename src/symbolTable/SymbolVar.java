@@ -2,18 +2,18 @@ package symbolTable;
 
 public class SymbolVar extends Symbol {
 
-    boolean isInitialize = false;
+    boolean isInitialized = false;
 
     public SymbolVar(String name) {
         super(name);
     }
 
-    public boolean isInitialize() {
-        return isInitialize;
+    public boolean isInitialized() {
+        return isInitialized;
     }
 
-    public void setInitialize() {
-        isInitialize = true;
+    public void setInitialized() {
+        isInitialized = true;
     }
 
     public void dump(String prefix) {
