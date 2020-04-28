@@ -18,8 +18,6 @@ public class CodeGenerator {
 	public void generate(SimpleNode node) {
 
         System.out.println("Starting creating jasmin code");
-        //System.out.println(this.symbolTable.toString());
-
         ASTClassDeclaration classNode=null;
 
         for(int i=0;i<node.jjtGetNumChildren();i++){
@@ -46,7 +44,7 @@ public class CodeGenerator {
         SymbolClass symbolClass = (SymbolClass) this.symbolTable.get(classNode.name);
 
         generateClassVariables(classNode);
-        generateExtend(classNode, symbolClass);
+        generateExtend(classNode);
         generateMethods(classNode, symbolClass);
     }
 
@@ -70,9 +68,8 @@ public class CodeGenerator {
 
     private String getType(ASTType nodeType) {
 
-        if (nodeType.isArray) {
+        if (nodeType.isArray)
             return "[I";
-        }
 
         switch (nodeType.type) {
             case "int":
@@ -91,9 +88,8 @@ public class CodeGenerator {
 
     private String getSymbolType(Type symbolType) {
 
-        if (symbolType == Type.INT_ARRAY) {
+        if (symbolType == Type.INT_ARRAY)
             return "[I";
-        }
 
         switch (symbolType) {
             case INT:
@@ -108,13 +104,12 @@ public class CodeGenerator {
         return "";
     }
 
-    private void generateExtend(ASTClassDeclaration node, SymbolClass symbolClass){
+    private void generateExtend(ASTClassDeclaration node){
         if(node.ext != null)
             this.printWriterFile.println("\n.method public <init>()V\n\taload_0\n\tinvokenonvirtual "
                     + node.ext + "/<init>()V\n\treturn\n.end method\n");
         else
             generateConstructor();
-
     }
 
     private void generateConstructor() {
@@ -141,13 +136,11 @@ public class CodeGenerator {
                     System.err.println("ERROR generating code for method " + methodDeclaration.name);
                     System.exit(0);
                 }
-
                 generateMethod(methodDeclaration, symbolClass, symbolMethod);
             }
         }
 
     }
-
 
     private void generateMainMethod(SimpleNode mainNode, SymbolClass symbolClass, SymbolMethod symbolMethod) {
         this.printWriterFile.println(".method public static main([Ljava/lang/String;)V");
@@ -171,7 +164,6 @@ public class CodeGenerator {
 
         printWriterFile.write(".endMethod\n\n");
     }
-
 
     private SymbolMethod getSymbolMethod(ArrayList<SymbolMethod> listSymbolMethod, int num) {
         if(listSymbolMethod.size() == 1)
@@ -251,7 +243,6 @@ public class CodeGenerator {
             if(node instanceof ASTEquality){
                 generateEquality((ASTEquality) node, symbolClass, symbolMethod);
             }
-            
             
             //Return
             if(node instanceof ASTReturn){
@@ -498,13 +489,19 @@ public class CodeGenerator {
         boolean declaredInClass=false;
         ArrayList<Type> callArgsArray;
 
+        //Import
+        if (symbolTable.containsKey(identifier1.val)) {
+
+        }
+
+        //Object of class / method
         if (symbolMethod.symbolTable.containsKey(identifier1.val)) {
             if (symbolMethod.symbolTable.get(identifier1.val).getType().equals(Type.OBJECT)) {
                 
                 SymbolClass sc = (SymbolClass) symbolTable.get(symbolMethod.symbolTable.get(identifier1.val).getObject_name());
 
                 //Verify if first part of dot expression was declared inside the class
-                if (symbolMethod.symbolTable.containsKey(identifier1.val) || symbolClass.symbolTableFields.containsKey(identifier1.val)) 
+                if (symbolMethod.symbolTable.containsKey(identifier1.val) || symbolClass.symbolTableFields.containsKey(identifier1.val))
                     declaredInClass=true;
 
                 if(identifier2 !=null){
@@ -526,7 +523,7 @@ public class CodeGenerator {
                 }
             }
         }
-        
+
         if (declaredInClass)
             this.printWriterFile.println("\t"+"invokevirtual "+objectName+"/"+methodName+"("+callArgs+")"+methodType);
         else
