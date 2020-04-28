@@ -99,11 +99,6 @@ public class ParserTest {
     }
 
     @Test
-    public void stringType() {
-        test("fixtures/public/fail/semantic/StringType.jmm", true);
-    }
-
-    @Test
     public void testarr_index_not_int() {
         test("fixtures/public/fail/semantic/arr_index_not_int.jmm", true);
     }
@@ -158,41 +153,50 @@ public class ParserTest {
         test("fixtures/public/fail/semantic/extra/miss_type.jmm", true);
     }
 
+    //Our tests
+
+    @Test
+    public void stringType() {
+        test("fixtures/public/fail/semantic/ourTests/StringType.jmm", true);
+    }
+
     @Test
     public void testAddArrays() {
-        test("fixtures/public/fail/semantic/addArrays.jmm", true);
+        test("fixtures/public/fail/semantic/ourTests/addArrays.jmm", true);
     }
 
     @Test
     public void testSameOperation() {
-        test("fixtures/public/fail/semantic/sameOperation.jmm", true);
+        test("fixtures/public/fail/semantic/ourTests/sameOperation.jmm", true);
     }
 
     @Test
     public void testAccessArray() {
-        test("fixtures/public/fail/semantic/accessArray.jmm", true);
+        test("fixtures/public/fail/semantic/ourTests/accessArray.jmm", true);
     }
 
 
     @Test
     public void testBooleanOper() {
-        test("fixtures/public/fail/semantic/booleanOper.jmm", true);
+        test("fixtures/public/fail/semantic/ourTests/booleanOper.jmm", true);
     }
 
     @Test
     public void testCheckIf() {
-        test("fixtures/public/fail/semantic/checkIf.jmm", true);
+        test("fixtures/public/fail/semantic/ourTests/checkIf.jmm", true);
     }
 
     @Test
     public void testAddBooleans() {
-        test("fixtures/public/fail/semantic/addBooleans.jmm", true);
+        test("fixtures/public/fail/semantic/ourTests/addBooleans.jmm", true);
     }
 
     @Test
     public void testRepetitiveVars() {
-        test("fixtures/public/fail/semantic/repetitiveVars.jmm", true);
+        test("fixtures/public/fail/semantic/ourTests/repetitiveVars.jmm", true);
     }
+
+    //end of our tests
 
     @Test
     public void testBlowUp() {
