@@ -298,12 +298,12 @@ public class SemanticAnalysis {
         }
 
         if (node instanceof ASTIf) {
-            analysingConditional(symbolClass, symbolMethod, node, "if");
+            analysingIf(symbolClass, symbolMethod, (ASTIf) node);
             return;
         }
 
         if (node instanceof ASTWhile) {
-            analysingConditional(symbolClass, symbolMethod, node, "while");
+            analysingWhile(symbolClass, symbolMethod, (ASTWhile) node);
             return;
         }
 
@@ -317,13 +317,28 @@ public class SemanticAnalysis {
 
     }
 
-    private void analysingConditional(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node, String type) {
+    private void analysingWhile(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTWhile node) {
 
         if (node.jjtGetNumChildren() < 2)
             return;
 
         if (analysingExpression(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(0)) != Type.BOOLEAN) {
-            this.errorMessage("Conditional expression of " + type + " must be boolean", node.getLine());
+            this.errorMessage("Conditional expression of while must be boolean", node.getLine());
+        }
+
+        for (int i = 1; i < node.jjtGetNumChildren(); i++) {
+            this.analysingStatement(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(i));
+        }
+
+    }
+
+    private void analysingIf(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIf node) {
+
+        if (node.jjtGetNumChildren() != 3)
+            return;
+
+        if (analysingExpression(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(0)) != Type.BOOLEAN) {
+            this.errorMessage("Conditional expression of if must be boolean", node.getLine());
         }
 
         for (int i = 1; i < node.jjtGetNumChildren(); i++) {

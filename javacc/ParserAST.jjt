@@ -276,9 +276,9 @@ void Conditional() #void: {} {
 void If() : {} {
     <IF> 
         Conditional()
-        Statement()
+        Statement() #IfBody
     <ELSE>
-        Statement()
+        Statement() #ElseBody
 }
 
 void While() : {} {
