@@ -844,6 +844,7 @@ public class SemanticAnalysis {
     }
 
     private Type getType(ASTType nodeType) {
+
         if (nodeType.isArray) {
             return Type.INT_ARRAY;
         } else if (nodeType.type.equals("int")) {
@@ -860,26 +861,14 @@ public class SemanticAnalysis {
     }
 
     private Type analysingType(Symbol parentSymbol, ASTType nodeType) {
-        if (nodeType.isArray) {
-            parentSymbol.setType(Type.INT_ARRAY);
-            return Type.INT_ARRAY;
-        } else if (nodeType.type.equals("int")) {
-            parentSymbol.setType(Type.INT);
-            return Type.INT;
-        } else if (nodeType.type.equals("boolean")) {
-            parentSymbol.setType(Type.BOOLEAN);
-            return Type.BOOLEAN;
-        } else if (nodeType.type.equals("String")) {
-            parentSymbol.setType(Type.STRING);
-            return Type.STRING;
-        } else if (nodeType.type.equals("void")) {
-            parentSymbol.setType(Type.VOID);
-            return Type.VOID;
-        } else {
+
+        Type type = getType(nodeType);
+        parentSymbol.setType(type);
+
+        if(type == Type.OBJECT)
             parentSymbol.setObject_name(nodeType.type);
-            parentSymbol.setType(Type.OBJECT);
-            return Type.OBJECT;
-        }
+
+        return type;
 
     }
 
