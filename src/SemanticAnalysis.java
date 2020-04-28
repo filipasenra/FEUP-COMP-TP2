@@ -105,6 +105,12 @@ public class SemanticAnalysis {
 
     private void addVarDeclarationInfo(SymbolClass symbolClass, ASTVarDeclaration nodeVarDeclaration) {
         SymbolVar symbolVar = new SymbolVar(nodeVarDeclaration.name);
+
+        if(symbolClass.symbolTableFields.containsKey(nodeVarDeclaration.name)){
+            this.errorMessage(nodeVarDeclaration.name + " variable is already defined in the class!");
+            return;
+        }
+
         symbolClass.addSymbolField(nodeVarDeclaration.name, symbolVar);
     }
 
@@ -179,6 +185,13 @@ public class SemanticAnalysis {
         }
 
         SymbolMethod symbolMethod = new SymbolMethod("main");
+
+        //adding parameter to main
+        SymbolVar symbolVar = new SymbolVar(methodNode.parametherName);
+        symbolVar.setType(Type.STRING_ARRAY);
+        symbolVar.setInitialize();
+        symbolMethod.addSymbol(symbolVar.name, symbolVar);
+
         symbolClass.addSymbolMethod("main", symbolMethod);
 
         for (int i = 0; i < methodNode.jjtGetNumChildren(); i++) {
@@ -228,7 +241,12 @@ public class SemanticAnalysis {
         if (node.jjtGetNumChildren() != 1)
             return;
 
-        if (symbolMethod.getType() != this.analysingExpression(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(0)))
+        Type type = this.analysingExpression(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(0));
+
+        if(type == null)
+            return;
+
+        if (symbolMethod.getType() != type)
             this.errorMessage("Return expression doesn't coincide with return type of function " + symbolMethod.name);
 
 
@@ -293,7 +311,7 @@ public class SemanticAnalysis {
             return;
 
         if (type1 != type2) {
-            this.errorMessage("Equality between two different types!");
+            this.errorMessage("Assignment between two different types!");
         }
 
     }
@@ -324,12 +342,14 @@ public class SemanticAnalysis {
     private Type analysingExpression(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node) {
 
         if (node instanceof ASTAND) {
-            analysingOperation(symbolClass, symbolMethod, node);
-            return Type.BOOLEAN;
+
+            return analysingBooleanOperation(symbolClass, symbolMethod, node);
         }
 
         if (node instanceof ASTLESSTHAN) {
-            analysingOperation(symbolClass, symbolMethod, node);
+            if (analysingOperation(symbolClass, symbolMethod, node) == null)
+                return null;
+
             return Type.BOOLEAN;
         }
 
@@ -369,7 +389,11 @@ public class SemanticAnalysis {
             if (node.jjtGetNumChildren() != 1)
                 return null;
 
-            return analysingExpression(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(0));
+            if (analysingExpression(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(0)) != Type.BOOLEAN){
+                this.errorMessage("Negation can only be applied to a boolean");
+            }
+
+            return Type.BOOLEAN;
         }
 
         if (node instanceof ASTIdentifier) {
@@ -676,20 +700,47 @@ public class SemanticAnalysis {
             if (node.jjtGetChild(0) instanceof ASTaccessToArray) {
 
                 if (analysingExpression(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(0).jjtGetChild(0)) != Type.INT)
-                    this.errorMessage("Access to array is not int!");
+                    this.errorMessage("Array indices must be integer!");
 
                 if (type == Type.INT_ARRAY)
                     return Type.INT;
                 else if (type == Type.STRING_ARRAY)
                     return Type.STRING;
 
-                this.errorMessage(node.val + "is not an array");
+                this.errorMessage(node.val + " is not an array!");
                 return null;
             }
         }
 
         return type;
 
+    }
+
+    private Type analysingBooleanOperation(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node) {
+
+        if (node.jjtGetNumChildren() != 2) {
+            this.errorMessage("Operation can only have 2 arguments!");
+            return null;
+        }
+
+        Type type1 = analysingExpression(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(0));
+        Type type2 = analysingExpression(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(1));
+
+        if (node.jjtGetChild(0) instanceof ASTIdentifier)
+            checkIfInitialize(symbolClass, symbolMethod, (ASTIdentifier) node.jjtGetChild(0));
+
+        if (node.jjtGetChild(1) instanceof ASTIdentifier)
+            checkIfInitialize(symbolClass, symbolMethod, (ASTIdentifier) node.jjtGetChild(1));
+
+        if (type1 == null || type2 == null)
+            return null;
+
+        if (type1 != Type.BOOLEAN || type2 != Type.BOOLEAN) {
+            this.errorMessage("Operation && only accepts booleans!");
+            return null;
+        }
+
+        return type1;
     }
 
     private Type analysingOperation(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node) {
@@ -712,7 +763,12 @@ public class SemanticAnalysis {
             return null;
 
         if(type1 == Type.INT_ARRAY || type1 == Type.STRING_ARRAY || type2 == Type.INT_ARRAY || type2 == Type.STRING_ARRAY) {
-            this.errorMessage("It is not possible to use arrays directly for arithmetic operations!");
+            this.errorMessage("It is not possible to use arrays directly in arithmetic operations!");
+            return null;
+        }
+
+        if (type1 == Type.BOOLEAN || type2 == Type.BOOLEAN) {
+            this.errorMessage("Arithmetic Operation doesn't accept booleans!");
             return null;
         }
 
@@ -751,6 +807,12 @@ public class SemanticAnalysis {
 
 
     private void analysingVarDeclaration(SymbolMethod symbolMethod, ASTVarDeclaration nodeVarDeclaration) {
+
+        if(symbolMethod.symbolTable.containsKey(nodeVarDeclaration.name)){
+            this.errorMessage(nodeVarDeclaration.name + " variable is already defined in the method!");
+            return;
+        }
+
         SymbolVar symbolVar = new SymbolVar(nodeVarDeclaration.name);
         symbolMethod.addSymbol(nodeVarDeclaration.name, symbolVar);
 
@@ -762,7 +824,7 @@ public class SemanticAnalysis {
 
             if (type == Type.OBJECT)
                 if (!symbolTable.containsKey(symbolVar.getObject_name())) {
-                    this.errorMessage("Missing type");
+                    this.errorMessage("Class " + symbolVar.getObject_name() + " doesn't exist! ");
                 }
 
         }

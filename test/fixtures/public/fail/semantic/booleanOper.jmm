@@ -1,5 +1,5 @@
 /*  REASON:
-    Cannot access index of a non array
+    Operation && only accepts booleans
 */
 
 class BooleanOper {
@@ -12,6 +12,6 @@ class BooleanOper {
         d = 1;
 
         b = c && d;
-        //b = c > d
+        b = c < d;
     }
 }

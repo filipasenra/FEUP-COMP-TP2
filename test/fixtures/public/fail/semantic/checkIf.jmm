@@ -1,5 +1,5 @@
 /*  REASON:
-    Cannot access index of a non array
+    Conditional expression of if must be boolean
 */
 
 class BooleanOper {

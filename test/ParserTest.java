@@ -173,15 +173,25 @@ public class ParserTest {
         test("fixtures/public/fail/semantic/accessArray.jmm", true);
     }
 
-    /*
+
     @Test
     public void testBooleanOper() {
         test("fixtures/public/fail/semantic/booleanOper.jmm", true);
-    }*/
+    }
 
     @Test
     public void testCheckIf() {
         test("fixtures/public/fail/semantic/checkIf.jmm", true);
+    }
+
+    @Test
+    public void testAddBooleans() {
+        test("fixtures/public/fail/semantic/addBooleans.jmm", true);
+    }
+
+    @Test
+    public void testRepetitiveVars() {
+        test("fixtures/public/fail/semantic/repetitiveVars.jmm", true);
     }
 
     @Test
