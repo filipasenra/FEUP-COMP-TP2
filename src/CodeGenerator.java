@@ -143,6 +143,9 @@ public class CodeGenerator {
     private void generateMainMethod(SimpleNode mainNode, SymbolClass symbolClass, SymbolMethod symbolMethod) {
         this.printWriterFile.println(".method public static main([Ljava/lang/String;)V");
 
+        printWriterFile.println("\t.limit stack 99");//TODO calculate stack and locals, just for ckpt3
+        printWriterFile.println("\t.limit locals 99\n");
+
         generateIndexes(mainNode, symbolMethod);
         generateMethodBody(mainNode, symbolClass, symbolMethod);
 
@@ -273,8 +276,9 @@ public class CodeGenerator {
             generateRhs(rhs, symbolClass, symbolMethod);
             this.printWriterFile.println("\tiastore");
         } else {
-            generateLhs(lhs, symbolMethod);
             generateRhs(rhs, symbolClass, symbolMethod);
+            generateLhs(lhs, symbolMethod);
+
         }
     }
 
@@ -286,7 +290,7 @@ public class CodeGenerator {
 
     private void generateRhs(SimpleNode rhs, SymbolClass symbolClass, SymbolMethod symbolMethod) {
         if (rhs != null) {
-            if (rhs.jjtGetNumChildren() > 1) {            
+            if (rhs.jjtGetNumChildren() > 1) { 
                 generateOperation(rhs, symbolClass, symbolMethod);
             }
             else if (rhs instanceof ASTIdentifier) {
@@ -309,6 +313,8 @@ public class CodeGenerator {
         SimpleNode rhs = (SimpleNode) operation.jjtGetChild(1);
 
         if(operation instanceof ASTDotExpression) {
+            if(lhs instanceof ASTIdentifier)   
+                loadLocalVariable((ASTIdentifier)lhs,symbolMethod);      
             generateDotExpression(operation, symbolClass, symbolMethod);
         }
         else{
@@ -479,6 +485,7 @@ public class CodeGenerator {
                 loadVariable(leftIdentifier, symbolMethod);
                 this.printWriterFile.println("\tarraylength");
             } else {
+                //loadLocalVariable(leftIdentifier, symbolMethod);
                 generateCall(symbolClass, symbolMethod, leftIdentifier, rightIdentifier);
             }
         }
@@ -499,9 +506,10 @@ public class CodeGenerator {
                     //Check for methods
                     if (identifier2.method) {
                         methodName=identifier2.val;
+                        if(identifier2.jjtGetNumChildren()>0 )
+                            processArgs(identifier2,symbolMethod);
                         if (sc.symbolTableMethods.containsKey(identifier2.val)) {
                             type = checkIfMethodExists(sc.symbolTableMethods.get(identifier2.val), getMethodCallTypes(symbolMethod, symbolClass, identifier2));
-                            System.out.println("type import: " + type);
                             if(type!=null)
                                 methodType += getSymbolType(type);
                         }
@@ -526,11 +534,12 @@ public class CodeGenerator {
 
                     SymbolClass sc = (SymbolClass) symbolTable.get(symbolMethod.symbolTable.get(identifier1.val).getObject_name());
 
-
                     if (identifier2 != null) {
                         //Right part of dot expression is a method
-                        if (identifier2.method) {
+                        if (identifier2.method) {                            
                             methodName = identifier2.val;
+                            processArgs(identifier2,symbolMethod);
+
                             //Get the return type of method
                             if (sc.symbolTableMethods.containsKey(identifier2.val)) {
                                 type = checkIfMethodExists(sc.symbolTableMethods.get(identifier2.val), getMethodCallTypes(symbolMethod, symbolClass, identifier2));
@@ -553,6 +562,17 @@ public class CodeGenerator {
             this.printWriterFile.println("\t"+"invokevirtual "+objectName+"/"+methodName+"("+callArgs+")"+methodType);
         else
             this.printWriterFile.println("\t" + "invokestatic "+objectName+"/"+methodName+"("+callArgs+")"+methodType);
+    }
+
+    private void processArgs(SimpleNode node, SymbolMethod symbolMethod){
+
+        for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+            SimpleNode child = (SimpleNode) node.jjtGetChild(i);
+            if(child instanceof ASTArg || child instanceof ASTIdentifier){
+                ASTIdentifier arg = (ASTIdentifier) child;
+                loadLocalVariable(arg, symbolMethod);    
+            }
+        }
     }
 
     private ArrayList<Type> getMethodCallTypes(SymbolMethod symbolMethod, SymbolClass symbolClass, ASTIdentifier node2) {
