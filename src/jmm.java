@@ -1,3 +1,6 @@
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
 public class jmm {
 
     private static boolean DEBUG = false;
@@ -30,8 +33,8 @@ public class jmm {
 
         ParserAST myParser;
         try {
-            myParser = new ParserAST(new java.io.FileInputStream(args[0]));
-        } catch (java.io.FileNotFoundException e) {
+            myParser = new ParserAST(new FileInputStream(args[0]));
+        } catch (FileNotFoundException e) {
             System.out.println("file " + args[0] + " not found.");
             return;
         }
@@ -61,7 +64,7 @@ public class jmm {
         }
 
         if (semanticAnalysis.getNwarnings() > 0) {
-            throw new RuntimeException("Has " + semanticAnalysis.getNwarnings() + " semantic warnings");
+            System.err.println("Has " + semanticAnalysis.getNwarnings() + " semantic warnings");
         }
 
         if(DEBUG) {
