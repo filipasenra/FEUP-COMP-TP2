@@ -223,7 +223,7 @@ void MethodDeclaration() #void : {Token t;} {
     <PUBLIC> 
     ((<STATIC> <VOID> <MAIN>
     <LEFT_PARENTESIS> 
-        <STRING> <LEFT_BRACKET> <RIGHT_BRACKET> <IDENTIFIER>
+        <STRING> <LEFT_BRACKET> <RIGHT_BRACKET> t = <IDENTIFIER> {jjtThis.parametherName = t.image;}
     <RIGHT_PARENTESIS>
     <LEFT_BRACE> 
         (LOOKAHEAD(2) VarDeclaration())* 

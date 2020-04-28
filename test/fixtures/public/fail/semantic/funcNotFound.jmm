@@ -1,5 +1,6 @@
 /*  REASON:
-    Variable assignments to literals must have the literal be the variable's type.
+    Not found function foo.
+    Not found class io.
 */
 
 class T {
