@@ -15,7 +15,7 @@ public class jmm {
     // java -jar comp2020-3a.jar test/fixtures/public/fail/syntactical/MultipleSequential.jmm
     //java -jar comp2020-3a.jar test/fixtures/public/fail/semantic/binop_incomp.jmm
 
-    public static void main(String args[]) throws ParseException {
+    public static void main(String[] args) throws ParseException {
         if (args.length != 1 && args.length != 2) {
             System.err.println("Usage: java Jmm <filename> -debug*>");
             return;

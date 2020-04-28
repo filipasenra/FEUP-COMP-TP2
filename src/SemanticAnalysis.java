@@ -164,7 +164,7 @@ public class SemanticAnalysis {
     //Adds arguments to method
     private void addMethodArg(SymbolMethod symbolMethod, ASTArg nodeArg) {
         SymbolVar symbolVar = new SymbolVar(nodeArg.val);
-        symbolVar.setInitialize();
+        symbolVar.updateInitialized(true);
         symbolMethod.addSymbol(nodeArg.val, symbolVar);
 
         if (nodeArg.jjtGetNumChildren() != 1)
@@ -214,7 +214,7 @@ public class SemanticAnalysis {
         //adding parameter to main
         SymbolVar symbolVar = new SymbolVar(methodNode.parametherName);
         symbolVar.setType(Type.STRING_ARRAY);
-        symbolVar.setInitialize();
+        symbolVar.updateInitialized(true);
         symbolMethod.addSymbol(symbolVar.name, symbolVar);
 
         symbolClass.addSymbolMethod("main", symbolMethod);
@@ -359,7 +359,7 @@ public class SemanticAnalysis {
         Type type1 = analysingIdentifier(symbolClass, symbolMethod, (ASTIdentifier) node.jjtGetChild(0));
         Type type2 = analysingExpression(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(1));
 
-        setInitialize(symbolClass, symbolMethod, (ASTIdentifier) node.jjtGetChild(0));
+        setInitialized(symbolClass, symbolMethod, (ASTIdentifier) node.jjtGetChild(0), false);
 
         if (type1 == null || type2 == null)
             return;
@@ -371,16 +371,11 @@ public class SemanticAnalysis {
     }
 
     //Flags that the a variable has been initiated
-    private void setInitialize(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node) {
-
-        if (symbolClass.symbolTableFields.containsKey(node.val)) {
-
-            symbolClass.symbolTableFields.get(node.val).setInitialize();
-
-        }else if (symbolMethod.symbolTable.containsKey(node.val)) {
-
-            symbolMethod.symbolTable.get(node.val).setInitialize();
-        }
+    private void setInitialized(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node, boolean partially) {
+        if (symbolClass.symbolTableFields.containsKey(node.val))
+            symbolClass.symbolTableFields.get(node.val).updateInitialized(partially);
+        else if (symbolMethod.symbolTable.containsKey(node.val))
+            symbolMethod.symbolTable.get(node.val).updateInitialized(partially);
     }
 
     private void analysingInitializeArray(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTInitializeArray node) {
@@ -792,10 +787,10 @@ public class SemanticAnalysis {
         Type type2 = analysingExpression(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(1));
 
         if (node.jjtGetChild(0) instanceof ASTIdentifier)
-            checkIfInitialize(symbolClass, symbolMethod, (ASTIdentifier) node.jjtGetChild(0));
+            checkIfInitialized(symbolClass, symbolMethod, (ASTIdentifier) node.jjtGetChild(0));
 
         if (node.jjtGetChild(1) instanceof ASTIdentifier)
-            checkIfInitialize(symbolClass, symbolMethod, (ASTIdentifier) node.jjtGetChild(1));
+            checkIfInitialized(symbolClass, symbolMethod, (ASTIdentifier) node.jjtGetChild(1));
 
         if (type1 == null || type2 == null)
             return null;
@@ -820,10 +815,10 @@ public class SemanticAnalysis {
         Type type2 = analysingExpression(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(1));
 
         if (node.jjtGetChild(0) instanceof ASTIdentifier)
-            checkIfInitialize(symbolClass, symbolMethod, (ASTIdentifier) node.jjtGetChild(0));
+            checkIfInitialized(symbolClass, symbolMethod, (ASTIdentifier) node.jjtGetChild(0));
 
         if (node.jjtGetChild(1) instanceof ASTIdentifier)
-            checkIfInitialize(symbolClass, symbolMethod, (ASTIdentifier) node.jjtGetChild(1));
+            checkIfInitialized(symbolClass, symbolMethod, (ASTIdentifier) node.jjtGetChild(1));
 
         if (type1 == null || type2 == null)
             return null;
@@ -848,7 +843,7 @@ public class SemanticAnalysis {
     }
 
     //Checks if a variable has been initialized
-    private void checkIfInitialize(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node) {
+    private void checkIfInitialized(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node) {
 
         if (symbolClass.symbolTableFields.containsKey(node.val)) {
 
@@ -857,18 +852,22 @@ public class SemanticAnalysis {
             if (symbolVar.getType() == Type.INT_ARRAY)
                 return;
 
-            if (!symbolVar.isInitialize())
-                this.warningMessage(node.val + " is not initialize!", node.getLine());
+            if (symbolVar.getInitialized() == Initialized.NOT_INITIALIZED)
+                this.warningMessage(node.val + " is not initialized!", node.getLine());
+            else if (symbolVar.getInitialized() == Initialized.PARTIALLY_INITIALIZED)
+                this.warningMessage(node.val + " may have not been initialized!", node.getLine());
 
-        }else if (symbolMethod.symbolTable.containsKey(node.val)) {
+        } else if (symbolMethod.symbolTable.containsKey(node.val)) {
 
             SymbolVar symbolVar = symbolMethod.symbolTable.get(node.val);
 
             if (symbolVar.getType() == Type.INT_ARRAY)
                 return;
 
-            if (!symbolVar.isInitialize())
-                this.warningMessage(node.val + " is not initialize!", node.getLine());
+            if (symbolVar.getInitialized() == Initialized.NOT_INITIALIZED)
+                this.warningMessage(node.val + " is not initialized!", node.getLine());
+            else if (symbolVar.getInitialized() == Initialized.PARTIALLY_INITIALIZED)
+                this.warningMessage(node.val + " may have not been initialized!", node.getLine());
         }
     }
 
@@ -951,18 +950,6 @@ public class SemanticAnalysis {
     private void warningMessage(String message, int line) {
         nWarnings++;
         System.err.println("Near line " + line + ": " + message);
-    }
-
-    //Handles an Error
-    private void errorMessage(String message) {
-        nErrors++;
-        System.err.println(message);
-    }
-
-    //Handles an Warning
-    private void warningMessage(String message) {
-        nWarnings++;
-        System.err.println(message);
     }
 
     //Dumps the symbol table
