@@ -14,8 +14,6 @@ public class ParserAST {
 
     void jjtreeOpenNodeScope(Node n) {
 
-        System.out.println("OLAAAAA");
-
             ((SimpleNode)n).setLine( getToken(1).beginLine ) ;
     }
 

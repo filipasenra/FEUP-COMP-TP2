@@ -15,4 +15,16 @@ public class SymbolVar extends Symbol {
     public void setInitialize() {
         isInitialize = true;
     }
+
+    public void dump(String prefix) {
+
+        System.out.println(prefix + "Variable: " + this.name);
+
+        String ifIsObject = "";
+        if(this.type == Type.OBJECT)
+            ifIsObject = ": " + this.object_name;
+
+        System.out.println(prefix + "  Type: " + this.type + ifIsObject);
+
+    }
 }

@@ -2,6 +2,7 @@ import symbolTable.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class SemanticAnalysis {
 
@@ -20,7 +21,6 @@ public class SemanticAnalysis {
 
     public void startAnalysing(SimpleNode node) {
 
-        System.out.println("Starting Semantic Analysis");
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             if (node.jjtGetChild(i) instanceof ASTImport)
                 addImport((ASTImport) node.jjtGetChild(i));
@@ -893,7 +893,7 @@ public class SemanticAnalysis {
         System.err.println("Near line " + line + ": " + message);
     }
 
-   /* private void errorMessage(String message) {
+    private void errorMessage(String message) {
         nErrors++;
         System.err.println(message);
     }
@@ -901,6 +901,20 @@ public class SemanticAnalysis {
     private void warningMessage(String message) {
         nWarnings++;
         System.err.println(message);
-    }*/
+    }
+
+    public void dump(){
+
+        for(Map.Entry<String, Symbol> entry : this.symbolTable.entrySet()) {
+
+            if(entry.getValue() instanceof SymbolVar)
+                ((SymbolVar) entry.getValue()).dump("");
+            else if(entry.getValue() instanceof SymbolMethod)
+                ((SymbolMethod) entry.getValue()).dump("");
+            else if(entry.getValue() instanceof SymbolClass)
+                ((SymbolClass) entry.getValue()).dump("");
+
+        }
+    }
 
 }

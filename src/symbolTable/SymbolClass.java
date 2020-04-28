@@ -2,6 +2,7 @@ package symbolTable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class SymbolClass extends Symbol {
 
@@ -30,5 +31,35 @@ public class SymbolClass extends Symbol {
         if(!symbolTableFields.containsKey(name)) {
             symbolTableFields.put(name, symbol);
         }
+    }
+
+    public void dump(String prefix) {
+
+        String superClassString = "";
+
+        if(this.superClass != null)
+            superClassString = " extends " + this.superClass;
+
+        System.out.println(prefix + "Class: " + this.name + superClassString);
+
+        if(this.symbolTableFields.size() > 0)
+            System.out.println(prefix + "  Fields: ");
+
+        for(Map.Entry<String, SymbolVar> entry : this.symbolTableFields.entrySet()) {
+
+            entry.getValue().dump(prefix + "   ");
+        }
+
+        if(this.symbolTableMethods.size() > 0)
+            System.out.println(prefix + "  Methods: ");
+
+        for(Map.Entry<String, ArrayList<SymbolMethod>> entry : this.symbolTableMethods.entrySet()) {
+
+            for (int j = 0; j < entry.getValue().size(); j++) {
+                entry.getValue().get(j).dump(prefix + "   ");
+                System.out.println();
+            }
+        }
+
     }
 }

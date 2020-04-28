@@ -17,7 +17,6 @@ public class CodeGenerator {
 
 	public void generate(SimpleNode node) {
 
-        System.out.println("Starting creating jasmin code");
         ASTClassDeclaration classNode=null;
 
         for(int i=0;i<node.jjtGetNumChildren();i++){
@@ -28,7 +27,6 @@ public class CodeGenerator {
 
         this.printWriterFile = createOutputFile(classNode.name);
         this.generateClass(classNode);
-        System.out.println("Jasmin code generated");
         this.printWriterFile.close();
     }
 
