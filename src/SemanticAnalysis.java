@@ -341,17 +341,11 @@ public class SemanticAnalysis {
             this.errorMessage("Conditional expression of if must be boolean", node.getLine());
         }
 
-        ASTIfBody ifBody = (ASTIfBody) node.jjtGetChild(1);
+        SimpleNode ifBody = (SimpleNode) node.jjtGetChild(1);
+        this.analysingStatement(symbolClass, symbolMethod, ifBody);
 
-        for (int i = 1; i < ifBody.jjtGetNumChildren(); i++) {
-            this.analysingStatement(symbolClass, symbolMethod, (SimpleNode) ifBody.jjtGetChild(i));
-        }
-
-        ASTElseBody elseBody = (ASTElseBody) node.jjtGetChild(2);
-
-        for (int i = 1; i < elseBody.jjtGetNumChildren(); i++) {
-            this.analysingStatement(symbolClass, symbolMethod, (SimpleNode) elseBody.jjtGetChild(i));
-        }
+        SimpleNode elseBody = (SimpleNode) node.jjtGetChild(2);
+        this.analysingStatement(symbolClass, symbolMethod, elseBody);
 
     }
 
