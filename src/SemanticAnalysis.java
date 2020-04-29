@@ -2,6 +2,7 @@ import symbolTable.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 public class SemanticAnalysis {
@@ -317,6 +318,35 @@ public class SemanticAnalysis {
 
     }
 
+    //Analysis statement within and if
+    private void analysingStatementWithinIf(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node, HashSet<SymbolVar> variablesInitialized) {
+
+        if (node instanceof ASTStatementBlock) {
+
+            for (int i = 0; i < node.jjtGetNumChildren(); i++)
+                analysingStatementWithinIf(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(i), variablesInitialized);
+        }
+
+        if (node instanceof ASTIf) {
+            analysingIfWithinAnIf(symbolClass, symbolMethod, (ASTIf) node, variablesInitialized);
+            return;
+        }
+
+        if (node instanceof ASTWhile) {
+            analysingWhile(symbolClass, symbolMethod, (ASTWhile) node);
+            return;
+        }
+
+        if (node instanceof ASTEquality) {
+            analysingEqualityWithinIf(symbolClass, symbolMethod, (ASTEquality) node, variablesInitialized);
+            return;
+        }
+
+        analysingExpression(symbolClass, symbolMethod, node);
+
+
+    }
+
     private void analysingWhile(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTWhile node) {
 
         if (node.jjtGetNumChildren() < 2)
@@ -342,10 +372,61 @@ public class SemanticAnalysis {
         }
 
         SimpleNode ifBody = (SimpleNode) node.jjtGetChild(1);
-        this.analysingStatement(symbolClass, symbolMethod, ifBody, true);
+        HashSet<SymbolVar> variablesInitializedInIf = new HashSet<>();
+        this.analysingStatementWithinIf(symbolClass, symbolMethod, ifBody, variablesInitializedInIf);
 
+        HashSet<SymbolVar> variablesInitializedInElse = new HashSet<>();
         SimpleNode elseBody = (SimpleNode) node.jjtGetChild(2);
-        this.analysingStatement(symbolClass, symbolMethod, elseBody, true);
+        this.analysingStatementWithinIf(symbolClass, symbolMethod, elseBody, variablesInitializedInElse);
+
+        for(SymbolVar symbolVar : variablesInitializedInIf){
+
+            symbolVar.updateInitialized(!variablesInitializedInElse.contains(symbolVar));
+        }
+
+        for(SymbolVar symbolVar : variablesInitializedInElse) {
+
+            symbolVar.updateInitialized(!variablesInitializedInIf.contains(symbolVar));
+        }
+
+    }
+
+    //Analysing an if within and another if
+    private void analysingIfWithinAnIf(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIf node, HashSet<SymbolVar> variablesInitialized) {
+
+        if (node.jjtGetNumChildren() != 3)
+            return;
+
+        if (analysingExpression(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(0)) != Type.BOOLEAN) {
+            this.errorMessage("Conditional expression of if must be boolean", node.getLine());
+        }
+
+        SimpleNode ifBody = (SimpleNode) node.jjtGetChild(1);
+        HashSet<SymbolVar> variablesInitializedInIf = new HashSet<>();
+        this.analysingStatementWithinIf(symbolClass, symbolMethod, ifBody, variablesInitializedInIf);
+
+        HashSet<SymbolVar> variablesInitializedInElse = new HashSet<>();
+        SimpleNode elseBody = (SimpleNode) node.jjtGetChild(2);
+        this.analysingStatementWithinIf(symbolClass, symbolMethod, elseBody, variablesInitializedInElse);
+
+
+        for(SymbolVar symbolVar : variablesInitializedInIf){
+
+            //if has been initialized in both, add to array initialized, if not, make it partially initialized
+            if(variablesInitializedInElse.contains(symbolVar))
+                variablesInitialized.add(symbolVar);
+            else
+                symbolVar.updateInitialized(true);
+        }
+
+        for(SymbolVar symbolVar : variablesInitializedInElse) {
+
+            //if has been initialized in both, add to array initialized, if not, make it partially initialized
+            if(variablesInitializedInIf.contains(symbolVar))
+                variablesInitialized.add(symbolVar);
+            else
+                symbolVar.updateInitialized(true);
+        }
 
     }
 
@@ -370,12 +451,49 @@ public class SemanticAnalysis {
 
     }
 
+
     //Flags that the a variable has been initiated
     private void setInitialized(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node, boolean partially) {
         if (symbolClass.symbolTableFields.containsKey(node.val))
             symbolClass.symbolTableFields.get(node.val).updateInitialized(partially);
         else if (symbolMethod.symbolTable.containsKey(node.val))
             symbolMethod.symbolTable.get(node.val).updateInitialized(partially);
+    }
+
+    //Analysing an equality within and if
+    private void analysingEqualityWithinIf(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTEquality node, HashSet<SymbolVar> variablesInitialized) {
+
+        if (node.jjtGetNumChildren() != 2) {
+            this.errorMessage("Equality can only have 2 arguments!", node.getLine());
+            return;
+        }
+
+        Type type1 = analysingIdentifier(symbolClass, symbolMethod, (ASTIdentifier) node.jjtGetChild(0));
+        Type type2 = analysingExpression(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(1));
+
+        if (type1 == null || type2 == null)
+            return;
+
+        setInitializedWithinIf(symbolClass, symbolMethod, (ASTIdentifier) node.jjtGetChild(0), variablesInitialized);
+
+        if (type1 != type2) {
+            this.errorMessage("Assignment between two different types!", node.getLine());
+        }
+
+    }
+
+    private void setInitializedWithinIf(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node, HashSet<SymbolVar> variablesInitialized) {
+
+        if (symbolMethod.symbolTable.containsKey(node.val)) {
+
+            if(symbolMethod.symbolTable.get(node.val).getInitialized() != Initialized.INITIALIZED)
+                variablesInitialized.add(symbolMethod.symbolTable.get(node.val));
+
+        } else if (symbolClass.symbolTableFields.containsKey(node.val)) {
+
+            if(symbolClass.symbolTableFields.get(node.val).getInitialized() != Initialized.INITIALIZED)
+                variablesInitialized.add(symbolClass.symbolTableFields.get(node.val));
+        }
     }
 
     private void analysingInitializeArray(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTInitializeArray node) {
