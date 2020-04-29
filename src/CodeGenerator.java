@@ -13,8 +13,7 @@ public class CodeGenerator {
     public CodeGenerator(SemanticAnalysis semanticAnalysis ){
         symbolTable = semanticAnalysis.getSymbolTable();
     }
-
-
+    
 	public void generate(SimpleNode node) {
 
         ASTClassDeclaration classNode=null;
@@ -45,7 +44,6 @@ public class CodeGenerator {
         generateExtend(classNode);
         generateMethods(classNode, symbolClass);
     }
-
 
     private void generateClassVariables(SimpleNode node) {
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
@@ -273,7 +271,7 @@ public class CodeGenerator {
         {
             //System.out.println("Lhs: " + lhs.val  + " array / filhos array: " + lhs.jjtGetChild(0).jjtGetNumChildren());
             ASTaccessToArray arrayAccess = (ASTaccessToArray) lhs.jjtGetChild(0);
-            generateAccessToArray(lhs, arrayAccess, symbolClass, symbolMethod);
+            generateAccessToArray(lhs, arrayAccess, symbolMethod);
             generateRhs(rhs, symbolClass, symbolMethod);
             this.printWriterFile.println("\tiastore");
         } else {
@@ -463,7 +461,7 @@ public class CodeGenerator {
         this.printWriterFile.println("\tnewarray int");
     }
 
-    private void generateAccessToArray(ASTIdentifier node, ASTaccessToArray arrayAccess, SymbolClass symbolClass, SymbolMethod symbolMethod){
+    private void generateAccessToArray(ASTIdentifier node, ASTaccessToArray arrayAccess, SymbolMethod symbolMethod){
         loadLocalVariable(node, symbolMethod);
 
         if(arrayAccess.jjtGetChild(0) instanceof ASTLiteral){
@@ -511,11 +509,11 @@ public class CodeGenerator {
                         if(identifier2.jjtGetNumChildren()>0 )
                             processArgs(identifier2,symbolMethod);
                         if (sc.symbolTableMethods.containsKey(identifier2.val)) {
-                            type = checkIfMethodExists(sc.symbolTableMethods.get(identifier2.val), getMethodCallTypes(symbolMethod, symbolClass, identifier2));
+                            type = checkIfMethodExists(sc.symbolTableMethods.get(identifier2.val), getMethodCallTypes(symbolMethod, identifier2));
                             if(type!=null)
                                 methodType += getSymbolType(type);
                         }
-                        callArgsArray = getMethodCallTypes(symbolMethod, symbolClass, identifier2);
+                        callArgsArray = getMethodCallTypes(symbolMethod, identifier2);
                         if(callArgsArray.size()>0) {
                             for (Type t : callArgsArray) {
                                 if(t!=null)
@@ -544,11 +542,11 @@ public class CodeGenerator {
 
                             //Get the return type of method
                             if (sc.symbolTableMethods.containsKey(identifier2.val)) {
-                                type = checkIfMethodExists(sc.symbolTableMethods.get(identifier2.val), getMethodCallTypes(symbolMethod, symbolClass, identifier2));
+                                type = checkIfMethodExists(sc.symbolTableMethods.get(identifier2.val), getMethodCallTypes(symbolMethod, identifier2));
                                 methodType += getSymbolType(type);
                             }
                             //Get the type of arguments of method
-                            callArgsArray = getMethodCallTypes(symbolMethod, symbolClass, identifier2);
+                            callArgsArray = getMethodCallTypes(symbolMethod, identifier2);
                             objectName = sc.name;
                             for (Type t : callArgsArray) {
                                 callArgs += getSymbolType(t);
@@ -577,7 +575,7 @@ public class CodeGenerator {
         }
     }
 
-    private ArrayList<Type> getMethodCallTypes(SymbolMethod symbolMethod, SymbolClass symbolClass, ASTIdentifier node2) {
+    private ArrayList<Type> getMethodCallTypes(SymbolMethod symbolMethod, ASTIdentifier node2) {
         ArrayList<Type> types = new ArrayList<>();
 
         for (int i = 0; i < node2.jjtGetNumChildren(); i++) {
