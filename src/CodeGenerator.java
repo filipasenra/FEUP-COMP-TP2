@@ -248,15 +248,22 @@ public class CodeGenerator {
             
             //Return
             if(node instanceof ASTReturn){
-                if(! (node.jjtGetChild(0) instanceof ASTLiteral)){//expression
-                    System.out.println("Entrou no literal"); //TODO parse the node!
-                }
-                else{
-                    if(symbolMethod.getType() == Type.INT){
+
+                if(node.jjtGetChild(0).jjtGetNumChildren() > 1){
+                    generateRhs((SimpleNode) node.jjtGetChild(0), symbolClass, symbolMethod); //expression
                     printWriterFile.println("\tireturn");
                     return;
-                    }
-                    else printWriterFile.println("\treturn");//void
+                }
+                if(node.jjtGetChild(0) instanceof ASTLiteral){//expression
+                    ASTLiteral literal = (ASTLiteral) node.jjtGetChild(0);
+                    loadIntLiteral(literal.val);
+                    printWriterFile.println("\tireturn");
+                    return;
+                }
+                if(node.jjtGetChild(0) instanceof ASTIdentifier){
+                    ASTIdentifier identifier = (ASTIdentifier) node.jjtGetChild(0);
+                    loadLocalVariable(identifier, symbolMethod);
+                    printWriterFile.println("\tireturn");
                 }
             }
             //TODO -> complete with, dot expressions, if, while...
