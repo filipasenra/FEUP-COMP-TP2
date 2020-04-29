@@ -161,7 +161,7 @@ public class CodeGenerator {
         generateIndexes(methodNode, symbolMethod);
         generateMethodBody(methodNode, symbolClass, symbolMethod);
 
-        printWriterFile.write(".endMethod\n\n");
+        printWriterFile.write(".end method\n\n");
     }
 
     private SymbolMethod getSymbolMethod(ArrayList<SymbolMethod> listSymbolMethod, int num) {
