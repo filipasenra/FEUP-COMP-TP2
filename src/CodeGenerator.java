@@ -271,8 +271,9 @@ public class CodeGenerator {
 
         if(lhs.jjtGetNumChildren() != 0 && lhs.jjtGetChild(0) instanceof ASTaccessToArray)
         {
-            //System.out.println("Lhs: " + lhs.val  + " array");
-            //generateAccessToArray
+            //System.out.println("Lhs: " + lhs.val  + " array / filhos array: " + lhs.jjtGetChild(0).jjtGetNumChildren());
+            ASTaccessToArray arrayAccess = (ASTaccessToArray) lhs.jjtGetChild(0);
+            generateAccessToArray(lhs, arrayAccess, symbolClass, symbolMethod);
             generateRhs(rhs, symbolClass, symbolMethod);
             this.printWriterFile.println("\tiastore");
         } else {
@@ -306,9 +307,8 @@ public class CodeGenerator {
                 generateNewObject(object, symbolClass, symbolMethod);
             }
             else if(rhs instanceof ASTInitializeArray){
-                //System.out.println("rhs é novo array");
                 ASTInitializeArray arrayInit = (ASTInitializeArray)rhs;
-                generateArrayInitilization(arrayInit, symbolClass, symbolMethod);
+                generateArrayInitilization(arrayInit);
             }
         }
     }
@@ -454,13 +454,22 @@ public class CodeGenerator {
         
     }
 
-    private void generateArrayInitilization(ASTInitializeArray arrayInit, SymbolClass symbolClass, SymbolMethod symbolMethod) {
+    private void generateArrayInitilization(ASTInitializeArray arrayInit) {
         if(arrayInit.jjtGetChild(0) instanceof ASTLiteral){
             ASTLiteral arg = (ASTLiteral) arrayInit.jjtGetChild(0);
             loadIntLiteral(arg.val);
         }
         
         this.printWriterFile.println("\tnewarray int");
+    }
+
+    private void generateAccessToArray(ASTIdentifier node, ASTaccessToArray arrayAccess, SymbolClass symbolClass, SymbolMethod symbolMethod){
+        loadLocalVariable(node, symbolMethod);
+
+        if(arrayAccess.jjtGetChild(0) instanceof ASTLiteral){
+            ASTLiteral arrayPos = (ASTLiteral) arrayAccess.jjtGetChild(0);
+            loadIntLiteral(arrayPos.val);
+        }
     }
 
     private void generateDotExpression(SimpleNode node, SymbolClass symbolClass, SymbolMethod symbolMethod){
