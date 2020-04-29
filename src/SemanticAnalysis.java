@@ -164,7 +164,7 @@ public class SemanticAnalysis {
     //Adds arguments to method
     private void addMethodArg(SymbolMethod symbolMethod, ASTArg nodeArg) {
         SymbolVar symbolVar = new SymbolVar(nodeArg.val);
-        symbolVar.updateInitialized(true);
+        symbolVar.updateInitialized(false);
         symbolMethod.addSymbol(nodeArg.val, symbolVar);
 
         if (nodeArg.jjtGetNumChildren() != 1)
@@ -214,7 +214,7 @@ public class SemanticAnalysis {
         //adding parameter to main
         SymbolVar symbolVar = new SymbolVar(methodNode.parametherName);
         symbolVar.setType(Type.STRING_ARRAY);
-        symbolVar.updateInitialized(true);
+        symbolVar.updateInitialized(false);
         symbolMethod.addSymbol(symbolVar.name, symbolVar);
 
         symbolClass.addSymbolMethod("main", symbolMethod);
@@ -229,7 +229,7 @@ public class SemanticAnalysis {
             }
 
             //Analysis statements
-            analysingStatement(symbolClass, symbolMethod, (SimpleNode) methodNode.jjtGetChild(i));
+            analysingStatement(symbolClass, symbolMethod, (SimpleNode) methodNode.jjtGetChild(i), false);
         }
     }
 
@@ -264,7 +264,7 @@ public class SemanticAnalysis {
                     }
 
                     //Analysis statement
-                    analysingStatement(symbolClass, symbolMethod, (SimpleNode) methodNode.jjtGetChild(i));
+                    analysingStatement(symbolClass, symbolMethod, (SimpleNode) methodNode.jjtGetChild(i), false);
                 }
             }
 
@@ -289,12 +289,12 @@ public class SemanticAnalysis {
     }
 
     //Analysis statement
-    private void analysingStatement(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node) {
+    private void analysingStatement(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node, boolean partially) {
 
         if (node instanceof ASTStatementBlock) {
 
             for (int i = 0; i < node.jjtGetNumChildren(); i++)
-                analysingStatement(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(i));
+                analysingStatement(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(i), partially);
         }
 
         if (node instanceof ASTIf) {
@@ -308,7 +308,7 @@ public class SemanticAnalysis {
         }
 
         if (node instanceof ASTEquality) {
-            analysingEquality(symbolClass, symbolMethod, (ASTEquality) node);
+            analysingEquality(symbolClass, symbolMethod, (ASTEquality) node, partially);
             return;
         }
 
@@ -327,7 +327,7 @@ public class SemanticAnalysis {
         }
 
         for (int i = 1; i < node.jjtGetNumChildren(); i++) {
-            this.analysingStatement(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(i));
+            this.analysingStatement(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(i), true);
         }
 
     }
@@ -342,14 +342,14 @@ public class SemanticAnalysis {
         }
 
         SimpleNode ifBody = (SimpleNode) node.jjtGetChild(1);
-        this.analysingStatement(symbolClass, symbolMethod, ifBody);
+        this.analysingStatement(symbolClass, symbolMethod, ifBody, false);
 
         SimpleNode elseBody = (SimpleNode) node.jjtGetChild(2);
-        this.analysingStatement(symbolClass, symbolMethod, elseBody);
+        this.analysingStatement(symbolClass, symbolMethod, elseBody, false);
 
     }
 
-    private void analysingEquality(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTEquality node) {
+    private void analysingEquality(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTEquality node, boolean partially) {
 
         if (node.jjtGetNumChildren() != 2) {
             this.errorMessage("Equality can only have 2 arguments!", node.getLine());
@@ -359,7 +359,7 @@ public class SemanticAnalysis {
         Type type1 = analysingIdentifier(symbolClass, symbolMethod, (ASTIdentifier) node.jjtGetChild(0));
         Type type2 = analysingExpression(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(1));
 
-        setInitialized(symbolClass, symbolMethod, (ASTIdentifier) node.jjtGetChild(0), false);
+        setInitialized(symbolClass, symbolMethod, (ASTIdentifier) node.jjtGetChild(0), partially);
 
         if (type1 == null || type2 == null)
             return;

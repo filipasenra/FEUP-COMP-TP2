@@ -13,7 +13,7 @@ public class SymbolVar extends Symbol {
     }
 
     public void updateInitialized(boolean partially) {
-        if (partially)
+        if (partially && initialized != Initialized.INITIALIZED)
             initialized = Initialized.PARTIALLY_INITIALIZED;
         else
             initialized = Initialized.INITIALIZED;

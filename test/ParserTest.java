@@ -196,6 +196,11 @@ public class ParserTest {
         test("fixtures/public/fail/semantic/ourTests/repetitiveVars.jmm", true);
     }
 
+    @Test
+    public void testVarInitWhile() {
+        test("fixtures/public/fail/semantic/ourTests/varInitWhile.jmm", false);
+    }
+
     //end of our tests
 
     @Test
