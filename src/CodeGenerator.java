@@ -271,7 +271,7 @@ public class CodeGenerator {
 
         if(lhs.jjtGetNumChildren() != 0 && lhs.jjtGetChild(0) instanceof ASTaccessToArray)
         {
-            //TODO
+            //System.out.println("Lhs: " + lhs.val  + " array");
             //generateAccessToArray
             generateRhs(rhs, symbolClass, symbolMethod);
             this.printWriterFile.println("\tiastore");
@@ -304,6 +304,11 @@ public class CodeGenerator {
             else if (rhs instanceof ASTNewObject) {
                 ASTNewObject object = (ASTNewObject) rhs;
                 generateNewObject(object, symbolClass, symbolMethod);
+            }
+            else if(rhs instanceof ASTInitializeArray){
+                //System.out.println("rhs é novo array");
+                ASTInitializeArray arrayInit = (ASTInitializeArray)rhs;
+                generateArrayInitilization(arrayInit, symbolClass, symbolMethod);
             }
         }
     }
@@ -439,32 +444,20 @@ public class CodeGenerator {
 
     private void generateNewObject(ASTNewObject object, SymbolClass symbolClass, SymbolMethod symbolMethod){
 		Type varType = null;
+
         if(symbolMethod.symbolTable.get(object.val)!=null) 
             varType = symbolMethod.symbolTable.get(object.val).getType();
 
-        if (varType == Type.INT_ARRAY) {
-            //TODO -> not tested
-            generateArrayInitilization(object, symbolClass, symbolMethod);
-        } else {
-            this.printWriterFile.println("\tnew " + object.val + "\n\tdup");
-            this.printWriterFile.println("\tinvokespecial " + object.val + "/<init>()V");
-        }
+
+        this.printWriterFile.println("\tnew " + object.val + "\n\tdup");
+        this.printWriterFile.println("\tinvokespecial " + object.val + "/<init>()V");
+        
     }
 
-    private void generateArrayInitilization(ASTNewObject object, SymbolClass symbolClass, SymbolMethod symbolMethod) {
-        SimpleNode child = (SimpleNode) object.jjtGetChild(0);
-
-        if (child.jjtGetNumChildren() == 2)
-            generateOperation(child,symbolClass, symbolMethod);
-        else {
-            if(child instanceof ASTLiteral){
-                ASTLiteral literal = (ASTLiteral) child;
-                loadIntLiteral(literal.val);
-            }
-            else if (child instanceof ASTIdentifier){
-                ASTIdentifier identifier = (ASTIdentifier) child;
-                this.loadLocalVariable(identifier, symbolMethod);                
-            }
+    private void generateArrayInitilization(ASTInitializeArray arrayInit, SymbolClass symbolClass, SymbolMethod symbolMethod) {
+        if(arrayInit.jjtGetChild(0) instanceof ASTLiteral){
+            ASTLiteral arg = (ASTLiteral) arrayInit.jjtGetChild(0);
+            loadIntLiteral(arg.val);
         }
         
         this.printWriterFile.println("\tnewarray int");
