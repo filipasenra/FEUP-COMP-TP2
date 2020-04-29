@@ -1,0 +1,69 @@
+/*  REASON:
+    Variable "j", "c", "map", "b" has been initialized.
+
+    Near line 27: c is not initialized!
+    Near line 33: b is not initialized!
+    Near line 33: c is not initialized!
+    Near line 40: j is not initialized!
+    Near line 56: b is not initialized!
+
+*/
+import Map;
+import Map.put(int, int);
+
+class VarNotInit {
+    public static void main(String[] a) { 
+        int i;
+        int j;
+        int k;
+        int b;
+        int c;
+
+        Map map;
+        Map map2;
+        Map map3;
+
+        map = new Map();
+        i = c;
+
+        k = 2;
+
+         if(true){
+
+            if(b < c){
+
+                b = 1;
+                b = b;
+
+                if(true){
+
+                    map.put(b, j);
+                    map2 = map;
+                    j = b;
+
+                 }else {
+                    j = 1;
+
+                    map2 = map;
+
+                 }
+
+            map3 = map2;
+            i=j+k;
+
+            }else {
+
+                j = b;
+            }
+
+
+            i=j+k;
+
+         }else {
+            j = 1;
+         }
+
+
+            i=j+k;
+    }
+}

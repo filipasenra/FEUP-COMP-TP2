@@ -30,4 +30,8 @@ public class SymbolVar extends Symbol {
         System.out.println(prefix + "  Type: " + this.type + ifIsObject);
 
     }
+
+    public void setInitialized(Initialized initialized) {
+        this.initialized = initialized;
+    }
 }
