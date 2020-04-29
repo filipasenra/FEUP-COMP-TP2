@@ -342,10 +342,10 @@ public class SemanticAnalysis {
         }
 
         SimpleNode ifBody = (SimpleNode) node.jjtGetChild(1);
-        this.analysingStatement(symbolClass, symbolMethod, ifBody, false);
+        this.analysingStatement(symbolClass, symbolMethod, ifBody, true);
 
         SimpleNode elseBody = (SimpleNode) node.jjtGetChild(2);
-        this.analysingStatement(symbolClass, symbolMethod, elseBody, false);
+        this.analysingStatement(symbolClass, symbolMethod, elseBody, true);
 
     }
 
