@@ -109,9 +109,9 @@ public class CodeGenerator {
     }
 
     private void generateConstructor() {
-        printWriterFile.println("\n.method public<init>()V");
+        printWriterFile.println("\n.method public <init>()V");
         printWriterFile.println("\taload_0");
-        printWriterFile.println("\tinvokenonvirtual java/lang/Object<init>()V");
+        printWriterFile.println("\tinvokenonvirtual java/lang/Object/<init>()V");
         printWriterFile.println("\treturn");
         printWriterFile.println(".end method\n");
     }
@@ -148,7 +148,7 @@ public class CodeGenerator {
         generateMethodBody(mainNode, symbolClass, symbolMethod);
 
         printWriterFile.println("\treturn");
-        printWriterFile.println(".endMethod\n\n");
+        printWriterFile.println(".end method\n\n");
     }
 
     private void generateMethod(ASTMethodDeclaration methodNode, SymbolClass symbolClass, SymbolMethod symbolMethod){
