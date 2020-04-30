@@ -450,6 +450,23 @@ public class SemanticAnalysis {
 
         if (type1 != type2) {
             this.errorMessage("Assignment between two different types!", node.getLine());
+            return;
+        }
+
+        if(type1 == Type.OBJECT){
+            String objectName;
+
+            if(symbolMethod.symbolTable.containsKey(((ASTIdentifier) node.jjtGetChild(0)).val)){
+                objectName = symbolMethod.symbolTable.get(((ASTIdentifier) node.jjtGetChild(0)).val).getObject_name();
+
+            } else if(symbolClass.symbolTableFields.containsKey(((ASTIdentifier) node.jjtGetChild(0)).val)){
+                objectName = symbolClass.symbolTableFields.get(((ASTIdentifier) node.jjtGetChild(0)).val).getObject_name();
+            } else
+                return;
+
+            if(!objectName.equals(((ASTNewObject) node.jjtGetChild(1)).val)){
+                this.errorMessage("Assignment between two different types of objects!", node.getLine());
+            }
         }
 
     }
@@ -588,6 +605,13 @@ public class SemanticAnalysis {
         }
 
         if (node instanceof ASTNewObject) {
+
+            ASTNewObject nodeNewObject = (ASTNewObject) node;
+
+            if(!this.symbolTable.containsKey(nodeNewObject.val)){
+                this.errorMessage("No class " + nodeNewObject.val + " exists!", nodeNewObject.getLine());
+            }
+
             return Type.OBJECT;
         }
 
@@ -610,34 +634,84 @@ public class SemanticAnalysis {
         if (node.jjtGetNumChildren() != 2)
             return null;
 
-        if (node.jjtGetChild(0) instanceof ASTIdentifier && node.jjtGetChild(1) instanceof ASTIdentifier) {
-            ASTIdentifier node1 = (ASTIdentifier) node.jjtGetChild(0);
+        if(node.jjtGetChild(1) instanceof ASTIdentifier) {
             ASTIdentifier node2 = (ASTIdentifier) node.jjtGetChild(1);
 
-            if (node1.val.equals("this")) {
-                if (symbolMethod.name == "main") {
-                    this.errorMessage(symbolClass.name + " cannot be referenced from a static context", node1.getLine());
-                    return null;
+            if (node.jjtGetChild(0) instanceof ASTIdentifier) {
+                ASTIdentifier node1 = (ASTIdentifier) node.jjtGetChild(0);
+
+                if (node1.val.equals("this")) {
+
+                    if (symbolMethod.name == "main") {
+                        this.errorMessage(symbolClass.name + " cannot be referenced from a static context", node1.getLine());
+                        return null;
+                    } else
+                        return analyseThisStatement(symbolClass, symbolMethod, node2, variablesInitialized);
+
+                } else {
+                    return analyseComplexStatement(symbolClass, symbolMethod, node1, node2, variablesInitialized);
                 }
-                else
-                    return analyseThisStatement(symbolClass, symbolMethod, node2, variablesInitialized);
-            } else {
-                return analyseComplexStatement(symbolClass, symbolMethod, node1, node2, variablesInitialized);
+
+            } else if (node.jjtGetChild(0) instanceof ASTNewObject) {
+
+
+                ASTNewObject node1 = (ASTNewObject) node.jjtGetChild(0);
+
+                analyseComplexStatementObject(symbolClass, symbolMethod, node1, node2, variablesInitialized);
+
+            } else if (node.jjtGetChild(0) instanceof ASTLiteral) {
+                this.errorMessage("Builtin \"" + node2.val + "\" does not exist over literal type.", 0);
+                return null;
+
+            } else if (node.jjtGetChild(0) instanceof ASTBoolean) {
+                this.errorMessage("Builtin \"" + node2.val + "\" does not exist over boolean type.", 0);
+                return null;
+
+            } else if (node.jjtGetChild(0) instanceof ASTNegation) {
+                this.errorMessage("Builtin \"" + node2.val + "\" does not exist over negation type.", 0);
+                return null;
+
             }
 
-        } else
+        }
+        return null;
+    }
+
+    private Type analyseComplexStatementObject(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTNewObject node1, ASTIdentifier node2, HashSet<SymbolVar> variablesInitialized) {
+
+
+        if (symbolTable.containsKey(node1.val)) {
+
+            if (symbolTable.get(node1.val) instanceof SymbolClass) {
+                SymbolClass sc = (SymbolClass) symbolTable.get(node1.val);
+
+                //Check for methods
+                if (node2.method) {
+
+                    if (sc.symbolTableMethods.containsKey(node2.val)) {
+
+                        Type type = getMethodType(sc.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2, variablesInitialized));
+
+                        if (type != null)
+                            return type;
+                    }
+                }
+            }
+        } else {
+
+            this.errorMessage("No class " + node1.val + " exists!", node1.getLine());
             return null;
+        }
+
+        return null;
+
     }
 
     //Analysis expression with dot but without 'this' in the left hand side
     private Type analyseComplexStatement(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node1, ASTIdentifier node2, HashSet<SymbolVar> variablesInitialized) {
 
-            //If it is an import
-        if (symbolTable.containsKey(node1.val)) {
-            return analyseComplexStatementST(symbolClass, symbolMethod, node1, node2, variablesInitialized);
-
-            //If it is an object declared in the current method
-        } else if (symbolMethod.symbolTable.containsKey(node1.val)) {
+        //If it is an object declared in the current method
+        if (symbolMethod.symbolTable.containsKey(node1.val)) {
 
             return analyseComplexStatementSM(symbolClass, symbolMethod, node1, node2, variablesInitialized);
 
@@ -645,8 +719,13 @@ public class SemanticAnalysis {
         } else if (symbolClass.symbolTableFields.containsKey(node1.val)) {
             return analyseComplexStatementSC(symbolClass, symbolMethod, node1, node2, variablesInitialized);
 
+            //If it is an import
+        } else if (symbolTable.containsKey(node1.val)) {
+
+            return analyseComplexStatementST(symbolClass, symbolMethod, node1, node2, variablesInitialized);
+
             //If it none of the above, it is undefined!
-        }else {
+        } else {
             this.errorMessage(node1.val + " is undefined!", node1.getLine());
             return null;
         }
@@ -1055,6 +1134,9 @@ public class SemanticAnalysis {
 
         if(symbolMethod.symbolTable.containsKey(nodeVarDeclaration.name)){
             this.errorMessage(nodeVarDeclaration.name + " variable is already defined in the method!", nodeVarDeclaration.getLine());
+            return;
+        } else if(this.symbolTable.containsKey(nodeVarDeclaration.name)){
+            this.errorMessage(nodeVarDeclaration.name + " variable is already defined in the imports!", nodeVarDeclaration.getLine());
             return;
         }
 

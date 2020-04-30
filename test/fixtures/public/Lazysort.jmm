@@ -66,4 +66,14 @@ class Lazysort extends Quicksort {
         
         return true;
     }
+
+    public int a(int b, int c) {
+
+        return 1;
+    }
+
+    public int a(int b) {
+
+            return 1;
+    }
 }

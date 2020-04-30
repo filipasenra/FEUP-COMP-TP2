@@ -26,4 +26,13 @@ import static io.readln() int;
 
 class ImportStressTest {
 
+public static void main(String[] a) {
+
+    List Io;
+    int b;
+
+    Io = new List();
+
+    b = new List().size();
+    }
 }

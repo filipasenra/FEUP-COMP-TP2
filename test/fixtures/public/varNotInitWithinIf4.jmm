@@ -12,7 +12,10 @@ import Map;
 import Map.put(int, int);
 
 class VarNotInit {
-    public static void main(String[] a) { 
+
+    int var;
+
+    public static void main(String[] a) {
         int i;
         int j;
         int k;

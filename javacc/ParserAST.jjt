@@ -331,10 +331,8 @@ void Expression() #void : {} {
 
 void Literal() #void : {Token t;} {
 
-    ( <NEGATION> Expression()) #Negation
-    | ( <LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS>)
-   | DotExpression() |
-   ( t= <INTEGER_LITERAL> {jjtThis.val = t.image;} #Literal) | ((t = <TRUE_> | t = <FALSE_>) {jjtThis.val = t.image.equals("true") ;} #Boolean)
+   ( <LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS>)
+   | DotExpression()
 }
 
 void DotExpression() #void : {Token t;} {
@@ -349,6 +347,9 @@ void FinalExpression() #void : {Token t;} {
     New()
     | ((t = <IDENTIFIER> {jjtThis.val = t.image;} (accessToArray() #accessToArray)? ) #Identifier)
     | (t = <THIS> {jjtThis.val = t.image;} #Identifier)
+    | ((t = <TRUE_> | t = <FALSE_>) {jjtThis.val = t.image.equals("true") ;} #Boolean)
+    | ( t= <INTEGER_LITERAL> {jjtThis.val = t.image;} #Literal)
+    | ( <NEGATION> Expression()) #Negation
 }
 
 void New() #void : {} {
