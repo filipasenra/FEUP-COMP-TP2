@@ -206,6 +206,11 @@ public class ParserTest {
         test("fixtures/public/fail/semantic/ourTests/staticContext.jmm", true);
     }
 
+    @Test
+    public void staticContext() {
+        test("fixtures/public/fail/semantic/ourTests/staticImport.jmm", true);
+    }
+
     //end of our tests
 
     @Test

@@ -5,6 +5,7 @@ public abstract class Symbol {
     Type type = Type.VOID;
     String object_name;
     int index;
+    boolean isStatic = false;
 
 
     public void setObject_name(String object_name) {
@@ -39,5 +40,13 @@ public abstract class Symbol {
 
     public int getIndex(){
         return this.index;
+    }
+
+    public boolean isStatic() {
+        return isStatic;
+    }
+
+    public void setStatic() {
+        isStatic = true;
     }
 }

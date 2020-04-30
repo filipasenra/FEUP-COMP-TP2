@@ -30,9 +30,13 @@ public class SymbolMethod extends Symbol {
 
         String ifIsObject = "";
         if(this.type == Type.OBJECT)
-            ifIsObject = ": " + this.object_name;
+            ifIsObject = ": " + this.object_name + " ";
 
-        System.out.println(prefix + "  Return Type: " + this.type + ifIsObject);
+        String ifIsStatic = "";
+        if(this.isStatic)
+            ifIsObject = "is static";
+
+        System.out.println(prefix + "  Return Type: " + this.type + ifIsObject + ifIsStatic);
 
         String methodSignature = "";
 

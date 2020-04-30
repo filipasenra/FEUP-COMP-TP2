@@ -55,8 +55,13 @@ public class SemanticAnalysis {
         symbolClass.setImported();
 
         //If it is an import of a class
-        if(importNode.methodName == null)
+        if(importNode.methodName == null) {
+
+            if(importNode.isStatic)
+                symbolClass.setStatic();
+
             return;
+        }
 
         //If it is an import of a method
         SymbolMethod sm = new SymbolMethod(importNode.methodName);
@@ -94,6 +99,9 @@ public class SemanticAnalysis {
                 }
             }
         }
+
+        if(importNode.isStatic)
+            sm.setStatic();
 
         //If it is a unique import, add to class imported
         symbolClass.addSymbolMethod(importNode.methodName, sm);
@@ -213,6 +221,8 @@ public class SemanticAnalysis {
         }
 
         SymbolMethod symbolMethod = new SymbolMethod("main");
+
+        symbolMethod.setStatic(); //make main static
 
         //adding parameter to main
         SymbolVar symbolVar = new SymbolVar(methodNode.parametherName);
@@ -610,6 +620,9 @@ public class SemanticAnalysis {
 
             if(!this.symbolTable.containsKey(nodeNewObject.val)){
                 this.errorMessage("No class " + nodeNewObject.val + " exists!", nodeNewObject.getLine());
+            } else {
+                if (this.symbolTable.get(nodeNewObject.val).isStatic())
+                    this.errorMessage("Cannot create instance of " + nodeNewObject.val + " because it is static!", nodeNewObject.getLine());
             }
 
             return Type.OBJECT;
@@ -642,8 +655,8 @@ public class SemanticAnalysis {
 
                 if (node1.val.equals("this")) {
 
-                    if (symbolMethod.name == "main") {
-                        this.errorMessage(symbolClass.name + " cannot be referenced from a static context", node1.getLine());
+                    if (symbolMethod.isStatic()) {
+                        this.errorMessage("non-static variable " + node1.val + " cannot be referenced from a static context", node1.getLine());
                         return null;
                     } else
                         return analyseThisStatement(symbolClass, symbolMethod, node2, variablesInitialized);
@@ -694,7 +707,7 @@ public class SemanticAnalysis {
 
                     if (sc.symbolTableMethods.containsKey(node2.val)) {
 
-                        Type type = getMethodType(sc.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2, variablesInitialized));
+                        Type type = getMethodType(sc.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2, variablesInitialized), false, 0);
 
                         if (type != null)
                             return type;
@@ -736,14 +749,20 @@ public class SemanticAnalysis {
     }
 
     //Return the type of a method with the it's signature and possible candidates
-    private Type getMethodType(ArrayList<SymbolMethod> methodArrayList, ArrayList<Type> methodSignature) {
+    private Type getMethodType(ArrayList<SymbolMethod> methodArrayList, ArrayList<Type> methodSignature, boolean mustBeStatic, int line) {
 
         for (SymbolMethod sm : methodArrayList) {
 
             //If it has the same signature
             if (methodSignature.size() == sm.types.size()) {
-                if (sm.types.equals(methodSignature))
+                if (sm.types.equals(methodSignature)) {
+
+                    if(mustBeStatic && !sm.isStatic()){
+                        this.errorMessage("non static method " + sm.name + " cannot be referenced from a static context", line);
+                    }
+
                     return sm.getType();
+                }
             }
         }
 
@@ -761,7 +780,7 @@ public class SemanticAnalysis {
 
                 if (sc.symbolTableMethods.containsKey(node2.val)) {
 
-                    Type type = getMethodType(sc.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2, variablesInitialized));
+                    Type type = getMethodType(sc.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2, variablesInitialized), true, node2.getLine());
 
                     if(type != null)
                         return type;
@@ -795,7 +814,7 @@ public class SemanticAnalysis {
                 if (sc.symbolTableMethods.containsKey(node2.val)) {
 
                     //check for a method with the same signature
-                    Type type = getMethodType(sc.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2, variablesInitialized));
+                    Type type = getMethodType(sc.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2, variablesInitialized), false, 0);
 
                     if(type != null)
                         return type;
@@ -815,7 +834,7 @@ public class SemanticAnalysis {
                     if(ssc.symbolTableMethods.containsKey(node2.val)) {
 
                         //check for a method with the same signature
-                        Type type = getMethodType(ssc.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2, variablesInitialized));
+                        Type type = getMethodType(ssc.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2, variablesInitialized), false, 0);
 
                         if(type != null)
                             return type;
@@ -865,7 +884,7 @@ public class SemanticAnalysis {
                 if (node2.method) {
 
                     if (sc.symbolTableMethods.containsKey(node2.val)) {
-                        Type type = getMethodType(sc.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2, variablesInitialized));
+                        Type type = getMethodType(sc.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2, variablesInitialized), false, 0);
 
                         if (type != null)
                             return type;
@@ -883,7 +902,7 @@ public class SemanticAnalysis {
                         if (ssc.symbolTableMethods.containsKey(node2.val)) {
 
                             //check for a method with the same signature
-                            Type type = getMethodType(ssc.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2, variablesInitialized));
+                            Type type = getMethodType(ssc.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2, variablesInitialized), false, 0);
 
                             if (type != null)
                                 return type;
@@ -931,7 +950,7 @@ public class SemanticAnalysis {
             //Check if current class has any method with the same signature
             if (symbolClass.symbolTableMethods.containsKey(node.val)) {
 
-                type = getMethodType(symbolClass.symbolTableMethods.get(node.val), getMethodCallTypes(symbolMethod, symbolClass, node, variablesInitialized));
+                type = getMethodType(symbolClass.symbolTableMethods.get(node.val), getMethodCallTypes(symbolMethod, symbolClass, node, variablesInitialized), false, 0);
 
             }
         }
@@ -941,7 +960,7 @@ public class SemanticAnalysis {
 
             SymbolClass sc = (SymbolClass) symbolTable.get(symbolClass.superClass);
 
-            Type type1 = getMethodType(sc.symbolTableMethods.get(node.val), getMethodCallTypes(symbolMethod, symbolClass, node, variablesInitialized));
+            Type type1 = getMethodType(sc.symbolTableMethods.get(node.val), getMethodCallTypes(symbolMethod, symbolClass, node, variablesInitialized), false, 0);
 
             if (type1 != null)
                 return type1;

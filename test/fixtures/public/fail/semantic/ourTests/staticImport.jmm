@@ -1,3 +1,9 @@
+/*
+REASON:
+Near line 40: non static method size cannot be referenced from a static context
+
+*/
+
 //key, value can be changed to other Types (e.g. boolean, int[], MyClass)
 import Map;
 import Map.put(int, int);
@@ -7,7 +13,7 @@ import Map.print();
 import Map.contains(int) boolean;
 import Map.remove(int) boolean;
 
- 
+
 
 //content can be changed to other Types (e.g. boolean, int[], MyClass)
 import List;
@@ -18,7 +24,7 @@ import List.contains(int) boolean;
 import List.remove(int) boolean;
 import List.size() int;
 
- 
+
 
 import static io.println(int) void;
 import static io.println(int,int) void;
@@ -35,7 +41,8 @@ public static void main(String[] a) {
 
     b = (new List()).size();
     b = (Io).size();
+
     //This makes it fail
-    //List.size();
+    List.size();
     }
 }
