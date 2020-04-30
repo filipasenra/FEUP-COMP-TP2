@@ -1120,13 +1120,13 @@ public class SemanticAnalysis {
     //Handles an Error
     private void errorMessage(String message, int line) {
         nErrors++;
-        System.err.println("Near line " + line + ": " + message);
+        System.err.println("ERROR: Near line " + line + ": " + message);
     }
 
     //Handles an Warning
     private void warningMessage(String message, int line) {
         nWarnings++;
-        System.err.println("Near line " + line + ": " + message);
+        System.err.println("WARNING: Near line " + line + ": " + message);
     }
 
     //Dumps the symbol table
