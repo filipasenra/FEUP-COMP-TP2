@@ -326,14 +326,8 @@ void Expression() #void : {} {
  }
 
  void Div() #void : {} {
-      Literal() (LOOKAHEAD(2) <DIV> Literal() #DIV(2))*
+      DotExpression() (LOOKAHEAD(2) <DIV> DotExpression() #DIV(2))*
   }
-
-void Literal() #void : {Token t;} {
-
-   ( <LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS>)
-   | DotExpression()
-}
 
 void DotExpression() #void : {Token t;} {
     FinalExpression() (LOOKAHEAD(2) ((<DOT> (t = <IDENTIFIER> | t = <LENGTH>) {jjtThis.val = t.image;}
@@ -350,6 +344,7 @@ void FinalExpression() #void : {Token t;} {
     | ((t = <TRUE_> | t = <FALSE_>) {jjtThis.val = t.image.equals("true") ;} #Boolean)
     | ( t= <INTEGER_LITERAL> {jjtThis.val = t.image;} #Literal)
     | ( <NEGATION> Expression()) #Negation
+    | ( <LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS>)
 }
 
 void New() #void : {} {

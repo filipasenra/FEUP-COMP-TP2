@@ -33,6 +33,7 @@ public static void main(String[] a) {
 
     Io = new List();
 
-    b = new List().size();
+    b = (new List()).size();
+    b = (Io).size();
     }
 }

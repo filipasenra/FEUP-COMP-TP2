@@ -657,7 +657,7 @@ public class SemanticAnalysis {
 
                 ASTNewObject node1 = (ASTNewObject) node.jjtGetChild(0);
 
-                analyseComplexStatementObject(symbolClass, symbolMethod, node1, node2, variablesInitialized);
+                return analyseComplexStatementObject(symbolClass, symbolMethod, node1, node2, variablesInitialized);
 
             } else if (node.jjtGetChild(0) instanceof ASTLiteral) {
                 this.errorMessage("Builtin \"" + node2.val + "\" does not exist over literal type.", 0);
@@ -673,7 +673,11 @@ public class SemanticAnalysis {
 
             }
 
+
+            this.errorMessage("Builtin \"" + node2.val + "\" does not exist over non-object type.", 0);
+
         }
+
         return null;
     }
 
