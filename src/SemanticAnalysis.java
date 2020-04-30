@@ -613,7 +613,12 @@ public class SemanticAnalysis {
             ASTIdentifier node2 = (ASTIdentifier) node.jjtGetChild(1);
 
             if (node1.val.equals("this")) {
-                return analyseThisStatement(symbolClass, symbolMethod, node2, variablesInitialized);
+                if (symbolMethod.name == "main") {
+                    this.errorMessage(symbolClass.name + " cannot be referenced from a static context", node1.getLine());
+                    return null;
+                }
+                else
+                    return analyseThisStatement(symbolClass, symbolMethod, node2, variablesInitialized);
             } else {
                 return analyseComplexStatement(symbolClass, symbolMethod, node1, node2, variablesInitialized);
             }

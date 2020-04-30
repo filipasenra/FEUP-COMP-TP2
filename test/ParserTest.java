@@ -201,6 +201,11 @@ public class ParserTest {
         test("fixtures/public/fail/semantic/ourTests/varInitWhile.jmm", false);
     }
 
+    @Test
+    public void testStaticContext() {
+        test("fixtures/public/fail/semantic/ourTests/staticContext.jmm", true);
+    }
+
     //end of our tests
 
     @Test
