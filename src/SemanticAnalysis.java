@@ -52,6 +52,8 @@ public class SemanticAnalysis {
         } else
             symbolClass = (SymbolClass) this.symbolTable.get(importNode.className);
 
+        symbolClass.setImported();
+
         //If it is an import of a class
         if(importNode.methodName == null)
             return;

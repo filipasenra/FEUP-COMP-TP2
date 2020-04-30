@@ -12,6 +12,8 @@ public class SymbolClass extends Symbol {
 
     public String superClass;
 
+    public boolean imported;
+
     public SymbolClass(String name) {
         super(name);
     }
@@ -27,6 +29,10 @@ public class SymbolClass extends Symbol {
         }
     }
 
+    public void setImported(){
+        this.imported = true;
+    }
+
     public void addSymbolField(String name, SymbolVar symbol) {
         if(!symbolTableFields.containsKey(name)) {
             symbolTableFields.put(name, symbol);
@@ -40,7 +46,8 @@ public class SymbolClass extends Symbol {
         if(this.superClass != null)
             superClassString = " extends " + this.superClass;
 
-        System.out.println(prefix + "Class: " + this.name + superClassString);
+        System.out.print(imported ? "IMPORTED ": "");
+        System.out.println("Class: " + this.name + superClassString);
 
         if(this.symbolTableFields.size() > 0)
             System.out.println(prefix + "  Fields: ");
@@ -52,6 +59,8 @@ public class SymbolClass extends Symbol {
 
         if(this.symbolTableMethods.size() > 0)
             System.out.println(prefix + "  Methods: ");
+        else
+            System.out.println("");
 
         for(Map.Entry<String, ArrayList<SymbolMethod>> entry : this.symbolTableMethods.entrySet()) {
 
