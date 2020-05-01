@@ -356,7 +356,7 @@ void InitializeArray() : {} {
 }
 
 void NewObject() : {Token t;} {
-    t = <IDENTIFIER> <LEFT_PARENTESIS> <RIGHT_PARENTESIS> {jjtThis.val = t.image;}
+    t = <IDENTIFIER> <LEFT_PARENTESIS> (Expression() (<COLON> Expression())*)? <RIGHT_PARENTESIS> {jjtThis.val = t.image;}
 }
 
 void accessToArray() #void : {} {

@@ -57,11 +57,62 @@ public class SemanticAnalysis {
         //If it is an import of a class
         if(importNode.methodName == null) {
 
-            if(importNode.isStatic)
-                this.errorMessage("Static import is not available to classes!", importNode.getLine());
-
+            addImportClass(symbolClass, importNode);
             return;
         }
+
+        addImportMethod(symbolClass, importNode);
+    }
+
+    private void addImportClass(SymbolClass symbolClass, ASTImport importNode){
+
+        ArrayList<Type> constructorSignature = new ArrayList<>();
+
+        for (int i = 0; i < importNode.jjtGetNumChildren(); i++) {
+
+            if (importNode.jjtGetChild(i) instanceof ASTParamList) {
+                ASTParamList astParamList = (ASTParamList) importNode.jjtGetChild(i);
+
+                if (astParamList.children != null) {
+                    for (int j = 0; j < astParamList.children.length; j++) {
+                        if (astParamList.children[j] instanceof ASTType) {
+                            ASTType astType = (ASTType) astParamList.children[j];
+
+                            Type type = getType(astType);
+
+                            if(type != Type.VOID)
+                                constructorSignature.add(type);
+                        }
+                    }
+                }
+            } else if (importNode.jjtGetChild(i) instanceof ASTType) {
+                this.errorMessage("Import Classes do not have a return type!", importNode.getLine());
+            }
+        }
+
+        //Checks if this import is unique
+
+            //Checks for import methods of the same class
+            for (int i = 0; i < symbolClass.symbolTableConstructors.size(); i++) {
+                ArrayList<Type> constructorCheck = symbolClass.symbolTableConstructors.get(i);
+
+                //If they have the same signature, we don't had
+                if (constructorSignature.equals(constructorCheck)) {
+                    this.warningMessage("This Constructor was already imported!", importNode.getLine());
+                    return;
+                }
+            }
+
+        if(importNode.isStatic)
+            this.errorMessage("Static import is not available to classes!", importNode.getLine());
+
+        //If it is a unique import, add to class imported
+        symbolClass.symbolTableConstructors.add(constructorSignature);
+
+    }
+
+
+    private void addImportMethod(SymbolClass symbolClass, ASTImport importNode){
 
         //If it is an import of a method
         SymbolMethod sm = new SymbolMethod(importNode.methodName);
@@ -75,7 +126,11 @@ public class SemanticAnalysis {
                     for (int j = 0; j < astParamList.children.length; j++) {
                         if (astParamList.children[j] instanceof ASTType) {
                             ASTType astType = (ASTType) astParamList.children[j];
-                            sm.addType(getType(astType));
+
+                            Type type = getType(astType);
+
+                            if(type != Type.VOID)
+                                sm.addType(type);
                         }
                     }
                 }
@@ -95,6 +150,7 @@ public class SemanticAnalysis {
 
                 //If they have the same signature, we don't had
                 if (sm.types.equals(smCheck.types)) {
+                    this.warningMessage("This method was already imported!", importNode.getLine());
                     return;
                 }
             }
@@ -616,16 +672,38 @@ public class SemanticAnalysis {
 
         if (node instanceof ASTNewObject) {
 
-            ASTNewObject nodeNewObject = (ASTNewObject) node;
-
-            if(!this.symbolTable.containsKey(nodeNewObject.val)){
-                this.errorMessage("No class " + nodeNewObject.val + " exists!", nodeNewObject.getLine());
-            }
+            analysingNewObject(symbolClass, symbolMethod, (ASTNewObject) node, variablesInitialized);
 
             return Type.OBJECT;
         }
 
         return null;
+    }
+
+    private void analysingNewObject(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTNewObject nodeNewObject, HashSet<SymbolVar> variablesInitialized) {
+
+        if(!this.symbolTable.containsKey(nodeNewObject.val)){
+            this.errorMessage("No class " + nodeNewObject.val + " exists!", nodeNewObject.getLine());
+            return;
+        }
+
+        SymbolClass symbolObject = (SymbolClass) this.symbolTable.get(nodeNewObject.val);
+        ArrayList<Type> callTypes = getMethodCallTypes(symbolMethod, symbolClass, nodeNewObject, variablesInitialized);
+
+        if(callTypes.size() == 0)
+            return;
+
+        for(ArrayList<Type> constructorSignature : symbolObject.symbolTableConstructors ){
+
+            if(constructorSignature.equals(callTypes)){
+                return;
+            }
+
+        }
+
+        this.errorMessage("There isn't a constructor compatible with the arguments given!", nodeNewObject.getLine());
+
+
     }
 
 
@@ -694,6 +772,8 @@ public class SemanticAnalysis {
     private Type analyseComplexStatementObject(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTNewObject node1, ASTIdentifier node2, HashSet<SymbolVar> variablesInitialized) {
 
 
+        analysingNewObject(symbolClass, symbolMethod, node1, variablesInitialized);
+
         if (symbolTable.containsKey(node1.val)) {
 
             if (symbolTable.get(node1.val) instanceof SymbolClass) {
@@ -704,10 +784,7 @@ public class SemanticAnalysis {
 
                     if (sc.symbolTableMethods.containsKey(node2.val)) {
 
-                        Type type = getMethodType(sc.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2, variablesInitialized), false, 0);
-
-                        if (type != null)
-                            return type;
+                        return getMethodType(sc.symbolTableMethods.get(node2.val), getMethodCallTypes(symbolMethod, symbolClass, node2, variablesInitialized), false, 0);
                     }
                 }
             }
@@ -970,7 +1047,7 @@ public class SemanticAnalysis {
     }
 
     //Returns the method signature
-    private ArrayList<Type> getMethodCallTypes(SymbolMethod symbolMethod, SymbolClass symbolClass, ASTIdentifier node2, HashSet<SymbolVar> variablesInitialized) {
+    private ArrayList<Type> getMethodCallTypes(SymbolMethod symbolMethod, SymbolClass symbolClass, SimpleNode node2, HashSet<SymbolVar> variablesInitialized) {
         ArrayList<Type> types = new ArrayList<>();
 
         for (int i = 0; i < node2.jjtGetNumChildren(); i++) {

@@ -7,8 +7,8 @@ import java.util.Map;
 public class SymbolClass extends Symbol {
 
     public HashMap<String, ArrayList<SymbolMethod>> symbolTableMethods = new HashMap<>();
-
     public HashMap<String, SymbolVar> symbolTableFields = new HashMap<>();
+    public ArrayList<ArrayList<Type>> symbolTableConstructors = new ArrayList<>();
 
     public String superClass;
 
@@ -49,6 +49,25 @@ public class SymbolClass extends Symbol {
         System.out.print(imported ? "IMPORTED ": "");
         System.out.println("Class: " + this.name + superClassString);
 
+        if(this.symbolTableConstructors.size() > 0)
+            System.out.println(prefix + "  Constructors: ");
+
+        for(ArrayList<Type> constructorSignature : this.symbolTableConstructors) {
+
+            String constructorSignatureString = "   Constructor ";
+
+            if(constructorSignature.size() == 0)
+                constructorSignatureString += "void";
+            else {
+
+                for (Type value : constructorSignature) {
+                    constructorSignatureString += value + " ";
+                }
+            }
+
+            System.out.println(constructorSignatureString);
+        }
+
         if(this.symbolTableFields.size() > 0)
             System.out.println(prefix + "  Fields: ");
 
@@ -60,7 +79,7 @@ public class SymbolClass extends Symbol {
         if(this.symbolTableMethods.size() > 0)
             System.out.println(prefix + "  Methods: ");
         else
-            System.out.println("");
+            System.out.println();
 
         for(Map.Entry<String, ArrayList<SymbolMethod>> entry : this.symbolTableMethods.entrySet()) {
 
