@@ -166,6 +166,7 @@ public class SemanticAnalysis {
     private void addClassInfo(ASTClassDeclaration classNode) {
 
         SymbolClass symbolClass = new SymbolClass(classNode.name);
+        symbolClass.symbolTableConstructors.add(new ArrayList<>()); //Adding default constructor
         this.symbolTable.put(classNode.name, symbolClass);
 
         for (int i = 0; i < classNode.jjtGetNumChildren(); i++) {
@@ -688,9 +689,6 @@ public class SemanticAnalysis {
 
         SymbolClass symbolObject = (SymbolClass) this.symbolTable.get(nodeNewObject.val);
         ArrayList<Type> callTypes = getMethodCallTypes(symbolMethod, symbolClass, nodeNewObject, variablesInitialized);
-
-        if(callTypes.size() == 0)
-            return;
 
         for(ArrayList<Type> constructorSignature : symbolObject.symbolTableConstructors ){
 

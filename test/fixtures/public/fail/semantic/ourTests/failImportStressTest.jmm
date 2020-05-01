@@ -48,5 +48,6 @@ public static void main(String[] a) {
     new Map(b, b);
     new ImportStressTest();
     new ImportStressTest(1, 1);
+    new io();
     }
 }
