@@ -64,7 +64,7 @@ public class SemanticAnalysis {
         addImportMethod(symbolClass, importNode);
     }
 
-    private void addImportClass(SymbolClass symbolClass, ASTImport importNode){
+    private void addImportClass(SymbolClass symbolClass, ASTImport importNode) {
 
         ArrayList<Type> constructorSignature = new ArrayList<>();
 
@@ -80,7 +80,7 @@ public class SemanticAnalysis {
 
                             Type type = getType(astType);
 
-                            if(type != Type.VOID)
+                            if (type != Type.VOID)
                                 constructorSignature.add(type);
                         }
                     }
@@ -92,18 +92,18 @@ public class SemanticAnalysis {
 
         //Checks if this import is unique
 
-            //Checks for import methods of the same class
-            for (int i = 0; i < symbolClass.symbolTableConstructors.size(); i++) {
-                ArrayList<Type> constructorCheck = symbolClass.symbolTableConstructors.get(i);
+        //Checks all the imported constructors
+        for (int i = 0; i < symbolClass.symbolTableConstructors.size(); i++) {
+            ArrayList<Type> constructorCheck = symbolClass.symbolTableConstructors.get(i);
 
-                //If they have the same signature, we don't had
-                if (constructorSignature.equals(constructorCheck)) {
-                    this.warningMessage("Constructor was already imported!", importNode.getLine());
-                    return;
-                }
+            //If they have the same signature, we don't had
+            if (constructorSignature.equals(constructorCheck)) {
+                this.warningMessage("Constructor was already imported!", importNode.getLine());
+                return;
             }
+        }
 
-        if(importNode.isStatic)
+        if (importNode.isStatic)
             this.errorMessage("Static import is not available to classes!", importNode.getLine());
 
         //If it is a unique import, add to class imported
@@ -141,7 +141,6 @@ public class SemanticAnalysis {
         }
 
         //Checks if this import is unique
-
         if (symbolClass.symbolTableMethods.get(importNode.methodName) != null) {
 
             //Checks for import methods of the same class
