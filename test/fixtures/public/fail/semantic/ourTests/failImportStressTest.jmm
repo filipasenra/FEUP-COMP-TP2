@@ -1,4 +1,12 @@
+/* REASON:
+WARNING: Near line 10: Constructor was already imported!
+ERROR: Near line 47: There isn't a constructor compatible with the arguments given!
+ERROR: Near line 50: There isn't a constructor compatible with the arguments given!
+
+*/
+
 //key, value can be changed to other Types (e.g. boolean, int[], MyClass)
+import Map;
 import Map;
 import Map(int, int);
 import Map.put(int, int);
@@ -8,7 +16,7 @@ import Map.print();
 import Map.contains(int) boolean;
 import Map.remove(int) boolean;
 
- 
+
 
 //content can be changed to other Types (e.g. boolean, int[], MyClass)
 import List;
@@ -36,7 +44,9 @@ public static void main(String[] a) {
     b = (Io).size();
 
     b = 1;
+    new Map(b, true);
     new Map(b, b);
     new ImportStressTest();
+    new ImportStressTest(1, 1);
     }
 }

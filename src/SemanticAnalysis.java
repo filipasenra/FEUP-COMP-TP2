@@ -98,7 +98,7 @@ public class SemanticAnalysis {
 
                 //If they have the same signature, we don't had
                 if (constructorSignature.equals(constructorCheck)) {
-                    this.warningMessage("This Constructor was already imported!", importNode.getLine());
+                    this.warningMessage("Constructor was already imported!", importNode.getLine());
                     return;
                 }
             }
