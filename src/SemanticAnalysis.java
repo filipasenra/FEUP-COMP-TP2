@@ -58,7 +58,7 @@ public class SemanticAnalysis {
         if(importNode.methodName == null) {
 
             if(importNode.isStatic)
-                symbolClass.setStatic();
+                this.errorMessage("Static import is not available to classes!", importNode.getLine());
 
             return;
         }
@@ -620,9 +620,6 @@ public class SemanticAnalysis {
 
             if(!this.symbolTable.containsKey(nodeNewObject.val)){
                 this.errorMessage("No class " + nodeNewObject.val + " exists!", nodeNewObject.getLine());
-            } else {
-                if (this.symbolTable.get(nodeNewObject.val).isStatic())
-                    this.errorMessage("Cannot create instance of " + nodeNewObject.val + " because it is static!", nodeNewObject.getLine());
             }
 
             return Type.OBJECT;

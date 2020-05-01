@@ -18,8 +18,6 @@ import List.contains(int) boolean;
 import List.remove(int) boolean;
 import List.size() int;
 
- 
-
 import static io.println(int) void;
 import static io.println(int,int) void;
 import static io.readln() int;
@@ -35,7 +33,5 @@ public static void main(String[] a) {
 
     b = (new List()).size();
     b = (Io).size();
-    //This makes it fail
-    //List.size();
     }
 }
