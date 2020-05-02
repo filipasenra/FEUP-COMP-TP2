@@ -4,30 +4,43 @@ import java.io.FileNotFoundException;
 public class jmm {
 
     private static boolean DEBUG = false;
+    private static boolean SEMANTIC = false;
+    private static boolean AST = false;
+    private static boolean ACTIVATE_ERROR = false;
 
     // When in root folder (comp2020-3a)
     // gradle build
     // or
     // gradle test
     // to run:
-        
     // java -jar comp2020-3a.jar test/fixtures/public/Simple.jmm
     // java -jar comp2020-3a.jar test/fixtures/public/fail/syntactical/MultipleSequential.jmm
     //java -jar comp2020-3a.jar test/fixtures/public/fail/semantic/binop_incomp.jmm
 
     public static void main(String[] args) throws ParseException {
-        if (args.length != 1 && args.length != 2) {
-            System.err.println("Usage: java Jmm <filename> -debug*>");
+        if (args.length == 0 || args.length>3) {
+            System.err.println("Usage: java Jmm <filename> -debug(-ast/-semantic) and/or -error");
             return;
         }
 
-        if(args.length == 2){
-            if(!args[1].equals("-debug")){
-                System.err.println("Usage: java Jmm <filename> -debug*>");
-                return;
+        for (String arg : args) {
+            switch (arg) {
+                case "-debug":
+                    DEBUG = true;
+                    break;
+                case "-error":
+                    ACTIVATE_ERROR = true;
+                    break;
+                case "-ast":
+                    AST = true;
+                    break;
+                case "-semantic":
+                    SEMANTIC = true;
+                    break;
+                default :
+                    System.err.println("Usage: java Jmm <filename> -debug(-ast/-semantic) and/or -error");
+                    System.exit(0);
             }
-
-            DEBUG = true;
         }
 
 
@@ -39,7 +52,7 @@ public class jmm {
             return;
         }
 
-        if(DEBUG)
+        if(DEBUG || AST)
             System.out.println("Starting Parsing\n");
 
         SimpleNode root = myParser.ParseExpression(); // returns reference to root node
@@ -47,16 +60,16 @@ public class jmm {
             throw new RuntimeException("Has syntactic errors");
         }
 
-        if(DEBUG) {
+        if(DEBUG || AST) {
             root.dump(""); // prints the tree on the screen
             System.out.println("Finished Parsing");
         }
 
-        SemanticAnalysis semanticAnalysis = new SemanticAnalysis();
+        SemanticAnalysis semanticAnalysis = new SemanticAnalysis(ACTIVATE_ERROR);
         semanticAnalysis.startAnalysing(root);
 
 
-        if(DEBUG)
+        if(DEBUG || SEMANTIC)
             System.out.println("Starting Semantic Analysis\n");
 
         if (semanticAnalysis.getNerros() > 0) {
@@ -67,13 +80,9 @@ public class jmm {
             System.err.println("Has " + semanticAnalysis.getNwarnings() + " semantic warnings");
         }
 
-        if(DEBUG) {
+        if(DEBUG || SEMANTIC) {
             semanticAnalysis.dump();
             System.out.println("Finished Semantic Analysis\n");
-        }
-
-        if(DEBUG) {
-            System.out.println("Starting creating jasmin code");
         }
 
         CodeGenerator generator = new CodeGenerator(semanticAnalysis);

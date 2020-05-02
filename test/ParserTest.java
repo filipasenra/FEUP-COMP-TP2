@@ -198,7 +198,7 @@ public class ParserTest {
 
     @Test
     public void testVarInitWhile() {
-        test("fixtures/public/varInitWhile.jmm", false);
+        test("fixtures/public/fail/semantic/ourTests/varInitWhile.jmm", false);
     }
 
     @Test
