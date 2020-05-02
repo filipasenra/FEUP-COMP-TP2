@@ -274,7 +274,7 @@ public class CodeGenerator {
         if(type!=null){
             switch (type) {
                 case BOOLEAN:
-                    this.printWriterFile.println("\treturn");   //TODO -> confirm
+                    this.printWriterFile.println("\tireturn");   //TODO -> confirm
                     break;                
                 case INT:
                     this.printWriterFile.println("\tireturn");
