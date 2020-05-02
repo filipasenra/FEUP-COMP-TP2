@@ -170,7 +170,6 @@ public class CodeGenerator {
 
         for(int i = 0; i < listSymbolMethod.size(); i++) {
             SymbolMethod symbolMethod = listSymbolMethod.get(i);
-            System.out.println(symbolMethod.num + " : " + num);
             if (symbolMethod.num == num) {
                 return symbolMethod;
             }

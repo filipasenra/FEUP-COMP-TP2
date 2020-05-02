@@ -1,11 +1,11 @@
 /*  REASON:
     Variable "j", "c", "map", "b" has been initialized.
 
-    Near line 27: c is not initialized!
-    Near line 33: b is not initialized!
-    Near line 33: c is not initialized!
-    Near line 40: j is not initialized!
-    Near line 56: b is not initialized!
+WARNING: Near line 30: c is not initialized!
+WARNING: Near line 36: b is not initialized!
+WARNING: Near line 36: c is not initialized!
+WARNING: Near line 43: j is not initialized!
+WARNING: Near line 59: b is not initialized!
 
 */
 import Map;

@@ -12,14 +12,12 @@ class VarNotInit {
          if(true){
 
             if(true){
-             j = 1;
 
                 if(true){
 
                    j = 1;
 
                  }else {
-                    j = 1;
 
                  }
 

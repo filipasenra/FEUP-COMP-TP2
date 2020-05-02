@@ -1,3 +1,7 @@
+/*
+REASON: ERROR: Near line 26: non-static variable this cannot be referenced from a static context
+*/
+
 import static io.println(int) void;
 
 class Simple {

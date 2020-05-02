@@ -23,8 +23,9 @@ public class jmm {
             return;
         }
 
-        for (String arg : args) {
-            switch (arg) {
+
+        for (int i = 1; i < args.length; i++) {
+            switch (args[i]) {
                 case "-debug":
                     DEBUG = true;
                     break;
@@ -37,9 +38,9 @@ public class jmm {
                 case "-semantic":
                     SEMANTIC = true;
                     break;
-                default :
+                default:
                     System.err.println("Usage: java Jmm <filename> -debug(-ast/-semantic) and/or -error");
-                    System.exit(0);
+                    System.exit(-1);
             }
         }
 

@@ -166,11 +166,6 @@ public class ParserTest {
     }
 
     @Test
-    public void testSameOperation() {
-        test("fixtures/public/fail/semantic/ourTests/sameOperation.jmm", true);
-    }
-
-    @Test
     public void testAccessArray() {
         test("fixtures/public/fail/semantic/ourTests/accessArray.jmm", true);
     }

@@ -359,7 +359,7 @@ public class SemanticAnalysis {
             return;
 
         if (symbolMethod.getType() != type)
-            this.errorMessage("Return expression doesn't coincide with return type of function " + symbolMethod.name, node.getLine());
+            this.errorMessage("Return expression was expecting " + symbolMethod.getType() + " but was given " + type, node.getLine());
 
 
     }
@@ -378,39 +378,12 @@ public class SemanticAnalysis {
         }
 
         if (node instanceof ASTWhile) {
-            analysingWhile(symbolClass, symbolMethod, (ASTWhile) node, null);
+            analysingWhile(symbolClass, symbolMethod, (ASTWhile) node, new HashSet<>());
             return;
         }
 
         if (node instanceof ASTEquality) {
             analysingEquality(symbolClass, symbolMethod, (ASTEquality) node, partially);
-            return;
-        }
-
-        analysingExpression(symbolClass, symbolMethod, node, null);
-    }
-
-    //Analysis statement within a while
-    private void analysingStatementWithinWhile(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node, HashSet<SymbolVar> variablesInitialized) {
-
-        if (node instanceof ASTStatementBlock) {
-
-            for (int i = 0; i < node.jjtGetNumChildren(); i++)
-                analysingStatementWithinIf(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(i), variablesInitialized);
-        }
-
-        if (node instanceof ASTIf) {
-            analysingIfWithinAnIf(symbolClass, symbolMethod, (ASTIf) node, variablesInitialized);
-            return;
-        }
-
-        if (node instanceof ASTWhile) {
-            analysingWhile(symbolClass, symbolMethod, (ASTWhile) node, variablesInitialized);
-            return;
-        }
-
-        if (node instanceof ASTEquality) {
-            analysingEqualityWithinIf(symbolClass, symbolMethod, (ASTEquality) node, variablesInitialized);
             return;
         }
 
@@ -453,11 +426,7 @@ public class SemanticAnalysis {
         }
 
         for (int i = 1; i < node.jjtGetNumChildren(); i++) {
-            if (variablesInitialized == null) {
-                HashSet<SymbolVar> variablesInitializedInWhile = new HashSet<>();
-                this.analysingStatementWithinWhile(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(i), variablesInitializedInWhile);
-            } else
-                this.analysingStatementWithinIf(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(i), variablesInitialized);
+            this.analysingStatementWithinIf(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(i), variablesInitialized);
         }
     }
 
@@ -542,7 +511,7 @@ public class SemanticAnalysis {
             return;
 
         if (type1 != type2) {
-            this.errorMessage("Assignment between two different types!", node.getLine());
+            this.errorMessage("Assignment between two different types: " + type1 + " and " + type2, node.getLine());
             return;
         }
 
@@ -558,7 +527,7 @@ public class SemanticAnalysis {
                 return;
 
             if (!objectName.equals(((ASTNewObject) node.jjtGetChild(1)).val)) {
-                this.errorMessage("Assignment between two different types of objects!", node.getLine());
+                this.errorMessage("Assignment between two different types of objects: " + objectName + " " + ((ASTNewObject) node.jjtGetChild(1)).val, node.getLine());
             }
         }
 
@@ -590,7 +559,7 @@ public class SemanticAnalysis {
         setInitializedWithinIf(symbolClass, symbolMethod, (ASTIdentifier) node.jjtGetChild(0), variablesInitialized);
 
         if (type1 != type2) {
-            this.errorMessage("Assignment between two different types!", node.getLine());
+            this.errorMessage("Assignment between two different types: " + type1 + " and " + type2, node.getLine());
         }
 
     }
@@ -599,12 +568,17 @@ public class SemanticAnalysis {
 
         if (symbolMethod.symbolTable.containsKey(node.val)) {
             if (symbolMethod.symbolTable.get(node.val).getInitialized() != Initialized.INITIALIZED)
+            {
                 variablesInitialized.add(symbolMethod.symbolTable.get(node.val));
+                symbolMethod.symbolTable.get(node.val).setInitialized(Initialized.PARTIALLY_INITIALIZED);
+            }
 
         } else if (symbolClass.symbolTableFields.containsKey(node.val)) {
 
-            if (symbolClass.symbolTableFields.get(node.val).getInitialized() != Initialized.INITIALIZED)
+            if (symbolClass.symbolTableFields.get(node.val).getInitialized() != Initialized.INITIALIZED) {
                 variablesInitialized.add(symbolClass.symbolTableFields.get(node.val));
+                symbolClass.symbolTableFields.get(node.val).setInitialized(Initialized.PARTIALLY_INITIALIZED);
+            }
         }
     }
 
@@ -850,7 +824,7 @@ public class SemanticAnalysis {
                 if (sm.types.equals(methodSignature)) {
 
                     if (mustBeStatic && !sm.isStatic()) {
-                        this.errorMessage("non static method " + sm.name + " cannot be referenced from a static context", line);
+                        this.errorMessage("non-static method " + sm.name + " cannot be referenced from a static context", line);
                     }
 
                     return sm.getType();
@@ -1170,22 +1144,24 @@ public class SemanticAnalysis {
         if (type1 == null || type2 == null)
             return null;
 
+        Type returnType = type1;
+
         if (type1 == Type.INT_ARRAY || type1 == Type.STRING_ARRAY || type2 == Type.INT_ARRAY || type2 == Type.STRING_ARRAY) {
             this.errorMessage("It is not possible to use arrays directly in arithmetic operations!", node.getLine());
-            return null;
+            returnType = null;
         }
 
         if (type1 == Type.BOOLEAN || type2 == Type.BOOLEAN) {
             this.errorMessage("Arithmetic Operation doesn't accept booleans!", node.getLine());
-            return null;
+            returnType = null;
         }
 
         if (type1 != type2) {
             this.errorMessage("Operands are not of the same type", node.getLine());
-            return null;
+            returnType = null;
         }
 
-        return type1;
+        return returnType;
 
     }
 
