@@ -9,6 +9,11 @@ class VarNotInit {
         int k;
         k = 2;
 
+        while(true){
+            i = 2;
+            i = i+2;
+        }
+
          if(true){
 
             if(true){
@@ -18,6 +23,7 @@ class VarNotInit {
                    j = 1;
 
                    while(true){
+
                    i = j+k;
                    }
 
