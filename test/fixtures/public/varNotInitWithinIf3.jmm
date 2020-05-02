@@ -17,6 +17,10 @@ class VarNotInit {
 
                    j = 1;
 
+                   while(true){
+                   i = j+k;
+                   }
+
                  }else {
 
                  }
