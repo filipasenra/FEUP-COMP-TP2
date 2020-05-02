@@ -1,8 +1,9 @@
 /* REASON:
-WARNING: Near line 10: Constructor was already imported!
-ERROR: Near line 47: There isn't a constructor compatible with the arguments given!
-ERROR: Near line 50: There isn't a constructor compatible with the arguments given!
-
+WARNING: Near line 11: Constructor was already imported!
+WARNING: Near line 44: test is not initialized!
+ERROR: Near line 51: There isn't a constructor compatible with the arguments given!
+ERROR: Near line 54: There isn't a constructor compatible with the arguments given!
+ERROR: Near line 55: There isn't a constructor compatible with the arguments given!
 */
 
 //key, value can be changed to other Types (e.g. boolean, int[], MyClass)
@@ -35,9 +36,12 @@ class ImportStressTest {
 
 public static void main(String[] a) {
 
+
+    int[] test;
     List Io;
     int b;
 
+    b = test[1];
     Io = new List();
 
     b = (new List(1)).size();

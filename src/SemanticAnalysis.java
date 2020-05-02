@@ -285,7 +285,7 @@ public class SemanticAnalysis {
         //adding parameter to main
         SymbolVar symbolVar = new SymbolVar(methodNode.parametherName);
         symbolVar.setType(Type.STRING_ARRAY);
-        symbolVar.updateInitialized(false);
+        symbolVar.setInitialized(Initialized.INITIALIZED);
         symbolMethod.addSymbol(symbolVar.name, symbolVar);
 
         symbolClass.addSymbolMethod("main", symbolMethod);
@@ -990,7 +990,7 @@ public class SemanticAnalysis {
                     return null;
 
                 }
-        } else if (symbolClass.symbolTableFields.get(node1.val).getType().equals(Type.INT_ARRAY)) {
+        } else if (symbolClass.symbolTableFields.get(node1.val).getType().equals(Type.INT_ARRAY) || symbolClass.symbolTableFields.get(node1.val).getType().equals(Type.STRING_ARRAY)) {
             if (node2.val.equals("length"))
                 return Type.INT;
         }
@@ -1203,9 +1203,6 @@ public class SemanticAnalysis {
 
             SymbolVar symbolVar = symbolClass.symbolTableFields.get(node.val);
 
-            if (symbolVar.getType() == Type.INT_ARRAY)
-                return;
-
             if (symbolVar.getInitialized() == Initialized.NOT_INITIALIZED)
                 this.warningMessage(node.val + " is not initialized!", node.getLine());
             else if (symbolVar.getInitialized() == Initialized.PARTIALLY_INITIALIZED)
@@ -1214,9 +1211,6 @@ public class SemanticAnalysis {
         } else if (symbolMethod.symbolTable.containsKey(node.val)) {
 
             SymbolVar symbolVar = symbolMethod.symbolTable.get(node.val);
-
-            if (symbolVar.getType() == Type.INT_ARRAY || symbolVar.getType() == Type.STRING_ARRAY)
-                return;
 
             if (symbolVar.getInitialized() == Initialized.NOT_INITIALIZED)
                 this.warningMessage(node.val + " is not initialized!", node.getLine());
