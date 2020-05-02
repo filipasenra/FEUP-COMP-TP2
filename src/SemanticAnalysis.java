@@ -427,7 +427,10 @@ public class SemanticAnalysis {
         }
 
         for (int i = 1; i < node.jjtGetNumChildren(); i++) {
-            this.analysingStatement(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(i), true);
+            if (variablesInitialized == null)
+                this.analysingStatement(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(i), true);
+            else
+                this.analysingStatementWithinIf(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(i), variablesInitialized);
         }
 
     }
