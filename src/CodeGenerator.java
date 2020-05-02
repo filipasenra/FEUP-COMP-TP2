@@ -251,23 +251,42 @@ public class CodeGenerator {
 
                 if(node.jjtGetChild(0).jjtGetNumChildren() > 1){
                     generateRhs((SimpleNode) node.jjtGetChild(0), symbolClass, symbolMethod); //expression
-                    printWriterFile.println("\tireturn");
-                    return;
                 }
                 if(node.jjtGetChild(0) instanceof ASTLiteral){//expression
                     ASTLiteral literal = (ASTLiteral) node.jjtGetChild(0);
                     loadIntLiteral(literal.val);
-                    printWriterFile.println("\tireturn");
-                    return;
                 }
                 if(node.jjtGetChild(0) instanceof ASTIdentifier){
                     ASTIdentifier identifier = (ASTIdentifier) node.jjtGetChild(0);
                     loadLocalVariable(identifier, symbolMethod);
-                    printWriterFile.println("\tireturn");
                 }
+
+                generateMethodReturn(symbolMethod);
+                return;
             }
             //TODO -> complete with, dot expressions, if, while...
         }
+    }
+
+    private void generateMethodReturn(SymbolMethod symbolMethod){
+        Type type = symbolMethod.getType();
+
+        if(type!=null){
+            switch (type) {
+                case BOOLEAN:
+                    this.printWriterFile.println("\treturn");   //TODO -> confirm
+                    break;                
+                case INT:
+                    this.printWriterFile.println("\tireturn");
+                    break;
+                case VOID:
+                    this.printWriterFile.println("\treturn");
+                    break;
+                default:
+                    this.printWriterFile.println("\tareturn");
+                    break;
+            }
+        } 
     }
 
     private void generateEquality(ASTEquality node, SymbolClass symbolClass, SymbolMethod symbolMethod) {
@@ -276,7 +295,6 @@ public class CodeGenerator {
 
         if(lhs.jjtGetNumChildren() != 0 && lhs.jjtGetChild(0) instanceof ASTaccessToArray)
         {
-            //System.out.println("Lhs: " + lhs.val  + " array / filhos array: " + lhs.jjtGetChild(0).jjtGetNumChildren());
             ASTaccessToArray arrayAccess = (ASTaccessToArray) lhs.jjtGetChild(0);
             generateAccessToArray(lhs, arrayAccess, symbolMethod);
             generateRhs(rhs, symbolClass, symbolMethod);
