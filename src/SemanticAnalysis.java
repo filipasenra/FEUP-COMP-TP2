@@ -384,12 +384,10 @@ public class SemanticAnalysis {
         }
 
         analysingExpression(symbolClass, symbolMethod, node, null);
-
-
     }
 
-    //Analysis statement within and if
-    private void analysingStatementWithinIf(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node, HashSet<SymbolVar> variablesInitialized) {
+    //Analysis statement within a while
+    private void analysingStatementWithinWhile(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node, HashSet<SymbolVar> variablesInitialized) {
 
         if (node instanceof ASTStatementBlock) {
 
@@ -412,9 +410,33 @@ public class SemanticAnalysis {
             return;
         }
 
+        analysingExpression(symbolClass, symbolMethod, node, null);
+    }
+
+    //Analysis statement within an if
+    private void analysingStatementWithinIf(SymbolClass symbolClass, SymbolMethod symbolMethod, SimpleNode node, HashSet<SymbolVar> variablesInitialized) {
+
+        if (node instanceof ASTStatementBlock) {
+            for (int i = 0; i < node.jjtGetNumChildren(); i++)
+                analysingStatementWithinIf(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(i), variablesInitialized);
+        }
+
+        if (node instanceof ASTIf) {
+            analysingIfWithinAnIf(symbolClass, symbolMethod, (ASTIf) node, variablesInitialized);
+            return;
+        }
+
+        if (node instanceof ASTWhile) {
+            analysingWhile(symbolClass, symbolMethod, (ASTWhile) node, variablesInitialized);
+            return;
+        }
+
+        if (node instanceof ASTEquality) {
+            analysingEqualityWithinIf(symbolClass, symbolMethod, (ASTEquality) node, variablesInitialized);
+            return;
+        }
+
         analysingExpression(symbolClass, symbolMethod, node, variablesInitialized);
-
-
     }
 
     private void analysingWhile(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTWhile node, HashSet<SymbolVar> variablesInitialized) {
@@ -427,12 +449,12 @@ public class SemanticAnalysis {
         }
 
         for (int i = 1; i < node.jjtGetNumChildren(); i++) {
-            if (variablesInitialized == null)
-                this.analysingStatement(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(i), true);
-            else
+            if (variablesInitialized == null) {
+                HashSet<SymbolVar> variablesInitializedInWhile = new HashSet<>();
+                this.analysingStatementWithinWhile(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(i), variablesInitializedInWhile);
+            } else
                 this.analysingStatementWithinIf(symbolClass, symbolMethod, (SimpleNode) node.jjtGetChild(i), variablesInitialized);
         }
-
     }
 
     private void analysingIf(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIf node) {
@@ -453,20 +475,16 @@ public class SemanticAnalysis {
         this.analysingStatementWithinIf(symbolClass, symbolMethod, elseBody, variablesInitializedInElse);
 
         for(SymbolVar symbolVar : variablesInitializedInIf){
-
             symbolVar.updateInitialized(!variablesInitializedInElse.contains(symbolVar));
         }
 
         for(SymbolVar symbolVar : variablesInitializedInElse) {
-
             symbolVar.updateInitialized(!variablesInitializedInIf.contains(symbolVar));
         }
-
     }
 
     //Analysing an if within and another if
     private void analysingIfWithinAnIf(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIf node, HashSet<SymbolVar> variablesInitialized) {
-
 
         if (node.jjtGetNumChildren() != 3)
             return;
