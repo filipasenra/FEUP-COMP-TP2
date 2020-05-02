@@ -162,6 +162,7 @@ public class SemanticAnalysis {
         symbolClass.addSymbolMethod(importNode.methodName, sm);
     }
 
+
     //Analysis class and signature of methods only (not their core) -> because of overloading
     private void addClassInfo(ASTClassDeclaration classNode) {
 
@@ -184,6 +185,7 @@ public class SemanticAnalysis {
     //Adds Vars of Class to SymbolClass
     private void addVarDeclarationInfo(SymbolClass symbolClass, ASTVarDeclaration nodeVarDeclaration) {
         SymbolVar symbolVar = new SymbolVar(nodeVarDeclaration.name);
+        symbolVar.setInitialized(Initialized.INITIALIZED);
 
         if(symbolClass.symbolTableFields.containsKey(nodeVarDeclaration.name)){
             this.errorMessage(nodeVarDeclaration.name + " variable is already defined in the class!", nodeVarDeclaration.getLine());
