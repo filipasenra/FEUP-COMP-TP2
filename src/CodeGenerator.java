@@ -483,6 +483,18 @@ public class CodeGenerator {
                     loadIntLiteral(literal.val);
                     argsConstructor += "I";
                 }
+                else if(object.jjtGetChild(i) instanceof ASTBoolean){
+                    argsConstructor += "B";
+                }
+                else if(object.jjtGetChild(i) instanceof ASTIdentifier){
+                    ASTIdentifier identifier = (ASTIdentifier) object.jjtGetChild(i);
+                    loadLocalVariable(identifier, symbolMethod);
+
+                    if(symbolMethod.symbolTable.get(identifier.val)!=null){
+                       Type varType = symbolMethod.symbolTable.get(identifier.val).getType();
+                       argsConstructor += getSymbolType(varType);
+                    }
+                }
             }
             this.printWriterFile.println("\tnew " + object.val + "\n\tdup");
             this.printWriterFile.println("\tinvokespecial " + object.val + "/<init>(" + argsConstructor + ")V");
