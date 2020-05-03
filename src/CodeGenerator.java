@@ -195,7 +195,7 @@ public class CodeGenerator {
             SimpleNode child = (SimpleNode) methodNode.jjtGetChild(i);
             if (child instanceof ASTArg){
                 if(child.jjtGetChild(0) instanceof ASTType){
-                    methodArgs+=generateMethodArgument((ASTArg)child);
+                    methodArgs+=generateArgument((ASTArg)child);
                 }
             }
             if (child instanceof ASTType) {
@@ -206,7 +206,7 @@ public class CodeGenerator {
         this.printWriterFile.println(".method public " + methodNode.name + "(" + methodArgs + ")" + methodType);
     }
 
-    private String generateMethodArgument(ASTArg argNode) {
+    private String generateArgument(ASTArg argNode) {
         if(argNode.jjtGetChild(0) instanceof ASTType)
            return getType((ASTType) argNode.jjtGetChild(0));
 
@@ -339,10 +339,15 @@ public class CodeGenerator {
         SimpleNode lhs = (SimpleNode) operation.jjtGetChild(0);
         SimpleNode rhs = (SimpleNode) operation.jjtGetChild(1);
 
+
         if(operation instanceof ASTDotExpression) {
             if(lhs instanceof ASTIdentifier)   
                 loadLocalVariable((ASTIdentifier)lhs,symbolMethod);      
             generateDotExpression(operation, symbolClass, symbolMethod);
+        }
+        if(operation instanceof ASTNewObject){
+            ASTNewObject object = (ASTNewObject) operation;
+            generateNewObject(object, symbolClass, symbolMethod);
         }
         else{
             if(lhs.jjtGetNumChildren()==2){
@@ -465,14 +470,26 @@ public class CodeGenerator {
     }
 
     private void generateNewObject(ASTNewObject object, SymbolClass symbolClass, SymbolMethod symbolMethod){
-		Type varType = null;
+        String argsConstructor="";
 
-        if(symbolMethod.symbolTable.get(object.val)!=null) 
-            varType = symbolMethod.symbolTable.get(object.val).getType();
+        if(object.jjtGetNumChildren()==0){
+            this.printWriterFile.println("\tnew " + object.val + "\n\tdup");
+            this.printWriterFile.println("\tinvokespecial " + object.val + "/<init>()V");
+        }
+        else{
+            for(int i=0;i<object.jjtGetNumChildren();i++){
+                if(object.jjtGetChild(i) instanceof ASTLiteral){
+                    ASTLiteral literal = (ASTLiteral) object.jjtGetChild(i);
+                    loadIntLiteral(literal.val);
+                    argsConstructor += "I";
+                }
+            }
+            this.printWriterFile.println("\tnew " + object.val + "\n\tdup");
+            this.printWriterFile.println("\tinvokespecial " + object.val + "/<init>(" + argsConstructor + ")V");
+            
 
-
-        this.printWriterFile.println("\tnew " + object.val + "\n\tdup");
-        this.printWriterFile.println("\tinvokespecial " + object.val + "/<init>()V");
+            
+        }
         
     }
 

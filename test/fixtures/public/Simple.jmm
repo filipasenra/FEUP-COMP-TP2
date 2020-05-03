@@ -1,4 +1,6 @@
 import static io.println(int) void;
+import Map(int, int);
+
 
 class Simple {
 
@@ -9,16 +11,12 @@ class Simple {
     }
 
     public static void main(String[] args){
-        int a;
-        int b;
-        int c;
+        Map m;
         Simple s;
-        a = 20;
-        b = 10;
+        m = new Map(1,3);
         s = new Simple();
-        c = s.add(a,b);
-        io.println(c);
     }
+    
 
     public int constInstr(){
         int c;
