@@ -273,7 +273,7 @@ public class CodeGenerator {
         if(type!=null){
             switch (type) {
                 case BOOLEAN:
-                    this.printWriterFile.println("\tireturn");   //TODO -> confirm
+                    this.printWriterFile.println("\tireturn");
                     break;                
                 case INT:
                     this.printWriterFile.println("\tireturn");
@@ -472,21 +472,26 @@ public class CodeGenerator {
     private void generateNewObject(ASTNewObject object, SymbolClass symbolClass, SymbolMethod symbolMethod){
         String argsConstructor="";
 
+        //Default constructor
         if(object.jjtGetNumChildren()==0){
             this.printWriterFile.println("\tnew " + object.val + "\n\tdup");
             this.printWriterFile.println("\tinvokespecial " + object.val + "/<init>()V");
         }
+        //Constructor w/ arguments
         else{
             for(int i=0;i<object.jjtGetNumChildren();i++){
+
                 if(object.jjtGetChild(i) instanceof ASTLiteral){
                     ASTLiteral literal = (ASTLiteral) object.jjtGetChild(i);
                     loadIntLiteral(literal.val);
                     argsConstructor += "I";
                 }
-                else if(object.jjtGetChild(i) instanceof ASTBoolean){
+
+                if(object.jjtGetChild(i) instanceof ASTBoolean){
                     argsConstructor += "B";
                 }
-                else if(object.jjtGetChild(i) instanceof ASTIdentifier){
+
+                if(object.jjtGetChild(i) instanceof ASTIdentifier){
                     ASTIdentifier identifier = (ASTIdentifier) object.jjtGetChild(i);
                     loadLocalVariable(identifier, symbolMethod);
 
@@ -496,11 +501,9 @@ public class CodeGenerator {
                     }
                 }
             }
+
             this.printWriterFile.println("\tnew " + object.val + "\n\tdup");
             this.printWriterFile.println("\tinvokespecial " + object.val + "/<init>(" + argsConstructor + ")V");
-            
-
-            
         }
         
     }
