@@ -89,7 +89,6 @@ public class jmm {
         CodeGenerator generator = new CodeGenerator(semanticAnalysis);
         generator.generate(root);
 
-
         System.out.println("Jasmin code generated");
     }
 }

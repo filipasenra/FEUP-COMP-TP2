@@ -10,23 +10,20 @@ public class CodeGenerator {
     private PrintWriter printWriterFile;
     private final HashMap<String, Symbol> symbolTable;
 
-    public CodeGenerator(SemanticAnalysis semanticAnalysis ){
-        symbolTable = semanticAnalysis.getSymbolTable();
+    public CodeGenerator(SemanticAnalysis semanticAnalysis){
+        this.symbolTable = semanticAnalysis.getSymbolTable();
     }
     
 	public void generate(SimpleNode node) {
-
-        ASTClassDeclaration classNode=null;
-
         for(int i=0;i<node.jjtGetNumChildren();i++){
             if(node.jjtGetChild(i) instanceof ASTClassDeclaration){
-                classNode = (ASTClassDeclaration) node.jjtGetChild(i);
+                ASTClassDeclaration classNode = (ASTClassDeclaration) node.jjtGetChild(i);
+
+                this.printWriterFile = createOutputFile(classNode.name);
+                this.generateClass(classNode);
+                this.printWriterFile.close();
             }
         }
-
-        this.printWriterFile = createOutputFile(classNode.name);
-        this.generateClass(classNode);
-        this.printWriterFile.close();
     }
 
     private void generateClass(ASTClassDeclaration classNode) {
@@ -166,10 +163,9 @@ public class CodeGenerator {
 
     private SymbolMethod getSymbolMethod(ArrayList<SymbolMethod> listSymbolMethod, int num) {
         if(listSymbolMethod.size() == 1)
-            return (SymbolMethod) listSymbolMethod.get(0);
+            return listSymbolMethod.get(0);
 
-        for(int i = 0; i < listSymbolMethod.size(); i++) {
-            SymbolMethod symbolMethod = listSymbolMethod.get(i);
+        for (SymbolMethod symbolMethod : listSymbolMethod) {
             if (symbolMethod.num == num) {
                 return symbolMethod;
             }
@@ -177,29 +173,20 @@ public class CodeGenerator {
         return null;
     }
 
-    private SymbolMethod getMethod(ASTMethodDeclaration methodNode, SymbolClass symbolClass) {
-        ArrayList<SymbolMethod> possibleMethods = symbolClass.symbolTableMethods.get(methodNode.name);
-
-        if(possibleMethods.size() == 1)
-            return possibleMethods.get(0);
-
-        return null;
-    }
-    
     private void generateMethodHeader(ASTMethodDeclaration methodNode) {
 
-        String methodArgs = "";
-        String methodType = "";
+        StringBuilder methodArgs = new StringBuilder();
+        StringBuilder methodType = new StringBuilder();
 
         for (int i = 0; i < methodNode.jjtGetNumChildren(); i++) {
             SimpleNode child = (SimpleNode) methodNode.jjtGetChild(i);
             if (child instanceof ASTArg){
                 if(child.jjtGetChild(0) instanceof ASTType){
-                    methodArgs+=generateArgument((ASTArg)child);
+                    methodArgs.append(generateArgument((ASTArg) child));
                 }
             }
             if (child instanceof ASTType) {
-                methodType+=getType((ASTType) child);
+                methodType.append(getType((ASTType) child));
             }          
         }
 
@@ -229,7 +216,6 @@ public class CodeGenerator {
                 ASTVarDeclaration varDeclaration = (ASTVarDeclaration) methodNode.jjtGetChild(i);
                 symbolMethod.symbolTable.get(varDeclaration.name).setIndex(indexCounter);
                 indexCounter++;
-                continue;
             }
         }
     }
@@ -273,8 +259,6 @@ public class CodeGenerator {
         if(type!=null){
             switch (type) {
                 case BOOLEAN:
-                    this.printWriterFile.println("\tireturn");
-                    break;                
                 case INT:
                     this.printWriterFile.println("\tireturn");
                     break;
@@ -326,7 +310,7 @@ public class CodeGenerator {
             }  
             else if (rhs instanceof ASTNewObject) {
                 ASTNewObject object = (ASTNewObject) rhs;
-                generateNewObject(object, symbolClass, symbolMethod);
+                generateNewObject(object, symbolMethod);
             }
             else if(rhs instanceof ASTInitializeArray){
                 ASTInitializeArray arrayInit = (ASTInitializeArray)rhs;
@@ -347,7 +331,7 @@ public class CodeGenerator {
         }
         if(operation instanceof ASTNewObject){
             ASTNewObject object = (ASTNewObject) operation;
-            generateNewObject(object, symbolClass, symbolMethod);
+            generateNewObject(object, symbolMethod);
         }
         else{
             if(lhs.jjtGetNumChildren()==2){
@@ -407,8 +391,8 @@ public class CodeGenerator {
         Type varType=null;
         
         int index = 0; 
-		String store = "";
-        String type="";
+		String store;
+        String type;
 		
         if(symbolMethod.symbolTable.get(identifier.val)!=null){
 	        varType = symbolMethod.symbolTable.get(identifier.val).getType();
@@ -430,8 +414,8 @@ public class CodeGenerator {
 
     private void loadLocalVariable(ASTIdentifier identifier, SymbolMethod symbolMethod){
 		Type varType=null;
-        String store = "";
-        String type="";
+        String store;
+        String type;
         int index = 0;
         
 		if(symbolMethod.symbolTable.get(identifier.val)!=null){
@@ -469,8 +453,8 @@ public class CodeGenerator {
         this.printWriterFile.println(output);
     }
 
-    private void generateNewObject(ASTNewObject object, SymbolClass symbolClass, SymbolMethod symbolMethod){
-        String argsConstructor="";
+    private void generateNewObject(ASTNewObject object, SymbolMethod symbolMethod){
+        StringBuilder argsConstructor= new StringBuilder();
 
         //Default constructor
         if(object.jjtGetNumChildren()==0){
@@ -484,11 +468,11 @@ public class CodeGenerator {
                 if(object.jjtGetChild(i) instanceof ASTLiteral){
                     ASTLiteral literal = (ASTLiteral) object.jjtGetChild(i);
                     loadIntLiteral(literal.val);
-                    argsConstructor += "I";
+                    argsConstructor.append("I");
                 }
 
                 if(object.jjtGetChild(i) instanceof ASTBoolean){
-                    argsConstructor += "B";
+                    argsConstructor.append("B");
                 }
 
                 if(object.jjtGetChild(i) instanceof ASTIdentifier){
@@ -497,7 +481,7 @@ public class CodeGenerator {
 
                     if(symbolMethod.symbolTable.get(identifier.val)!=null){
                        Type varType = symbolMethod.symbolTable.get(identifier.val).getType();
-                       argsConstructor += getSymbolType(varType);
+                       argsConstructor.append(getSymbolType(varType));
                     }
                 }
             }
@@ -548,8 +532,8 @@ public class CodeGenerator {
     }
 
     private void generateCall(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier identifier1, ASTIdentifier identifier2) {
-        String methodName=""; String objectName=""; String methodType=""; String callArgs = "";
-        Type type=null;
+        String methodName=""; String objectName=""; String methodType=""; StringBuilder callArgs = new StringBuilder();
+        Type type;
         boolean declaredInClass=false;
         ArrayList<Type> callArgsArray;
 
@@ -573,7 +557,7 @@ public class CodeGenerator {
                         if(callArgsArray.size()>0) {
                             for (Type t : callArgsArray) {
                                 if(t!=null)
-                                    callArgs += getSymbolType(t);
+                                    callArgs.append(getSymbolType(t));
                             }
                         }
                         objectName=sc.name;
@@ -605,7 +589,7 @@ public class CodeGenerator {
                             callArgsArray = getMethodCallTypes(symbolMethod, identifier2);
                             objectName = sc.name;
                             for (Type t : callArgsArray) {
-                                callArgs += getSymbolType(t);
+                                callArgs.append(getSymbolType(t));
                             }
                         }
                     }
@@ -624,7 +608,7 @@ public class CodeGenerator {
 
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             SimpleNode child = (SimpleNode) node.jjtGetChild(i);
-            if(child instanceof ASTArg || child instanceof ASTIdentifier){
+            if (child instanceof ASTIdentifier){
                 ASTIdentifier arg = (ASTIdentifier) child;
                 loadLocalVariable(arg, symbolMethod);    
             }
