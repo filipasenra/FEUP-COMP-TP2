@@ -282,6 +282,11 @@ public class CodeGenerator {
             generateAccessToArray(lhs, arrayAccess, symbolMethod);
             generateRhs(rhs, symbolClass, symbolMethod);
             this.printWriterFile.println("\tiastore");
+        } else if (rhs.jjtGetNumChildren() != 0 && rhs.jjtGetChild(0) instanceof ASTaccessToArray) {
+            ASTaccessToArray arrayAccess = (ASTaccessToArray) rhs.jjtGetChild(0);
+            generateAccessToArray((ASTIdentifier) rhs, arrayAccess, symbolMethod);
+            this.printWriterFile.println("\tiaload");
+            generateLhs(lhs, symbolMethod);
         } else {
             generateRhs(rhs, symbolClass, symbolMethod);
             generateLhs(lhs, symbolMethod);
@@ -490,8 +495,7 @@ public class CodeGenerator {
         if (arrayInit.jjtGetChild(0) instanceof ASTLiteral) {
             ASTLiteral arg = (ASTLiteral) arrayInit.jjtGetChild(0);
             loadIntLiteral(arg.val);
-        }
-        else if(arrayInit.jjtGetChild(0) instanceof ASTIdentifier) {
+        } else if (arrayInit.jjtGetChild(0) instanceof ASTIdentifier) {
             ASTIdentifier astIdentifier = (ASTIdentifier) arrayInit.jjtGetChild(0);
             loadLocalVariable(astIdentifier, symbolMethod);
         }
