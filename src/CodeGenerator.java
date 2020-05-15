@@ -231,6 +231,9 @@ public class CodeGenerator {
             if (node instanceof ASTDotExpression) {
                 generateDotExpression(node, symbolClass, symbolMethod);
             }
+            if(node instanceof ASTIf){
+                generateIfExpression(node, symbolClass, symbolMethod);
+            }
 
             //Return
             if (node instanceof ASTReturn) {
@@ -664,6 +667,42 @@ public class CodeGenerator {
             }
         }
         return null;
+    }
+
+    private void generateIfExpression(SimpleNode node, SymbolClass symbolClass, SymbolMethod symbolMethod){
+        // System.out.println("if expression: " + node);
+        // System.out.println("nr filhos: " + node.jjtGetNumChildren());
+
+        SimpleNode condition = (SimpleNode) node.jjtGetChild(0);
+        SimpleNode ifBody = (SimpleNode) node.jjtGetChild(1);
+        SimpleNode elseBody = (SimpleNode) node.jjtGetChild(2);
+
+        generateCondition(condition, symbolMethod);
+
+        // System.out.println(condition);
+        // System.out.println(ifBody);
+        // System.out.println(elseBody);
+
+    }
+
+    private void generateCondition(SimpleNode condition, SymbolMethod symbolMethod) {
+        // System.out.println("condition node: " + condition);
+        // System.out.println("nr filhos: " + condition.jjtGetNumChildren());
+        // for(int i=0;i<condition.jjtGetNumChildren();i++){
+        //     System.out.println("\t"  + condition.jjtGetChild(i));
+        // }
+
+        for (int i = 0; i < condition.jjtGetNumChildren(); i++) {
+            SimpleNode child = (SimpleNode) condition.jjtGetChild(i);
+            if (child instanceof ASTLiteral) {
+                ASTLiteral literal = (ASTLiteral) child;
+                loadIntLiteral(literal.val);
+            }
+            if (child instanceof ASTIdentifier) {
+                ASTIdentifier identifier = (ASTIdentifier) child;
+                loadLocalVariable(identifier, symbolMethod);
+            }
+        }
     }
 
     private PrintWriter createOutputFile(String className) {
