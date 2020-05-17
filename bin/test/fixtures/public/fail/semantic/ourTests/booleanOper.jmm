@@ -1,5 +1,6 @@
 /*  REASON:
     Operation && only accepts booleans
+    a is not declared
 */
 
 class BooleanOper {
@@ -13,5 +14,9 @@ class BooleanOper {
 
         b = c && d;
         b = c < d;
+    }
+
+    public int test() {
+         return a;
     }
 }

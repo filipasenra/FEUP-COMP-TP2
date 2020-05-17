@@ -1,4 +1,4 @@
-.class public HelloWorld
+.class public VarNotInit
 .super java/lang/Object
 
 .method public <init>()V
@@ -11,7 +11,14 @@
 	.limit stack 99
 	.limit locals 99
 
-	invokestatic ioPlus/printHelloWorld()V
+	iconst_2
+	istore 4
+	iconst_2
+	istore_3
+	iload_2
+	iload_3
+	iadd
+	istore_1
 	return
 .end method
 

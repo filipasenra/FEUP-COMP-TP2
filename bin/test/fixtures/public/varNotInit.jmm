@@ -1,5 +1,5 @@
 /*  REASON:
-    Variable "j" is undefined.
+    Variable "j" hasn't been initialized.
 */
 
 class VarNotInit {

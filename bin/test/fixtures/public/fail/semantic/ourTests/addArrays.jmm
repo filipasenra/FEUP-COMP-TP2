@@ -9,6 +9,8 @@ class AddArrays {
         int[] b;
 
         String d;
+        i = new int[1];
+        b = new int[2];
 
         d = a[1];
 
