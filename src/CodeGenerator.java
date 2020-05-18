@@ -452,6 +452,9 @@ public class CodeGenerator {
     }
 
     private void loadLocalVariable(String val, SymbolMethod symbolMethod) {
+
+        //TODO: MAYBE MISSING CASE FOR "THIS"
+
         Type varType = null;
         String store;
         String type;
@@ -561,7 +564,7 @@ public class CodeGenerator {
                     if (identifier2.method) {
                         methodName = identifier2.val;
                         if (identifier2.jjtGetNumChildren() > 0)
-                            processArgs(identifier2, symbolMethod);
+                            processArgs(identifier2, symbolClass, symbolMethod);
                         if (sc.symbolTableMethods.containsKey(identifier2.val)) {
                             type = checkIfMethodExists(sc.symbolTableMethods.get(identifier2.val), getMethodCallTypes(symbolMethod, identifier2));
                             if (type != null)
@@ -592,7 +595,7 @@ public class CodeGenerator {
                         //Right part of dot expression is a method
                         if (identifier2.method) {
                             methodName = identifier2.val;
-                            processArgs(identifier2, symbolMethod);
+                            processArgs(identifier2, symbolClass, symbolMethod);
 
                             //Get the return type of method
                             if (sc.symbolTableMethods.containsKey(identifier2.val)) {
@@ -618,15 +621,12 @@ public class CodeGenerator {
             this.printWriterFile.println("\t" + "invokestatic " + objectName + "/" + methodName + "(" + callArgs + ")" + methodType);
     }
 
-    private void processArgs(SimpleNode node, SymbolMethod symbolMethod) {
+    private void processArgs(SimpleNode node, SymbolClass symbolClass, SymbolMethod symbolMethod) {
+
+        //Change this because call can be with identifiers and other things in expression
 
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
-            SimpleNode child = (SimpleNode) node.jjtGetChild(i);
-            if (child instanceof ASTIdentifier) {
-                loadLocalVariable(((ASTIdentifier) child).val, symbolMethod);
-            } else if (child instanceof ASTArg){
-                loadLocalVariable(((ASTArg) child).val, symbolMethod);
-            }
+            this.generateExpression((SimpleNode) node.jjtGetChild(i), symbolClass, symbolMethod);
         }
     }
 
