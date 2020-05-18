@@ -33,15 +33,22 @@ class Test {
     }
 
     public int[] get_array() {
+        this.tets();
         return test_arr;
     }
 
+    public int tets() {return 0;}
+
     public static void main(String[] args) {
         Test fm;
-
         fm = new Test();
-        fm.build_test_arr();
 
-        System.out.println(fm.find_maximum(fm.get_array()));
+        new Test().build_test_arr();
+
+        print(fm.find_maximum(fm.get_array()));
+    }
+
+    public static void print(int i){
+
     }
 }

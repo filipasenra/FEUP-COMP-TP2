@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import symbolTable.*;
 
@@ -388,7 +389,7 @@ public class CodeGenerator {
                 return Type.INT;
 
             } else if (node instanceof ASTIdentifier) {
-                this.loadLocalVariable(((ASTIdentifier) node).val, symbolMethod);
+                return this.loadLocalVariable(((ASTIdentifier) node).val, symbolMethod);
 
             } else if (node instanceof ASTLiteral) {
                 loadIntLiteral(((ASTLiteral) node).val);
@@ -455,9 +456,13 @@ public class CodeGenerator {
         this.printWriterFile.println("\t" + type + store + index);
     }
 
-    private void loadLocalVariable(String val, SymbolMethod symbolMethod) {
+    private Type loadLocalVariable(String val, SymbolMethod symbolMethod) {
 
-        //TODO: MAYBE MISSING CASE FOR "THIS"
+        //TODO: check if case for this is correct
+        if(val.equals("this")) {
+            this.printWriterFile.println("\taload0");
+            return Type.OBJECT;
+        }
 
         Type varType = null;
         String store;
@@ -474,6 +479,7 @@ public class CodeGenerator {
         store = (index <= 3) ? "load_" : "load ";
 
         this.printWriterFile.println("\t" + type + store + index);
+        return varType;
     }
 
     private void loadIntLiteral(String val) {
@@ -532,38 +538,73 @@ public class CodeGenerator {
     }
 
     private Type generateDotExpression(SimpleNode node, SymbolClass symbolClass, SymbolMethod symbolMethod) {
-        //TODO: MISSING CASE WHEN OTHER THAN IDENTIFIER IS CALLED IN THE LEFT PART
 
         SimpleNode leftPart = (SimpleNode) node.jjtGetChild(0);
         SimpleNode rightPart = (SimpleNode) node.jjtGetChild(1);
 
-        if (leftPart instanceof ASTIdentifier && rightPart instanceof ASTIdentifier) {
-            ASTIdentifier leftIdentifier = (ASTIdentifier) node.jjtGetChild(0);
+        if(rightPart instanceof ASTIdentifier) {
+
             ASTIdentifier rightIdentifier = (ASTIdentifier) node.jjtGetChild(1);
 
-            if (leftIdentifier.val.equals("this")) {
-                generateThisStatement(symbolClass, symbolMethod, rightIdentifier);
-            } else if (rightIdentifier.val.equals("length")) {
-                loadVariable(leftIdentifier, symbolMethod);
-                this.printWriterFile.println("\tarraylength");
-                return Type.INT;
+            if (leftPart instanceof ASTIdentifier) {
+                ASTIdentifier leftIdentifier = (ASTIdentifier) node.jjtGetChild(0);
 
-            } else {
+                if (leftIdentifier.val.equals("this")) {
+                    return generateThisStatement(symbolClass, symbolMethod, leftIdentifier, rightIdentifier);
+                }
+
+                if (rightIdentifier.val.equals("length")) {
+
+                    this.generateExpression(leftIdentifier, symbolClass, symbolMethod);
+                    this.printWriterFile.println("\tarraylength");
+                    return Type.INT;
+
+                }
+
                 return generateCall(symbolClass, symbolMethod, leftIdentifier, rightIdentifier);
+
+            }
+
+            if (leftPart instanceof ASTNewObject) {
+
+                ASTNewObject leftIdentifier = (ASTNewObject) node.jjtGetChild(0);
+
+                return generateCallObject(symbolClass, symbolMethod, leftIdentifier, rightIdentifier);
+
             }
         }
 
         return null;
     }
 
-    private Type generateThisStatement(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node) {
+
+    private Type generateCallObject(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTNewObject node1, ASTIdentifier node2) {
+
+        this.generateExpression(node1, symbolClass, symbolMethod);
+
+        if (symbolTable.containsKey(node1.val)) {
+
+            if (symbolTable.get(node1.val) instanceof SymbolClass) {
+
+                SymbolClass sc = (SymbolClass) symbolTable.get(node1.val);
+                return generateCallForMethod(sc, node2, symbolClass, symbolMethod, true);
+            }
+        }
+
+        return null;
+
+    }
+
+    private Type generateThisStatement(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier identifier1, ASTIdentifier identifier2) {
 
         //TODO: check if with "this" the call should be done in a different way
 
+        this.generateExpression(identifier1, symbolClass, symbolMethod);
+
         //if it is a call for variable/field
-        if (!node.method) {
-            if (symbolClass.symbolTableFields.containsKey(node.val)) {
-                return symbolClass.symbolTableFields.get(node.val).getType();
+        if (!identifier2.method) {
+            if (symbolClass.symbolTableFields.containsKey(identifier2.val)) {
+                return symbolClass.symbolTableFields.get(identifier2.val).getType();
             }
 
             return null;
@@ -571,24 +612,22 @@ public class CodeGenerator {
         }
 
         //Check if current class has any method with the same signature
-        if (symbolClass.symbolTableMethods.containsKey(node.val)) {
+        if (symbolClass.symbolTableMethods.containsKey(identifier2.val)) {
 
-            return generateCallForMethod(symbolClass, node, symbolClass, symbolMethod, true);
+            return generateCallForMethod(symbolClass, identifier2, symbolClass, symbolMethod, true);
         }
 
         //check if method is defined in super class, if it is not defined in the current class
         if (symbolTable.containsKey(symbolClass.superClass)) {
 
             SymbolClass sc = (SymbolClass) symbolTable.get(symbolClass.superClass);
-
-            return generateCallForMethod(sc, node, symbolClass, symbolMethod, true);
+            return generateCallForMethod(sc, identifier2, symbolClass, symbolMethod, true);
         }
 
         return null;
     }
 
     private Type generateCall(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier identifier1, ASTIdentifier identifier2) {
-        //TODO: MISSING CASE WHEN FUNCTION IS CALLED OR WHEN OPERATION IS CALLED AND WHEN OTHER THAN IDENTIFIER IS CALLED IN THE LEFT PART
 
         //Import
         if (symbolTable.containsKey(identifier1.val)) {
@@ -597,23 +636,30 @@ public class CodeGenerator {
 
                 return generateCallForMethod(sc, identifier2, symbolClass, symbolMethod, false);
             }
+
+            return null;
         }
 
         //Verify if first part of dot expression was declared inside the class or method
-        else if (symbolMethod.symbolTable.containsKey(identifier1.val) || symbolClass.symbolTableFields.containsKey(identifier1.val)) {
+        if (symbolMethod.symbolTable.containsKey(identifier1.val) || symbolClass.symbolTableFields.containsKey(identifier1.val)) {
             if (symbolMethod.symbolTable.containsKey(identifier1.val)) {
+
+                this.generateExpression(identifier1, symbolClass, symbolMethod);
+
                 if (symbolMethod.symbolTable.get(identifier1.val).getType().equals(Type.OBJECT)) {
 
                     SymbolClass sc = (SymbolClass) symbolTable.get(symbolMethod.symbolTable.get(identifier1.val).getObject_name());
                     return generateCallForMethod(sc, identifier2, symbolClass, symbolMethod, true);
                 }
             }
+
+            return null;
         }
 
         return null;
     }
 
-    private Type generateCallForMethod(SymbolClass sc, ASTIdentifier identifier2, SymbolClass symbolClass, SymbolMethod symbolMethod, boolean declaredInClass) {
+    private Type generateCallForMethod(SymbolClass sc, ASTIdentifier identifier2, SymbolClass symbolClass, SymbolMethod symbolMethod, boolean virtual) {
 
         //Check for methods
         if (identifier2.method) {
@@ -637,7 +683,7 @@ public class CodeGenerator {
             String methodType = ((returnType != null) ? getSymbolType(returnType) : "");
             String objectName = sc.name;
 
-            this.printWriterFile.println("\t" + ((declaredInClass) ? "invokevirtual " : "invokestatic ") + objectName + "/" + methodName + "(" + callArgs + ")" + methodType);
+            this.printWriterFile.println("\t" + ((virtual) ? "invokevirtual " : "invokestatic ") + objectName + "/" + methodName + "(" + callArgs + ")" + methodType);
             return returnType;
         }
 
