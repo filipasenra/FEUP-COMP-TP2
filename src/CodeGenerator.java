@@ -1,7 +1,6 @@
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -180,29 +179,20 @@ public class CodeGenerator {
         return null;
     }
 
-    private SymbolMethod getMethod(ASTMethodDeclaration methodNode, SymbolClass symbolClass) {
-        ArrayList<SymbolMethod> possibleMethods = symbolClass.symbolTableMethods.get(methodNode.name);
-
-        if (possibleMethods.size() == 1)
-            return possibleMethods.get(0);
-
-        return null;
-    }
-
     private void generateMethodHeader(ASTMethodDeclaration methodNode) {
 
-        String methodArgs = "";
-        String methodType = "";
+        StringBuilder methodArgs = new StringBuilder();
+        StringBuilder methodType = new StringBuilder();
 
         for (int i = 0; i < methodNode.jjtGetNumChildren(); i++) {
             SimpleNode child = (SimpleNode) methodNode.jjtGetChild(i);
             if (child instanceof ASTArg) {
                 if (child.jjtGetChild(0) instanceof ASTType) {
-                    methodArgs += generateMethodArgument((ASTArg) child);
+                    methodArgs.append(generateMethodArgument((ASTArg) child));
                 }
             }
             if (child instanceof ASTType) {
-                methodType += getType((ASTType) child);
+                methodType.append(getType((ASTType) child));
             }
         }
 
@@ -510,6 +500,8 @@ public class CodeGenerator {
     }
 
     private void generateNewObject(ASTNewObject object, SymbolClass symbolClass, SymbolMethod symbolMethod) {
+        //TODO: missing new object with parameters
+
         Type varType = null;
 
         if (symbolMethod.symbolTable.get(object.val) != null)
@@ -566,7 +558,7 @@ public class CodeGenerator {
 
     private Type generateThisStatement(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node) {
 
-        //TODO: check if with his the call should be done in a diferent way
+        //TODO: check if with "this" the call should be done in a different way
 
         //if it is a call for variable/field
         if (!node.method) {
@@ -631,12 +623,12 @@ public class CodeGenerator {
             //Get return type of method
             Type returnType = getReturnTypeMethod(sc, methodCallTypes, identifier2);
 
-            String callArgs = "";
+            StringBuilder callArgs = new StringBuilder();
             //Get list of arguments type
             if (methodCallTypes.size() > 0) {
                 for (Type t : methodCallTypes) {
                     if (t != null)
-                        callArgs += getSymbolType(t);
+                        callArgs.append(getSymbolType(t));
                 }
             }
 
