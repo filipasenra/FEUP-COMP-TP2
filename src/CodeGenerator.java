@@ -591,34 +591,32 @@ public class CodeGenerator {
     }
 
     private Type generateCallForMethod(SymbolClass sc, ASTIdentifier identifier2, SymbolClass symbolClass, SymbolMethod symbolMethod, boolean declaredInClass) {
-        String methodName = "";
-        String objectName = "";
-        String methodType = "";
+
         String callArgs = "";
         Type returnType = null;
 
         if (identifier2 != null) {
             //Check for methods
             if (identifier2.method) {
-                methodName = identifier2.val;
                 ArrayList<Type> methodCallTypes = processArgs(identifier2, symbolClass, symbolMethod);
 
                 //Get return type of method
                 returnType = getReturnTypeMethod(sc, methodCallTypes, identifier2);
-                methodType = (returnType != null) ? getSymbolType(returnType) : "";
 
                 //Get list of arguments type
-                //TODO: Missing case when function is called or in case of object
                 if (methodCallTypes.size() > 0) {
                     for (Type t : methodCallTypes) {
                         if (t != null)
                             callArgs += getSymbolType(t);
                     }
                 }
-
-                objectName = sc.name;
             }
         }
+
+
+        String methodName = identifier2.val;
+        String methodType = ((returnType != null) ? getSymbolType(returnType) : "");
+        String objectName = sc.name;;
 
         this.printWriterFile.println("\t" + ((declaredInClass) ? "invokevirtual " : "invokestatic ") + objectName + "/" + methodName + "(" + callArgs + ")" + methodType);
         return returnType;
