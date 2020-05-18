@@ -550,15 +550,46 @@ public class CodeGenerator {
             ASTIdentifier rightIdentifier = (ASTIdentifier) node.jjtGetChild(1);
 
             if (leftIdentifier.val.equals("this")) {
-                //TODO
+                generateThisStatement(symbolClass, symbolMethod, rightIdentifier);
             } else if (rightIdentifier.val.equals("length")) {
                 loadVariable(leftIdentifier, symbolMethod);
                 this.printWriterFile.println("\tarraylength");
                 return Type.INT;
+
             } else {
-                //loadLocalVariable(leftIdentifier, symbolMethod);
                 return generateCall(symbolClass, symbolMethod, leftIdentifier, rightIdentifier);
             }
+        }
+
+        return null;
+    }
+
+    private Type generateThisStatement(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node) {
+
+        //TODO: check if with his the call should be done in a diferent way
+
+        //if it is a call for variable/field
+        if (!node.method) {
+            if (symbolClass.symbolTableFields.containsKey(node.val)) {
+                return symbolClass.symbolTableFields.get(node.val).getType();
+            }
+
+            return null;
+
+        }
+
+        //Check if current class has any method with the same signature
+        if (symbolClass.symbolTableMethods.containsKey(node.val)) {
+
+            return generateCallForMethod(symbolClass, node, symbolClass, symbolMethod, true);
+        }
+
+        //check if method is defined in super class, if it is not defined in the current class
+        if (symbolTable.containsKey(symbolClass.superClass)) {
+
+            SymbolClass sc = (SymbolClass) symbolTable.get(symbolClass.superClass);
+
+            return generateCallForMethod(sc, node, symbolClass, symbolMethod, true);
         }
 
         return null;
