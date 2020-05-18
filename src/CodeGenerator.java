@@ -592,34 +592,33 @@ public class CodeGenerator {
 
     private Type generateCallForMethod(SymbolClass sc, ASTIdentifier identifier2, SymbolClass symbolClass, SymbolMethod symbolMethod, boolean declaredInClass) {
 
-        String callArgs = "";
-        Type returnType = null;
+        //Check for methods
+        if (identifier2.method) {
 
-        if (identifier2 != null) {
-            //Check for methods
-            if (identifier2.method) {
-                ArrayList<Type> methodCallTypes = processArgs(identifier2, symbolClass, symbolMethod);
+            ArrayList<Type> methodCallTypes = processArgs(identifier2, symbolClass, symbolMethod);
 
-                //Get return type of method
-                returnType = getReturnTypeMethod(sc, methodCallTypes, identifier2);
+            //Get return type of method
+            Type returnType = getReturnTypeMethod(sc, methodCallTypes, identifier2);
 
-                //Get list of arguments type
-                if (methodCallTypes.size() > 0) {
-                    for (Type t : methodCallTypes) {
-                        if (t != null)
-                            callArgs += getSymbolType(t);
-                    }
+            String callArgs = "";
+            //Get list of arguments type
+            if (methodCallTypes.size() > 0) {
+                for (Type t : methodCallTypes) {
+                    if (t != null)
+                        callArgs += getSymbolType(t);
                 }
             }
+
+
+            String methodName = identifier2.val;
+            String methodType = ((returnType != null) ? getSymbolType(returnType) : "");
+            String objectName = sc.name;
+
+            this.printWriterFile.println("\t" + ((declaredInClass) ? "invokevirtual " : "invokestatic ") + objectName + "/" + methodName + "(" + callArgs + ")" + methodType);
+            return returnType;
         }
 
-
-        String methodName = identifier2.val;
-        String methodType = ((returnType != null) ? getSymbolType(returnType) : "");
-        String objectName = sc.name;;
-
-        this.printWriterFile.println("\t" + ((declaredInClass) ? "invokevirtual " : "invokestatic ") + objectName + "/" + methodName + "(" + callArgs + ")" + methodType);
-        return returnType;
+        return null;
     }
 
     private Type getReturnTypeMethod( SymbolClass symbolClass, ArrayList<Type> methodCallTypes, ASTIdentifier identifier){
