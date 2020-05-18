@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -264,9 +265,6 @@ public class CodeGenerator {
         if (node instanceof ASTEquality) {
             generateEquality((ASTEquality) node, symbolClass, symbolMethod);
 
-        } else if (node instanceof ASTDotExpression) {
-            generateDotExpression(node, symbolClass, symbolMethod);
-
         } else if (node instanceof ASTIf) {
             generateIfExpression(node, symbolClass, symbolMethod);
 
@@ -367,19 +365,23 @@ public class CodeGenerator {
         //TODO -> Global variable
     }
 
-    private void generateExpression(SimpleNode node, SymbolClass symbolClass, SymbolMethod symbolMethod) {
+    private Type generateExpression(SimpleNode node, SymbolClass symbolClass, SymbolMethod symbolMethod) {
         if (node != null) {
             if (node instanceof ASTAND) {
                 //generateOperation(node, symbolClass, symbolMethod);
                 //TODO: use if_icmpge (i think)
+                return Type.BOOLEAN;
 
             } else if (node instanceof ASTLESSTHAN) {
                 //generateOperation(node, symbolClass, symbolMethod);
                 //TODO: use if_icmpge (i think)
+                return Type.BOOLEAN;
 
             } else if (node instanceof ASTSUM) {
                 generateOperation(node, symbolClass, symbolMethod);
                 this.printWriterFile.println("\tiadd");
+                return Type.INT;
+
 
             } else if (node instanceof ASTSUB) {
                 generateOperation(node, symbolClass, symbolMethod);
@@ -388,31 +390,43 @@ public class CodeGenerator {
             } else if (node instanceof ASTMUL) {
                 generateOperation(node, symbolClass, symbolMethod);
                 this.printWriterFile.println("\timul");
+                return Type.INT;
 
             } else if (node instanceof ASTDIV) {
                 generateOperation(node, symbolClass, symbolMethod);
                 this.printWriterFile.println("\tidiv");
+                return Type.INT;
 
             } else if (node instanceof ASTIdentifier) {
                 this.loadLocalVariable(((ASTIdentifier) node).val, symbolMethod);
 
             } else if (node instanceof ASTLiteral) {
                 loadIntLiteral(((ASTLiteral) node).val);
+                return Type.INT;
 
             } else if (node instanceof ASTNewObject) {
                 ASTNewObject object = (ASTNewObject) node;
                 generateNewObject(object, symbolClass, symbolMethod);
+                return Type.OBJECT;
 
             } else if (node instanceof ASTInitializeArray) {
                 generateArrayInitialization((ASTInitializeArray) node);
+                return Type.INT_ARRAY;
 
             } else if (node instanceof ASTNegation) {
                 //TODO: negation
+                return Type.BOOLEAN;
 
             } else if (node instanceof ASTBoolean) {
                 //TODO: negation
+                return Type.BOOLEAN;
+
+            } else if (node instanceof ASTDotExpression){
+                return this.generateDotExpression(node, symbolClass, symbolMethod);
             }
         }
+
+        return null;
     }
 
     private void generateOperation(SimpleNode operation, SymbolClass symbolClass, SymbolMethod symbolMethod) {
@@ -525,7 +539,9 @@ public class CodeGenerator {
         }
     }
 
-    private void generateDotExpression(SimpleNode node, SymbolClass symbolClass, SymbolMethod symbolMethod) {
+    private Type generateDotExpression(SimpleNode node, SymbolClass symbolClass, SymbolMethod symbolMethod) {
+        //TODO: MISSING CASE WHEN OTHER THAN IDENTIFIER IS CALLED IN THE LEFT PART
+
         SimpleNode leftPart = (SimpleNode) node.jjtGetChild(0);
         SimpleNode rightPart = (SimpleNode) node.jjtGetChild(1);
 
@@ -538,126 +554,94 @@ public class CodeGenerator {
             } else if (rightIdentifier.val.equals("length")) {
                 loadVariable(leftIdentifier, symbolMethod);
                 this.printWriterFile.println("\tarraylength");
+                return Type.INT;
             } else {
                 //loadLocalVariable(leftIdentifier, symbolMethod);
-                generateCall(symbolClass, symbolMethod, leftIdentifier, rightIdentifier);
+                return generateCall(symbolClass, symbolMethod, leftIdentifier, rightIdentifier);
             }
         }
+
+        return null;
     }
 
-    private void generateCall(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier identifier1, ASTIdentifier identifier2) {
-        String methodName = "";
-        String objectName = "";
-        String methodType = "";
-        String callArgs = "";
-        Type type;
-        boolean declaredInClass = false;
-        ArrayList<Type> callArgsArray;
+    private Type generateCall(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier identifier1, ASTIdentifier identifier2) {
+        //TODO: MISSING CASE WHEN FUNCTION IS CALLED OR WHEN OPERATION IS CALLED AND WHEN OTHER THAN IDENTIFIER IS CALLED IN THE LEFT PART
 
         //Import
         if (symbolTable.containsKey(identifier1.val)) {
             if (symbolTable.get(identifier1.val) instanceof SymbolClass) {
                 SymbolClass sc = (SymbolClass) symbolTable.get(identifier1.val);
 
-                if (identifier2 != null) {
-                    //Check for methods
-                    if (identifier2.method) {
-                        methodName = identifier2.val;
-                        if (identifier2.jjtGetNumChildren() > 0)
-                            processArgs(identifier2, symbolClass, symbolMethod);
-                        if (sc.symbolTableMethods.containsKey(identifier2.val)) {
-                            type = checkIfMethodExists(sc.symbolTableMethods.get(identifier2.val), getMethodCallTypes(symbolMethod, identifier2));
-                            if (type != null)
-                                methodType += getSymbolType(type);
-                        }
-                        callArgsArray = getMethodCallTypes(symbolMethod, identifier2);
-                        if (callArgsArray.size() > 0) {
-                            for (Type t : callArgsArray) {
-                                if (t != null)
-                                    callArgs += getSymbolType(t);
-                            }
-                        }
-                        objectName = sc.name;
-                    }
-                }
+                return generateCallForMethod(sc, identifier2, symbolClass, symbolMethod, false);
             }
         }
 
         //Verify if first part of dot expression was declared inside the class or method
         else if (symbolMethod.symbolTable.containsKey(identifier1.val) || symbolClass.symbolTableFields.containsKey(identifier1.val)) {
-            declaredInClass = true;
             if (symbolMethod.symbolTable.containsKey(identifier1.val)) {
                 if (symbolMethod.symbolTable.get(identifier1.val).getType().equals(Type.OBJECT)) {
 
                     SymbolClass sc = (SymbolClass) symbolTable.get(symbolMethod.symbolTable.get(identifier1.val).getObject_name());
-
-                    if (identifier2 != null) {
-                        //Right part of dot expression is a method
-                        if (identifier2.method) {
-                            methodName = identifier2.val;
-                            processArgs(identifier2, symbolClass, symbolMethod);
-
-                            //Get the return type of method
-                            if (sc.symbolTableMethods.containsKey(identifier2.val)) {
-                                type = checkIfMethodExists(sc.symbolTableMethods.get(identifier2.val), getMethodCallTypes(symbolMethod, identifier2));
-                                methodType += getSymbolType(type);
-                            }
-                            //Get the type of arguments of method
-                            callArgsArray = getMethodCallTypes(symbolMethod, identifier2);
-                            objectName = sc.name;
-                            for (Type t : callArgsArray) {
-                                callArgs += getSymbolType(t);
-                            }
-                        }
-                    }
+                    return generateCallForMethod(sc, identifier2, symbolClass, symbolMethod, true);
                 }
             }
         }
 
-
-        if (declaredInClass)
-            this.printWriterFile.println("\t" + "invokevirtual " + objectName + "/" + methodName + "(" + callArgs + ")" + methodType);
-        else
-            this.printWriterFile.println("\t" + "invokestatic " + objectName + "/" + methodName + "(" + callArgs + ")" + methodType);
+        return null;
     }
 
-    private void processArgs(SimpleNode node, SymbolClass symbolClass, SymbolMethod symbolMethod) {
+    private Type generateCallForMethod(SymbolClass sc, ASTIdentifier identifier2, SymbolClass symbolClass, SymbolMethod symbolMethod, boolean declaredInClass) {
+        String methodName = "";
+        String objectName = "";
+        String methodType = "";
+        String callArgs = "";
+        Type returnType = null;
 
-        //Change this because call can be with identifiers and other things in expression
+        if (identifier2 != null) {
+            //Check for methods
+            if (identifier2.method) {
+                methodName = identifier2.val;
+                ArrayList<Type> methodCallTypes = processArgs(identifier2, symbolClass, symbolMethod);
+
+                //Get return type of method
+                returnType = getReturnTypeMethod(sc, methodCallTypes, identifier2);
+                methodType = (returnType != null) ? getSymbolType(returnType) : "";
+
+                //Get list of arguments type
+                //TODO: Missing case when function is called or in case of object
+                if (methodCallTypes.size() > 0) {
+                    for (Type t : methodCallTypes) {
+                        if (t != null)
+                            callArgs += getSymbolType(t);
+                    }
+                }
+
+                objectName = sc.name;
+            }
+        }
+
+        this.printWriterFile.println("\t" + ((declaredInClass) ? "invokevirtual " : "invokestatic ") + objectName + "/" + methodName + "(" + callArgs + ")" + methodType);
+        return returnType;
+    }
+
+    private Type getReturnTypeMethod( SymbolClass symbolClass, ArrayList<Type> methodCallTypes, ASTIdentifier identifier){
+
+        if (symbolClass.symbolTableMethods.containsKey(identifier.val)) {
+            return checkIfMethodExists(symbolClass.symbolTableMethods.get(identifier.val), methodCallTypes);
+        }
+
+        return null;
+    }
+
+    private ArrayList<Type> processArgs(SimpleNode node, SymbolClass symbolClass, SymbolMethod symbolMethod) {
+
+        ArrayList<Type> methodSignature = new ArrayList<>();
 
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
-            this.generateExpression((SimpleNode) node.jjtGetChild(i), symbolClass, symbolMethod);
-        }
-    }
-
-    private ArrayList<Type> getMethodCallTypes(SymbolMethod symbolMethod, ASTIdentifier node2) {
-        ArrayList<Type> types = new ArrayList<>();
-
-        for (int i = 0; i < node2.jjtGetNumChildren(); i++) {
-
-            types.add(getNodeType(symbolMethod, (SimpleNode) node2.jjtGetChild(i)));
+            methodSignature.add(this.generateExpression((SimpleNode) node.jjtGetChild(i), symbolClass, symbolMethod));
         }
 
-        return types;
-    }
-
-    private Type getNodeType(SymbolMethod symbolMethod, SimpleNode node) {
-        if (node instanceof ASTAND || node instanceof ASTLESSTHAN || node instanceof ASTBoolean || node instanceof ASTNegation) {
-            return Type.BOOLEAN;
-        }
-        if (node instanceof ASTLiteral) {
-            return Type.INT;
-        }
-        if (node instanceof ASTIdentifier) {
-            return symbolMethod.symbolTable.get(((ASTIdentifier) node).val).getType();
-        }
-        if (node instanceof ASTInitializeArray) {
-            return Type.INT_ARRAY;
-        }
-        if (node instanceof ASTNewObject) {
-            return Type.OBJECT;
-        }
-        return null;
+        return methodSignature;
     }
 
     private Type checkIfMethodExists(ArrayList<SymbolMethod> methodArrayList, ArrayList<Type> methodSignature) {
