@@ -550,7 +550,7 @@ public class CodeGenerator {
                 ASTIdentifier leftIdentifier = (ASTIdentifier) node.jjtGetChild(0);
 
                 if (leftIdentifier.val.equals("this")) {
-                    return generateThisStatement(symbolClass, symbolMethod, leftIdentifier, rightIdentifier);
+                    return generateThisStatement(leftIdentifier, rightIdentifier, symbolClass, symbolMethod);
                 }
 
                 if (rightIdentifier.val.equals("length")) {
@@ -561,7 +561,7 @@ public class CodeGenerator {
 
                 }
 
-                return generateCall(symbolClass, symbolMethod, leftIdentifier, rightIdentifier);
+                return generateCall(leftIdentifier, rightIdentifier, symbolClass, symbolMethod);
 
             }
 
@@ -569,7 +569,7 @@ public class CodeGenerator {
 
                 ASTNewObject leftIdentifier = (ASTNewObject) node.jjtGetChild(0);
 
-                return generateCallObject(symbolClass, symbolMethod, leftIdentifier, rightIdentifier);
+                return generateCallObject(leftIdentifier, rightIdentifier, symbolClass, symbolMethod);
 
             }
         }
@@ -578,7 +578,7 @@ public class CodeGenerator {
     }
 
 
-    private Type generateCallObject(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTNewObject node1, ASTIdentifier node2) {
+    private Type generateCallObject(ASTNewObject node1, ASTIdentifier node2, SymbolClass symbolClass, SymbolMethod symbolMethod) {
 
         this.generateExpression(node1, symbolClass, symbolMethod);
 
@@ -587,7 +587,7 @@ public class CodeGenerator {
             if (symbolTable.get(node1.val) instanceof SymbolClass) {
 
                 SymbolClass sc = (SymbolClass) symbolTable.get(node1.val);
-                return generateCallForMethod(sc, node2, symbolClass, symbolMethod, true);
+                return generateCallForMethod(node2, sc, symbolClass, symbolMethod, true);
             }
         }
 
@@ -595,7 +595,7 @@ public class CodeGenerator {
 
     }
 
-    private Type generateThisStatement(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier identifier1, ASTIdentifier identifier2) {
+    private Type generateThisStatement( ASTIdentifier identifier1, ASTIdentifier identifier2, SymbolClass symbolClass, SymbolMethod symbolMethod) {
 
         //TODO: check if with "this" the call should be done in a different way
 
@@ -614,27 +614,27 @@ public class CodeGenerator {
         //Check if current class has any method with the same signature
         if (symbolClass.symbolTableMethods.containsKey(identifier2.val)) {
 
-            return generateCallForMethod(symbolClass, identifier2, symbolClass, symbolMethod, true);
+            return generateCallForMethod(identifier2, symbolClass, symbolClass, symbolMethod, true);
         }
 
         //check if method is defined in super class, if it is not defined in the current class
         if (symbolTable.containsKey(symbolClass.superClass)) {
 
             SymbolClass sc = (SymbolClass) symbolTable.get(symbolClass.superClass);
-            return generateCallForMethod(sc, identifier2, symbolClass, symbolMethod, true);
+            return generateCallForMethod(identifier2, sc, symbolClass, symbolMethod, true);
         }
 
         return null;
     }
 
-    private Type generateCall(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier identifier1, ASTIdentifier identifier2) {
+    private Type generateCall(ASTIdentifier identifier1, ASTIdentifier identifier2, SymbolClass symbolClass, SymbolMethod symbolMethod) {
 
         //Import
         if (symbolTable.containsKey(identifier1.val)) {
             if (symbolTable.get(identifier1.val) instanceof SymbolClass) {
                 SymbolClass sc = (SymbolClass) symbolTable.get(identifier1.val);
 
-                return generateCallForMethod(sc, identifier2, symbolClass, symbolMethod, false);
+                return generateCallForMethod(identifier2, sc, symbolClass, symbolMethod, false);
             }
 
             return null;
@@ -649,7 +649,7 @@ public class CodeGenerator {
                 if (symbolMethod.symbolTable.get(identifier1.val).getType().equals(Type.OBJECT)) {
 
                     SymbolClass sc = (SymbolClass) symbolTable.get(symbolMethod.symbolTable.get(identifier1.val).getObject_name());
-                    return generateCallForMethod(sc, identifier2, symbolClass, symbolMethod, true);
+                    return generateCallForMethod(identifier2, sc, symbolClass, symbolMethod, true);
                 }
             }
 
@@ -659,7 +659,7 @@ public class CodeGenerator {
         return null;
     }
 
-    private Type generateCallForMethod(SymbolClass sc, ASTIdentifier identifier2, SymbolClass symbolClass, SymbolMethod symbolMethod, boolean virtual) {
+    private Type generateCallForMethod(ASTIdentifier identifier2, SymbolClass classOfMethod, SymbolClass symbolClass, SymbolMethod symbolMethod, boolean virtual) {
 
         //Check for methods
         if (identifier2.method) {
@@ -667,7 +667,7 @@ public class CodeGenerator {
             ArrayList<Type> methodCallTypes = processArgs(identifier2, symbolClass, symbolMethod);
 
             //Get return type of method
-            Type returnType = getReturnTypeMethod(sc, methodCallTypes, identifier2);
+            Type returnType = getReturnTypeMethod(classOfMethod, methodCallTypes, identifier2);
 
             StringBuilder callArgs = new StringBuilder();
             //Get list of arguments type
@@ -681,7 +681,7 @@ public class CodeGenerator {
 
             String methodName = identifier2.val;
             String methodType = ((returnType != null) ? getSymbolType(returnType) : "");
-            String objectName = sc.name;
+            String objectName = symbolClass.name;
 
             this.printWriterFile.println("\t" + ((virtual) ? "invokevirtual " : "invokestatic ") + objectName + "/" + methodName + "(" + callArgs + ")" + methodType);
             return returnType;
