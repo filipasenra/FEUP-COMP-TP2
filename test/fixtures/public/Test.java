@@ -1,9 +1,13 @@
 class Test {
     public static void main(String[] args){
 
-        int b = 30;
-        int c = 40;
+        boolean b;
+        b = true;
+        boolean c;
+        c= false;
 
-        int a = c+1;
+        boolean a;
+        a =true;
+        a = b && c;
     }
 }

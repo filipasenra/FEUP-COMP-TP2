@@ -242,20 +242,13 @@ public class CodeGenerator {
         for (int i = 0; i < method.jjtGetNumChildren(); i++) {
 
             SimpleNode node = (SimpleNode) method.jjtGetChild(i);
-            if (node instanceof ASTEquality) {
-                generateEquality((ASTEquality) node, symbolClass, symbolMethod);
 
-            } else if (node instanceof ASTDotExpression) {
-                generateDotExpression(node, symbolClass, symbolMethod);
-
-            } else if (node instanceof ASTIf) {
-                generateIfExpression(node, symbolClass, symbolMethod);
-
+            //Already processed
+            if (node instanceof ASTArg || node instanceof ASTVarDeclaration) {
+                continue;
             }
-            //TODO -> complete while...
 
-            //Return
-            else if (node instanceof ASTReturn) {
+            if (node instanceof ASTReturn) {
 
                 if (node.jjtGetChild(0).jjtGetNumChildren() > 1) {
                     generateExpression((SimpleNode) node.jjtGetChild(0), symbolClass, symbolMethod); //expression
@@ -272,9 +265,39 @@ public class CodeGenerator {
 
                 generateMethodReturn(symbolMethod);
                 return;
+
             }
 
+            //If is not any of the others, it is a statement
+            generateStatement(node, symbolClass, symbolMethod);
+
         }
+    }
+
+    private void generateStatement(SimpleNode node, SymbolClass symbolClass, SymbolMethod symbolMethod){
+
+        if (node instanceof ASTEquality) {
+            generateEquality((ASTEquality) node, symbolClass, symbolMethod);
+
+        } else if (node instanceof ASTDotExpression) {
+            generateDotExpression(node, symbolClass, symbolMethod);
+
+        } else if (node instanceof ASTIf) {
+            generateIfExpression(node, symbolClass, symbolMethod);
+
+        } else if (node instanceof ASTWhile){
+
+            //TODO: complete while
+
+        } else if (node instanceof ASTStatementBlock){
+            for (int i = 0; i < node.jjtGetNumChildren(); i++)
+                generateStatement((SimpleNode) node.jjtGetChild(i), symbolClass, symbolMethod);
+        }
+
+        //If it is not any of the others it is an expression
+        generateExpression(node, symbolClass, symbolMethod);
+
+
     }
 
     private void generateIfExpression(SimpleNode node, SymbolClass symbolClass, SymbolMethod symbolMethod) {
@@ -300,13 +323,13 @@ public class CodeGenerator {
         //**************************************
 
         // *********IF BLOCK*********************
-        generateMethodBody(ifBlock, symbolClass, symbolMethod);
+        generateStatement(ifBlock, symbolClass, symbolMethod);
         this.printWriterFile.println("\tgoto if" + thisCounter + "_end");
         //************************** */
 
         //*******ELSE BLOCK ***********/
         this.printWriterFile.println("if" + thisCounter + "_else:");
-        generateMethodBody(elseBlock, symbolClass, symbolMethod);
+        generateStatement(elseBlock, symbolClass, symbolMethod);
         this.printWriterFile.println("if" + thisCounter + "_end:");
         //******************************** */
 
@@ -362,12 +385,12 @@ public class CodeGenerator {
     private void generateExpression(SimpleNode node, SymbolClass symbolClass, SymbolMethod symbolMethod) {
         if (node != null) {
             if (node instanceof ASTAND) {
-                generateOperation(node, symbolClass, symbolMethod);
-                //TODO
+                //generateOperation(node, symbolClass, symbolMethod);
+                //TODO: use if_icmpge (i think)
 
             } else if (node instanceof ASTLESSTHAN) {
-                generateOperation(node, symbolClass, symbolMethod);
-                //TODO
+                //generateOperation(node, symbolClass, symbolMethod);
+                //TODO: use if_icmpge (i think)
 
             } else if (node instanceof ASTSUM) {
                 generateOperation(node, symbolClass, symbolMethod);
