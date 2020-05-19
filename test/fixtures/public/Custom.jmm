@@ -16,16 +16,11 @@ class Custom {
         a = 20;
         b = 10;
 
-        if(b < a){
-            
-            c = s.add(a, b);
-        }
-        else{
-           if(a < b){
-               b = 11;
-           }
-           else{
-           }
+        while(b < a ){
+            b = a + a;
+            while(false){
+                a = b;
+            }
         }
     }
 }

@@ -16,6 +16,27 @@
 	istore_2
 	aload_1
 	istore_3
+while_1_begin:
+	iload_2
+	aload_1
+	arraylength
+	if_icmpge while_1_end
+	aload_1
+	istore 4
+	iload_3
+	iload 4
+	if_icmpge if_2_else
+	iload 4
+	istore_3
+	goto if_2_end
+if_2_else:
+if_2_end:
+	iload_2
+	iconst_1
+	iadd
+	istore_2
+	goto while_1_begin
+while_1_end:
 	iload_3
 	ireturn
 .end method
@@ -57,8 +78,18 @@
 	.limit stack 99
 	.limit locals 99
 
+	aload0
+	invokevirtual FindMaximum/tets()I
 	aload_0
 	areturn
+.end method
+
+.method public tets()I
+	.limit stack 99
+	.limit locals 99
+
+	iconst_0
+	ireturn
 .end method
 
 .method public static main([Ljava/lang/String;)V
@@ -69,8 +100,15 @@
 	dup
 	invokespecial FindMaximum/<init>()V
 	astore_1
+	new FindMaximum
+	dup
+	invokespecial FindMaximum/<init>()V
 	invokevirtual FindMaximum/build_test_arr()I
-	invokestatic ioPlus/printResult()
+	aload_1
+	aload_1
+	invokevirtual FindMaximum/get_array()[I
+	invokevirtual FindMaximum/find_maximum([I)I
+	invokestatic FindMaximum/printResult(I)V
 	return
 .end method
 

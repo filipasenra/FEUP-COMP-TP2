@@ -37,7 +37,7 @@
 	invokevirtual Simple/add(II)I
 	istore_3
 	iload_3
-	invokestatic io/println(I)V
+	invokestatic Simple/println(I)V
 	return
 .end method
 

@@ -263,7 +263,7 @@ public class CodeGenerator {
 
         } else if (node instanceof ASTWhile) {
 
-            //TODO: complete while
+            generateWhileExpression(node, symbolClass, symbolMethod);
 
         } else if (node instanceof ASTStatementBlock) {
             for (int i = 0; i < node.jjtGetNumChildren(); i++)
@@ -276,7 +276,31 @@ public class CodeGenerator {
 
     }
 
-    private void generateIfExpression(SimpleNode node, SymbolClass symbolClass, SymbolMethod symbolMethod) {
+
+    private void generateWhileExpression(SimpleNode node, SymbolClass symbolClass, SymbolMethod symbolMethod){
+        this.loopCounter++;
+        int thisCounter = this.loopCounter;
+        SimpleNode testExpression = (SimpleNode) node.jjtGetChild(0);
+        SimpleNode statement = (SimpleNode) node.jjtGetChild(1);
+
+        this.printWriterFile.println("while_" + thisCounter + "_begin:");
+        //evaluate expression
+        if (testExpression instanceof ASTBoolean){
+            ASTBoolean value = (ASTBoolean) testExpression;
+            int valueInt = value.val ? 1 : 0;
+            loadIntLiteral(String.valueOf(valueInt));
+            this.printWriterFile.println("\tifeq while_" + thisCounter + "_end" );
+        }
+        if (testExpression instanceof ASTLESSTHAN){
+            generateOperation(testExpression,symbolClass, symbolMethod);
+            this.printWriterFile.println("\tif_icmpge while_" + thisCounter + "_end");
+        }
+        generateStatement(statement, symbolClass, symbolMethod);
+        this.printWriterFile.println("\tgoto while_" + thisCounter + "_begin");
+        this.printWriterFile.println("while_" + thisCounter + "_end:");
+    }
+
+    private void generateIfExpression(SimpleNode node, SymbolClass symbolClass, SymbolMethod symbolMethod){
         this.loopCounter++;
         int thisCounter = this.loopCounter;
 
@@ -289,27 +313,25 @@ public class CodeGenerator {
             ASTBoolean value = (ASTBoolean) expression;
             int valueInt = value.val ? 1 : 0;
             loadIntLiteral(String.valueOf(valueInt));
-            this.printWriterFile.println("\tifeq if" + thisCounter + "_else");
+            this.printWriterFile.println("\tifeq if_" + thisCounter + "_else");
         }
         if (expression instanceof ASTLESSTHAN) {
 
             generateOperation(expression, symbolClass, symbolMethod);
-            this.printWriterFile.println("\tif_icmpge if" + thisCounter + "_else");
+            this.printWriterFile.println("\tif_icmpge if_" + thisCounter + "_else");
         }
         //**************************************
 
         // *********IF BLOCK*********************
         generateStatement(ifBlock, symbolClass, symbolMethod);
-        this.printWriterFile.println("\tgoto if" + thisCounter + "_end");
+        this.printWriterFile.println("\tgoto if_" + thisCounter + "_end");
         //************************** */
 
         //*******ELSE BLOCK ***********/
-        this.printWriterFile.println("if" + thisCounter + "_else:");
+        this.printWriterFile.println("if_" + thisCounter + "_else:");
         generateStatement(elseBlock, symbolClass, symbolMethod);
-        this.printWriterFile.println("if" + thisCounter + "_end:");
+        this.printWriterFile.println("if_" + thisCounter + "_end:");
         //******************************** */
-
-
     }
 
 

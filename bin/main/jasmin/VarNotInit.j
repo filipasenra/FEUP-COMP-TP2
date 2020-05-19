@@ -15,6 +15,18 @@
 	istore 4
 	iconst_2
 	istore_3
+while_1_begin:
+	iload 4
+	iconst_1
+	if_icmpge while_1_end
+	bipush 9
+	istore_2
+	iload 4
+	iconst_1
+	iadd
+	istore 4
+	goto while_1_begin
+while_1_end:
 	iload_2
 	iload_3
 	iadd

@@ -20,20 +20,58 @@
 	astore 4
 	iload_1
 	iload_2
-	if_icmpge if1_else
+	if_icmpge if_1_else
 	iload_1
 	iconst_1
 	isub
 	istore_3
-	goto if1_end
-if1_else:
+	goto if_1_end
+if_1_else:
 	iload_2
 	iconst_1
 	isub
 	istore_3
-if1_end:
+if_1_end:
+while_2_begin:
+	iconst_0
+	iconst_1
+	isub
+	iload_3
+	if_icmpge while_2_end
+	aload 4
+	iload_1
+	iload_2
+	isub
+	iastore
+	iload_3
+	iconst_1
+	isub
+	istore_3
+	iload_1
+	iconst_1
+	isub
+	istore_1
+	iload_2
+	iconst_1
+	isub
+	istore_2
+	goto while_2_begin
+while_2_end:
 	iconst_0
 	istore_3
+while_3_begin:
+	iload_3
+	aload 4
+	arraylength
+	if_icmpge while_3_end
+	aload 4
+	invokestatic WhileAndIf/println([I)
+	iload_3
+	iconst_1
+	iadd
+	istore_3
+	goto while_3_begin
+while_3_end:
 	return
 .end method
 

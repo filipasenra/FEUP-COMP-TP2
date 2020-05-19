@@ -11,7 +11,7 @@
 	.limit stack 99
 	.limit locals 99
 
-	invokestatic ioPlus/printHelloWorld()V
+	invokestatic HelloWorld/printHelloWorld()V
 	return
 .end method
 

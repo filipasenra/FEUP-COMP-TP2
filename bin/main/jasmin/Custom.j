@@ -27,25 +27,23 @@
 	istore_1
 	bipush 10
 	istore_2
+while_1_begin:
 	iload_2
 	iload_1
-	if_icmpge if1_else
-	aload 4
+	if_icmpge while_1_end
 	iload_1
-	iload_2
-	invokevirtual Custom/add(II)I
-	istore_3
-	goto if1_end
-if1_else:
 	iload_1
-	iload_2
-	if_icmpge if2_else
-	bipush 11
+	iadd
 	istore_2
-	goto if2_end
-if2_else:
-if2_end:
-if1_end:
+while_2_begin:
+	iconst_0
+	ifeq while_2_end
+	iload_2
+	istore_1
+	goto while_2_begin
+while_2_end:
+	goto while_1_begin
+while_1_end:
 	return
 .end method
 

@@ -33,14 +33,19 @@ class FindMaximum {
 	}
 
 	public int[] get_array() {
+
+        this.tets();
 		return test_arr;
 	}
+
+
+    public int tets() {return 0;}
 
 	public static void main(String[] args) {
 		FindMaximum fm;
 
 		fm = new FindMaximum();
-		fm.build_test_arr();
+		new FindMaximum().build_test_arr();
 
 		ioPlus.printResult(fm.find_maximum(fm.get_array()));
 	}

@@ -74,16 +74,22 @@
 
 	iload_2
 	iconst_0
-	if_icmpge if1_else
+	if_icmpge if_1_else
 	istore_3
-	goto if1_end
-if1_else:
+	goto if_1_end
+if_1_else:
+	iconst_2
+	iload_2
+	if_icmpge if_2_else
+	istore_3
+	goto if_2_end
+if_2_else:
 	iconst_0
 	aload_1
-	if_icmpge if2_else
+	if_icmpge if_3_else
 	istore_3
-	goto if2_end
-if2_else:
+	goto if_3_end
+if_3_else:
 	aload_1
 	aload_0
 	iastore
@@ -92,8 +98,9 @@ if2_else:
 	iadd
 	astore_0
 	istore_3
-if2_end:
-if1_end:
+if_3_end:
+if_2_end:
+if_1_end:
 	iload_3
 	ireturn
 .end method
@@ -102,17 +109,31 @@ if1_end:
 	.limit stack 99
 	.limit locals 99
 
+	aload0
 	aload_0
+	iload_2
+	invokevirtual TicTacToe/MoveRow(I)
 	istore_3
-	goto if3_end
-if3_else:
+	goto if_4_end
+if_4_else:
+	aload0
 	aload_0
+	iload_2
+	invokevirtual TicTacToe/MoveRow(I)
 	istore_3
-	goto if4_end
-if4_else:
+	goto if_5_end
+if_5_else:
+	aload0
+	aload_0
+	iload_2
+	invokevirtual TicTacToe/MoveRow(I)
 	istore_3
-if4_end:
-if3_end:
+	goto if_6_end
+if_6_else:
+	istore_3
+if_6_end:
+if_5_end:
+if_4_end:
 	iload_3
 	ireturn
 .end method
@@ -123,19 +144,33 @@ if3_end:
 
 	iload_1
 	iconst_0
-	if_icmpge if5_else
-	goto if5_end
-if5_else:
+	if_icmpge if_7_else
 	istore_3
+	goto if_7_end
+if_7_else:
+	iload_2
+	iconst_0
+	if_icmpge if_8_else
+	istore_3
+	goto if_8_end
+if_8_else:
 	iconst_2
 	iload_1
-	if_icmpge if6_else
-	goto if6_end
-if6_else:
+	if_icmpge if_9_else
 	istore_3
+	goto if_9_end
+if_9_else:
+	iconst_2
+	iload_2
+	if_icmpge if_10_else
 	istore_3
-if6_end:
-if5_end:
+	goto if_10_end
+if_10_else:
+	istore_3
+if_10_end:
+if_9_end:
+if_8_end:
+if_7_end:
 	iload_3
 	ireturn
 .end method
@@ -174,17 +209,45 @@ if5_end:
 	astore_1
 	aload_0
 	istore_2
-	goto if7_end
-if7_else:
+	goto if_11_end
+if_11_else:
 	aload_0
 	istore_2
-	goto if8_end
-if8_else:
+	goto if_12_end
+if_12_else:
+	aload_0
+	istore_2
+	goto if_13_end
+if_13_else:
 	iconst_0
 	istore_3
+while_14_begin:
+	aload_1
+	iconst_0
+	aload_0
+	iastore
+	aload_1
+	iconst_1
+	aload_0
+	iastore
+	aload_1
+	iconst_2
+	aload_0
+	iastore
+	aload_1
+	istore_2
+	goto if_15_end
+if_15_else:
+if_15_end:
+	iload_3
+	iconst_1
+	iadd
+	istore_3
+	goto while_14_begin
+while_14_end:
 	iload_2
 	iconst_1
-	if_icmpge if9_else
+	if_icmpge if_16_else
 	aload_1
 	iconst_0
 	aload_0
@@ -199,8 +262,8 @@ if8_else:
 	iastore
 	aload_1
 	istore_2
-	goto if10_end
-if10_else:
+	goto if_17_end
+if_17_else:
 	aload_1
 	iconst_0
 	aload_0
@@ -215,18 +278,21 @@ if10_else:
 	iastore
 	aload_1
 	istore_2
-	goto if11_end
-if11_else:
-if11_end:
-if10_end:
-	goto if9_end
-if9_else:
-if9_end:
-if8_end:
-if7_end:
-	goto if12_end
-if12_else:
-if12_end:
+	goto if_18_end
+if_18_else:
+if_18_end:
+if_17_end:
+	goto if_16_end
+if_16_else:
+if_16_end:
+if_13_end:
+if_12_end:
+if_11_end:
+	iconst_0
+	istore_2
+	goto if_19_end
+if_19_else:
+if_19_end:
 	iload_2
 	ireturn
 .end method
@@ -239,13 +305,51 @@ if12_end:
 	dup
 	invokespecial TicTacToe/<init>()V
 	astore_1
+	aload_1
 	invokevirtual TicTacToe/init()B
-	invokestatic BoardBase/printBoard()
+while_20_begin:
+	istore_3
+while_21_begin:
+	aload_1
+	invokevirtual TicTacToe/getRow0()[I
+	aload_1
+	invokevirtual TicTacToe/getRow1()[I
+	aload_1
+	invokevirtual TicTacToe/getRow2()[I
+	invokestatic TicTacToe/printBoard([I[I[I)V
+	aload_1
+	invokevirtual TicTacToe/getCurrentPlayer()I
+	istore 5
+	iload 5
+	invokestatic TicTacToe/playerTurn(I)[I
+	astore 4
+	invokestatic TicTacToe/wrongMove()V
+	goto if_22_end
+if_22_else:
+	invokestatic TicTacToe/placeTaken()V
+	goto if_23_end
+if_23_else:
+	istore_3
+if_23_end:
+if_22_end:
+	goto while_21_begin
+while_21_end:
+	aload_1
+	invokevirtual TicTacToe/changeturn()B
+	goto while_20_begin
+while_20_end:
+	aload_1
+	invokevirtual TicTacToe/getRow0()[I
+	aload_1
+	invokevirtual TicTacToe/getRow1()[I
+	aload_1
+	invokevirtual TicTacToe/getRow2()[I
+	invokestatic TicTacToe/printBoard([I[I[I)V
 	aload_1
 	invokevirtual TicTacToe/winner()I
 	istore_2
 	iload_2
-	invokestatic BoardBase/printWinner(I)V
+	invokestatic TicTacToe/printWinner(I)V
 	return
 .end method
 
