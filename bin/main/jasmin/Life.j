@@ -22,7 +22,19 @@
 	dup
 	invokespecial Life/<init>()V
 	astore_1
+	aload_1
 	invokevirtual Life/init()B
+while_1_begin:
+	iconst_1
+	ifeq while_1_end
+	aload_1
+	invokevirtual Life/printfield_name()B
+	aload_1
+	invokevirtual Life/update()B
+	invokestatic Life/read()I
+	istore_2
+	goto while_1_begin
+while_1_end:
 	return
 .end method
 
@@ -42,7 +54,9 @@
 	astore_0
 	ldc 225000
 	astore_0
-	aload_0
+	aload0
+	aload_1
+	invokevirtual Life/field_name([I)[I
 	astore_0
 	aload_1
 	istore_2
@@ -50,7 +64,6 @@
 	iconst_1
 	isub
 	astore_0
-	aload_0
 	aload_0
 	arraylength
 	iload_2
@@ -484,6 +497,45 @@
 	astore 5
 	iconst_0
 	istore_1
+while_2_begin:
+	iload_1
+	aload_0
+	arraylength
+	if_icmpge while_2_end
+	aload_0
+	istore_2
+	aload0
+	iload_1
+	invokevirtual Life/getLiveNeighborN(I)I
+	istore_3
+	istore 4
+	aload 5
+	iconst_0
+	iastore
+	goto if_4_end
+if_4_else:
+	aload 5
+	aload_0
+	iastore
+if_4_end:
+	goto if_3_end
+if_3_else:
+	aload 5
+	iconst_1
+	iastore
+	goto if_5_end
+if_5_else:
+	aload 5
+	aload_0
+	iastore
+if_5_end:
+if_3_end:
+	iload_1
+	iconst_1
+	iadd
+	istore_1
+	goto while_2_begin
+while_2_end:
 	aload 5
 	astore_0
 	ireturn
@@ -497,8 +549,31 @@
 	istore_1
 	iconst_0
 	istore_2
-	invokestatic io/println()V
-	invokestatic io/println()V
+while_6_begin:
+	iload_1
+	aload_0
+	arraylength
+	if_icmpge while_6_end
+	invokestatic Life/println()V
+	iconst_0
+	istore_2
+	goto if_7_end
+if_7_else:
+if_7_end:
+	aload_0
+	invokestatic Life/print()
+	iload_1
+	iconst_1
+	iadd
+	istore_1
+	iload_2
+	iconst_1
+	iadd
+	istore_2
+	goto while_6_begin
+while_6_end:
+	invokestatic Life/println()V
+	invokestatic Life/println()V
 	ireturn
 .end method
 
@@ -553,7 +628,9 @@
 	.limit stack 99
 	.limit locals 99
 
-	aload_0
+	aload0
+	iload_1
+	invokevirtual Life/cartIdx(I)[I
 	astore 8
 	aload 8
 	istore_2
@@ -561,76 +638,112 @@
 	istore_3
 	iload_2
 	aload_0
-	if_icmpge if1_else
+	if_icmpge if_8_else
 	iload_2
 	iconst_1
 	iadd
 	istore 6
-	goto if2_end
-if2_else:
-if2_end:
-	goto if1_end
-if1_else:
+	iload_2
+	iconst_1
+	isub
+	istore 4
+	goto if_9_end
+if_9_else:
+	aload_0
+	istore 4
+if_9_end:
+	goto if_8_end
+if_8_else:
 	iconst_0
 	istore 6
 	iload_2
 	iconst_1
 	isub
 	istore 4
-if1_end:
+if_8_end:
 	iload_3
 	aload_0
-	if_icmpge if3_else
+	if_icmpge if_10_else
 	iload_3
 	iconst_1
 	iadd
 	istore 7
-	goto if4_end
-if4_else:
-if4_end:
-	goto if3_end
-if3_else:
+	iload_3
+	iconst_1
+	isub
+	istore 5
+	goto if_11_end
+if_11_else:
+	aload_0
+	istore 5
+if_11_end:
+	goto if_10_end
+if_10_else:
 	iconst_0
 	istore 7
 	iload_3
 	iconst_1
 	isub
 	istore 5
-if3_end:
+if_10_end:
 	bipush 8
 	newarray int
 	astore 9
 	aload 9
 	iconst_0
-	aload_0
+	aload0
+	iload_2
+	iload 5
+	invokevirtual Life/trIdx(II)I
 	iastore
 	aload 9
 	iconst_1
-	aload_0
+	aload0
+	iload 4
+	iload 5
+	invokevirtual Life/trIdx(II)I
 	iastore
 	aload 9
 	iconst_2
-	aload_0
+	aload0
+	iload 4
+	iload_3
+	invokevirtual Life/trIdx(II)I
 	iastore
 	aload 9
 	iconst_3
-	aload_0
+	aload0
+	iload 4
+	iload 7
+	invokevirtual Life/trIdx(II)I
 	iastore
 	aload 9
 	iconst_4
-	aload_0
+	aload0
+	iload_2
+	iload 7
+	invokevirtual Life/trIdx(II)I
 	iastore
 	aload 9
 	iconst_5
-	aload_0
+	aload0
+	iload 6
+	iload 7
+	invokevirtual Life/trIdx(II)I
 	iastore
 	aload 9
 	bipush 6
-	aload_0
+	aload0
+	iload 6
+	iload_3
+	invokevirtual Life/trIdx(II)I
 	iastore
 	aload 9
 	bipush 7
-	aload_0
+	aload0
+	iload 6
+	iload 5
+	invokevirtual Life/trIdx(II)I
 	iastore
 	aload 9
 	areturn
@@ -642,10 +755,30 @@ if3_end:
 
 	iconst_0
 	istore 4
-	aload_0
+	aload0
+	iload_1
+	invokevirtual Life/getNeighborCoords(I)[I
 	astore_2
 	iconst_0
 	istore_3
+while_12_begin:
+	iload_3
+	aload_2
+	arraylength
+	if_icmpge while_12_end
+	iload 4
+	iconst_1
+	iadd
+	istore 4
+	goto if_13_end
+if_13_else:
+if_13_end:
+	iload_3
+	iconst_1
+	iadd
+	istore_3
+	goto while_12_begin
+while_12_end:
 	iload 4
 	ireturn
 .end method
@@ -660,6 +793,16 @@ if3_end:
 	istore_3
 	iconst_0
 	istore_2
+while_14_begin:
+	iload_2
+	iload_3
+	if_icmpge while_14_end
+	iload_2
+	iconst_1
+	iadd
+	istore_2
+	goto while_14_begin
+while_14_end:
 	ireturn
 .end method
 
@@ -681,8 +824,6 @@ if3_end:
 	.limit stack 99
 	.limit locals 99
 
-	iload_1
-	iload_2
 	ireturn
 .end method
 

@@ -16,10 +16,28 @@
 	astore_1
 	iconst_0
 	istore_2
+while_1_begin:
+	iload_2
+	aload_1
+	arraylength
+	if_icmpge while_1_end
+	aload_1
+	aload_1
+	arraylength
+	iload_2
+	isub
+	iastore
+	iload_2
+	iconst_1
+	iadd
+	istore_2
+	goto while_1_begin
+while_1_end:
 	new Lazysort
 	dup
 	invokespecial Lazysort/<init>()V
 	astore 4
+	aload 4
 	aload_1
 	invokevirtual Lazysort/quicksort([I)B
 	aload 4
@@ -34,21 +52,32 @@
 	.limit stack 99
 	.limit locals 99
 
-	aload_0
-	invokestatic MathUtils/random(II)I
+	iconst_0
+	iconst_5
+	invokestatic Lazysort/random(II)I
 	iconst_4
-	if_icmpge if1_else
+	if_icmpge if_2_else
+	aload0
+	aload_1
+	invokevirtual Lazysort/beLazy([I)B
 	istore_2
-	goto if1_end
-if1_else:
+	goto if_2_end
+if_2_else:
 	istore_2
-if1_end:
+if_2_end:
 	istore_2
-	goto if2_end
-if2_else:
-	aload_0
+	goto if_3_end
+if_3_else:
+	aload0
+	aload_1
+	iconst_0
+	aload_1
+	arraylength
+	iconst_1
+	isub
+	invokevirtual Lazysort/quicksort([II)
 	istore_2
-if2_end:
+if_3_end:
 	iload_2
 	ireturn
 .end method
@@ -58,11 +87,44 @@ if2_end:
 	.limit locals 99
 
 	aload_1
-	aload_1
 	arraylength
 	istore_2
 	iconst_0
 	istore_3
+while_4_begin:
+	iload_3
+	iload_2
+	iconst_2
+	idiv
+	if_icmpge while_4_end
+	aload_1
+	iconst_0
+	bipush 10
+	invokestatic Lazysort/random(II)I
+	iastore
+	iload_3
+	iconst_1
+	iadd
+	istore_3
+	goto while_4_begin
+while_4_end:
+while_5_begin:
+	iload_3
+	iload_2
+	if_icmpge while_5_end
+	aload_1
+	iconst_0
+	bipush 10
+	invokestatic Lazysort/random(II)I
+	iconst_1
+	iadd
+	iastore
+	iload_3
+	iconst_1
+	iadd
+	istore_3
+	goto while_5_begin
+while_5_end:
 	ireturn
 .end method
 
