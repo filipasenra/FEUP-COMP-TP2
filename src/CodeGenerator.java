@@ -142,10 +142,12 @@ public class CodeGenerator {
     }
 
     private void generateMainMethod(SimpleNode mainNode, SymbolClass symbolClass, SymbolMethod symbolMethod) {
+        int nLocalVars = 0;
+        
         this.printWriterFile.println(".method public static main([Ljava/lang/String;)V");
 
-        printWriterFile.println("\t.limit stack 99");//TODO calculate stack and locals, just for ckpt3
-        printWriterFile.println("\t.limit locals 99\n");
+        printWriterFile.println("\t.limit stack 99");
+        printWriterFile.println("\t.limit locals " + nParams + nLocalVars);
 
         generateIndexes(mainNode, symbolMethod);
         generateMethodBody(mainNode, symbolClass, symbolMethod);
@@ -158,7 +160,7 @@ public class CodeGenerator {
         //Header for method
         generateMethodHeader(methodNode);
 
-        printWriterFile.println("\t.limit stack 99");//TODO calculate stack and locals, just for ckpt3
+        printWriterFile.println("\t.limit stack 99");
         printWriterFile.println("\t.limit locals 99\n");
 
         generateIndexes(methodNode, symbolMethod);
