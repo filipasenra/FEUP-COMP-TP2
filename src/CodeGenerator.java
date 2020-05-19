@@ -12,6 +12,8 @@ public class CodeGenerator {
     private PrintWriter printWriterFile;
     private final HashMap<String, Symbol> symbolTable;
     private int loopCounter;
+    private int localVars = 0;
+    private int nParams = 0;
 
     public CodeGenerator(SemanticAnalysis semanticAnalysis) {
         symbolTable = semanticAnalysis.getSymbolTable();
@@ -33,7 +35,7 @@ public class CodeGenerator {
     }
 
     private void generateClass(ASTClassDeclaration classNode) {
-
+        this.localVars = 0;
         this.printWriterFile.println(".class public " + classNode.name);
 
         if (classNode.ext != null)
@@ -141,32 +143,41 @@ public class CodeGenerator {
 
     }
 
-    private void generateMainMethod(SimpleNode mainNode, SymbolClass symbolClass, SymbolMethod symbolMethod) {
-        int nLocalVars = 0;
-        
+    private void generateMainMethod(SimpleNode mainNode, SymbolClass symbolClass, SymbolMethod symbolMethod) {        
         this.printWriterFile.println(".method public static main([Ljava/lang/String;)V");
 
-        printWriterFile.println("\t.limit stack 99");
-        printWriterFile.println("\t.limit locals " + nParams + nLocalVars);
-
         generateIndexes(mainNode, symbolMethod);
+        
+        int localLimits = this.localVars+1; //nParams = 1
+
+        printWriterFile.println("\t.limit stack 99");
+        printWriterFile.println("\t.limit locals " + localLimits + "\n");
+
         generateMethodBody(mainNode, symbolClass, symbolMethod);
 
         printWriterFile.println("\treturn");
         printWriterFile.println(".end method\n\n");
+        this.localVars = 0;
     }
 
     private void generateMethod(ASTMethodDeclaration methodNode, SymbolClass symbolClass, SymbolMethod symbolMethod) {
         //Header for method
         generateMethodHeader(methodNode);
+        generateIndexes(methodNode, symbolMethod);
+
+        int localLimits = this.localVars + this.nParams;
+
+        if(!symbolMethod.isStatic())
+            localLimits+=1;
 
         printWriterFile.println("\t.limit stack 99");
-        printWriterFile.println("\t.limit locals 99\n");
-
-        generateIndexes(methodNode, symbolMethod);
+        printWriterFile.println("\t.limit locals " + localLimits + "\n");
+        //System.out.println("Metodo: " + methodNode.name + "\n\tLocal limits: " + localLimits);
         generateMethodBody(methodNode, symbolClass, symbolMethod);
 
         printWriterFile.write(".end method\n\n");
+        this.localVars = 0;
+        this.nParams = 0;
     }
 
     private SymbolMethod getSymbolMethod(ArrayList<SymbolMethod> listSymbolMethod, int num) {
@@ -192,6 +203,7 @@ public class CodeGenerator {
             if (child instanceof ASTArg) {
                 if (child.jjtGetChild(0) instanceof ASTType) {
                     methodArgs.append(generateMethodArgument((ASTArg) child));
+                    this.nParams++;
                 }
             }
             if (child instanceof ASTType) {
@@ -224,6 +236,7 @@ public class CodeGenerator {
             if (methodNode.jjtGetChild(i) instanceof ASTVarDeclaration) {
                 ASTVarDeclaration varDeclaration = (ASTVarDeclaration) methodNode.jjtGetChild(i);
                 symbolMethod.symbolTable.get(varDeclaration.name).setIndex(indexCounter);
+                this.localVars++;
                 indexCounter++;
                 continue;
             }
