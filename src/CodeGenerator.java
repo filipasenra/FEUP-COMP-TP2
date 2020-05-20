@@ -14,6 +14,8 @@ public class CodeGenerator {
     private int loopCounter;
     private int localVars = 0;
     private int nParams = 0;
+    private int maxStack = 0;
+    private int totalStack = 0;
 
     public CodeGenerator(SemanticAnalysis semanticAnalysis) {
         symbolTable = semanticAnalysis.getSymbolTable();
@@ -756,6 +758,17 @@ public class CodeGenerator {
             }
         }
         return null;
+    }
+
+    private void incrementStack(){
+        this.totalStack++;
+        if(this.totalStack>this.maxStack){
+            this.maxStack = this.totalStack;
+        }
+    }
+
+    private void reduceStack(int decrement){
+        this.totalStack -= decrement;
     }
 
 
