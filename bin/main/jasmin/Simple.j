@@ -9,7 +9,7 @@
 
 .method public add(II)I
 	.limit stack 99
-	.limit locals 99
+	.limit locals 4
 
 	iload_1
 	iload_2
@@ -21,7 +21,7 @@
 
 .method public static main([Ljava/lang/String;)V
 	.limit stack 99
-	.limit locals 99
+	.limit locals 5
 
 	bipush 20
 	istore_1
@@ -44,7 +44,7 @@
 
 .method public constInstr()I
 	.limit stack 99
-	.limit locals 99
+	.limit locals 2
 
 	iconst_0
 	istore_1

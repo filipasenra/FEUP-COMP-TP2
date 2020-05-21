@@ -1,4 +1,4 @@
-.class public HelloWorld
+.class public Array
 .super java/lang/Object
 
 .method public <init>()V
@@ -9,9 +9,22 @@
 
 .method public static main([Ljava/lang/String;)V
 	.limit stack 99
-	.limit locals 1
+	.limit locals 4
 
-	invokestatic HelloWorld/printHelloWorld()V
+	bipush 100
+	istore_2
+	bipush 12
+	istore_3
+	newarray int
+	astore_1
+	aload_1
+	bipush 10
+	iload_3
+	iastore
+	aload_1
+	istore_3
+	aload_1
+	invokestatic Array/println([I)V
 	return
 .end method
 

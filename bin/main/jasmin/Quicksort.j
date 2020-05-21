@@ -9,7 +9,7 @@
 
 .method public static main([Ljava/lang/String;)V
 	.limit stack 99
-	.limit locals 99
+	.limit locals 4
 
 	bipush 10
 	newarray int
@@ -49,7 +49,7 @@ while_1_end:
 
 .method public printL([I)B
 	.limit stack 99
-	.limit locals 99
+	.limit locals 3
 
 	iconst_0
 	istore_2
@@ -71,7 +71,7 @@ while_2_end:
 
 .method public quicksort([I)B
 	.limit stack 99
-	.limit locals 99
+	.limit locals 2
 
 	aload0
 	aload_1
@@ -86,7 +86,7 @@ while_2_end:
 
 .method public quicksort([III)B
 	.limit stack 99
-	.limit locals 99
+	.limit locals 5
 
 	iload_2
 	iload_3
@@ -119,7 +119,7 @@ if_3_end:
 
 .method public partition([III)I
 	.limit stack 99
-	.limit locals 99
+	.limit locals 8
 
 	aload_1
 	istore 4

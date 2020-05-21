@@ -15,7 +15,7 @@
 
 .method public init()B
 	.limit stack 99
-	.limit locals 99
+	.limit locals 1
 
 	iconst_3
 	newarray int
@@ -46,7 +46,7 @@
 
 .method public getRow0()[I
 	.limit stack 99
-	.limit locals 99
+	.limit locals 1
 
 	aload_0
 	areturn
@@ -54,7 +54,7 @@
 
 .method public getRow1()[I
 	.limit stack 99
-	.limit locals 99
+	.limit locals 1
 
 	aload_0
 	areturn
@@ -62,7 +62,7 @@
 
 .method public getRow2()[I
 	.limit stack 99
-	.limit locals 99
+	.limit locals 1
 
 	aload_0
 	areturn
@@ -70,7 +70,7 @@
 
 .method public MoveRow([II)B
 	.limit stack 99
-	.limit locals 99
+	.limit locals 4
 
 	iload_2
 	iconst_0
@@ -107,7 +107,7 @@ if_1_end:
 
 .method public Move(II)B
 	.limit stack 99
-	.limit locals 99
+	.limit locals 4
 
 	aload0
 	aload_0
@@ -140,7 +140,7 @@ if_4_end:
 
 .method public inbounds(II)B
 	.limit stack 99
-	.limit locals 99
+	.limit locals 4
 
 	iload_1
 	iconst_0
@@ -177,7 +177,7 @@ if_7_end:
 
 .method public changeturn()B
 	.limit stack 99
-	.limit locals 99
+	.limit locals 1
 
 	iconst_1
 	aload_0
@@ -188,7 +188,7 @@ if_7_end:
 
 .method public getCurrentPlayer()I
 	.limit stack 99
-	.limit locals 99
+	.limit locals 1
 
 	aload_0
 	iconst_1
@@ -198,7 +198,7 @@ if_7_end:
 
 .method public winner()I
 	.limit stack 99
-	.limit locals 99
+	.limit locals 4
 
 	iconst_0
 	iconst_1
@@ -299,7 +299,7 @@ if_19_end:
 
 .method public static main([Ljava/lang/String;)V
 	.limit stack 99
-	.limit locals 99
+	.limit locals 6
 
 	new TicTacToe
 	dup

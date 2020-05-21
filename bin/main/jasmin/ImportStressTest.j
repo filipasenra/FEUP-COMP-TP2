@@ -10,7 +10,7 @@
 
 .method public static main([Ljava/lang/String;)V
 	.limit stack 99
-	.limit locals 99
+	.limit locals 3
 
 	aload_0
 	istore_2

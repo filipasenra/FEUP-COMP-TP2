@@ -1,4 +1,5 @@
 import static io.println(int) void;
+import static io.println(int []) void;
 
 class Array {
     public static void main(String[] args){
@@ -10,5 +11,7 @@ class Array {
         buffer = new int[bufsz];
         buffer[10] = value;
         value = buffer[11];
+
+        io.println(buffer);
     }
 }

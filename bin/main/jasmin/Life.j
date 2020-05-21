@@ -16,7 +16,7 @@
 
 .method public static main([Ljava/lang/String;)V
 	.limit stack 99
-	.limit locals 99
+	.limit locals 3
 
 	new Life
 	dup
@@ -41,7 +41,7 @@ while_1_end:
 
 .method public init()B
 	.limit stack 99
-	.limit locals 99
+	.limit locals 3
 
 	iconst_1
 	newarray int
@@ -76,7 +76,7 @@ while_1_end:
 
 .method public field_name([I)[I
 	.limit stack 99
-	.limit locals 99
+	.limit locals 3
 
 	bipush 100
 	newarray int
@@ -491,7 +491,7 @@ while_1_end:
 
 .method public update()B
 	.limit stack 99
-	.limit locals 99
+	.limit locals 6
 
 	newarray int
 	astore 5
@@ -543,7 +543,7 @@ while_2_end:
 
 .method public printfield_name()B
 	.limit stack 99
-	.limit locals 99
+	.limit locals 3
 
 	iconst_0
 	istore_1
@@ -579,7 +579,7 @@ while_6_end:
 
 .method public trIdx(II)I
 	.limit stack 99
-	.limit locals 99
+	.limit locals 3
 
 	iload_1
 	aload_0
@@ -593,7 +593,7 @@ while_6_end:
 
 .method public cartIdx(I)[I
 	.limit stack 99
-	.limit locals 99
+	.limit locals 6
 
 	aload_0
 	iconst_1
@@ -626,7 +626,7 @@ while_6_end:
 
 .method public getNeighborCoords(I)[I
 	.limit stack 99
-	.limit locals 99
+	.limit locals 10
 
 	aload0
 	iload_1
@@ -751,7 +751,7 @@ if_10_end:
 
 .method public getLiveNeighborN(I)I
 	.limit stack 99
-	.limit locals 99
+	.limit locals 5
 
 	iconst_0
 	istore 4
@@ -785,7 +785,7 @@ while_12_end:
 
 .method public busyWait(I)B
 	.limit stack 99
-	.limit locals 99
+	.limit locals 4
 
 	iload_1
 	aload_0
@@ -808,42 +808,42 @@ while_14_end:
 
 .method public eq(II)B
 	.limit stack 99
-	.limit locals 99
+	.limit locals 3
 
 	ireturn
 .end method
 
 .method public ne(II)B
 	.limit stack 99
-	.limit locals 99
+	.limit locals 3
 
 	ireturn
 .end method
 
 .method public lt(II)B
 	.limit stack 99
-	.limit locals 99
+	.limit locals 3
 
 	ireturn
 .end method
 
 .method public le(II)B
 	.limit stack 99
-	.limit locals 99
+	.limit locals 3
 
 	ireturn
 .end method
 
 .method public gt(II)B
 	.limit stack 99
-	.limit locals 99
+	.limit locals 3
 
 	ireturn
 .end method
 
 .method public ge(II)B
 	.limit stack 99
-	.limit locals 99
+	.limit locals 3
 
 	ireturn
 .end method
