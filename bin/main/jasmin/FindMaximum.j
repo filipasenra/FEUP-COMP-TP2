@@ -10,7 +10,7 @@
 
 .method public find_maximum([I)I
 	.limit stack 99
-	.limit locals 99
+	.limit locals 5
 
 	iconst_1
 	istore_2
@@ -43,7 +43,7 @@ while_1_end:
 
 .method public build_test_arr()I
 	.limit stack 99
-	.limit locals 99
+	.limit locals 1
 
 	iconst_5
 	newarray int
@@ -76,7 +76,7 @@ while_1_end:
 
 .method public get_array()[I
 	.limit stack 99
-	.limit locals 99
+	.limit locals 1
 
 	aload0
 	invokevirtual FindMaximum/tets()I
@@ -86,7 +86,7 @@ while_1_end:
 
 .method public tets()I
 	.limit stack 99
-	.limit locals 99
+	.limit locals 1
 
 	iconst_0
 	ireturn
@@ -94,7 +94,7 @@ while_1_end:
 
 .method public static main([Ljava/lang/String;)V
 	.limit stack 99
-	.limit locals 99
+	.limit locals 2
 
 	new FindMaximum
 	dup

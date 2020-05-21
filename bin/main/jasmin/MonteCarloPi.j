@@ -9,7 +9,7 @@
 
 .method public performSingleEstimate()B
 	.limit stack 99
-	.limit locals 99
+	.limit locals 5
 
 	iconst_0
 	bipush 100
@@ -47,7 +47,7 @@ if_1_end:
 
 .method public estimatePi100(I)I
 	.limit stack 99
-	.limit locals 99
+	.limit locals 5
 
 	iconst_0
 	istore_3
@@ -82,7 +82,7 @@ while_2_end:
 
 .method public static main([Ljava/lang/String;)V
 	.limit stack 99
-	.limit locals 99
+	.limit locals 3
 
 	invokestatic MonteCarloPi/requestNumber()I
 	istore_2

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import com.sun.prism.shader.Solid_TextureYV12_AlphaTest_Loader;
 import symbolTable.*;
 
 public class CodeGenerator {
@@ -412,7 +413,13 @@ public class CodeGenerator {
             generateExpression(rhs, symbolClass, symbolMethod);
             this.printWriterFile.println("\tiastore");
 
-        } else {
+        } else if (rhs.jjtGetNumChildren() != 0 && rhs.jjtGetChild(0) instanceof ASTaccessToArray) {
+            ASTaccessToArray arrayAccess = (ASTaccessToArray) rhs.jjtGetChild(0);
+            generateAccessToArray((ASTIdentifier) rhs, arrayAccess, symbolMethod);
+            this.printWriterFile.println("\tiaload");
+            generateLhs(lhs, symbolMethod);
+
+        }else {
             generateExpression(rhs, symbolClass, symbolMethod);
             generateLhs(lhs, symbolMethod);
 
@@ -469,7 +476,8 @@ public class CodeGenerator {
                 return Type.INT;
 
             } else if (node instanceof ASTIdentifier) {
-                return this.loadLocalVariable(((ASTIdentifier) node).val, symbolMethod);
+                Type type =  this.loadLocalVariable(((ASTIdentifier) node).val, symbolMethod);
+                return type;
 
             } else if (node instanceof ASTLiteral) {
                 loadIntLiteral(((ASTLiteral) node).val);
@@ -481,7 +489,7 @@ public class CodeGenerator {
                 return Type.OBJECT;
 
             } else if (node instanceof ASTInitializeArray) {
-                generateArrayInitialization((ASTInitializeArray) node);
+                generateArrayInitialization((ASTInitializeArray) node, symbolMethod);
                 return Type.INT_ARRAY;
 
             } else if (node instanceof ASTNegation) {
@@ -504,17 +512,6 @@ public class CodeGenerator {
 
         generateExpression((SimpleNode) operation.jjtGetChild(0), symbolClass, symbolMethod);
         generateExpression((SimpleNode) operation.jjtGetChild(1), symbolClass, symbolMethod);
-    }
-
-    private void loadVariable(ASTIdentifier var, SymbolMethod symbolMethod) {
-        if (var.jjtGetNumChildren() != 0) {
-            //TODO
-            //generateAccessToArray
-            this.printWriterFile.println("\tiaload");
-        } else {
-            //TODO -> global variable
-            loadLocalVariable(var.val, symbolMethod);
-        }
     }
 
     private void storeLocalVariable(ASTIdentifier identifier, SymbolMethod symbolMethod) {
@@ -611,10 +608,14 @@ public class CodeGenerator {
 
     }
 
-    private void generateArrayInitialization(ASTInitializeArray arrayInit) {
+    private void generateArrayInitialization(ASTInitializeArray arrayInit, SymbolMethod symbolMethod) {
         if (arrayInit.jjtGetChild(0) instanceof ASTLiteral) {
             ASTLiteral arg = (ASTLiteral) arrayInit.jjtGetChild(0);
             loadIntLiteral(arg.val);
+        }
+        else if (arrayInit.jjtGetChild(0) instanceof ASTIdentifier) {
+            ASTIdentifier arg = (ASTIdentifier) arrayInit.jjtGetChild(0);
+            loadLocalVariable(arg.val, symbolMethod);
         }
 
         this.printWriterFile.println("\tnewarray int");
@@ -765,15 +766,16 @@ public class CodeGenerator {
             //Get list of arguments type
             if (methodCallTypes.size() > 0) {
                 for (Type t : methodCallTypes) {
-                    if (t != null)
+                    if (t != null) {
                         callArgs.append(getSymbolType(t));
+                    }
                 }
             }
 
 
             String methodName = identifier2.val;
             String methodType = ((returnType != null) ? getSymbolType(returnType) : "");
-            String objectName = symbolClass.name;
+            String objectName = classOfMethod.name;
 
             int decrement = 1 + methodCallTypes.size();
             if(returnType != Type.VOID) decrement--;

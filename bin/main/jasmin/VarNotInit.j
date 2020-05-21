@@ -9,7 +9,7 @@
 
 .method public static main([Ljava/lang/String;)V
 	.limit stack 99
-	.limit locals 99
+	.limit locals 5
 
 	iconst_2
 	istore 4

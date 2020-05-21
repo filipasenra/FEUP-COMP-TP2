@@ -9,7 +9,7 @@
 
 .method public static main([Ljava/lang/String;)V
 	.limit stack 99
-	.limit locals 99
+	.limit locals 5
 
 	bipush 10
 	newarray int
@@ -50,7 +50,7 @@ while_1_end:
 
 .method public quicksort([I)B
 	.limit stack 99
-	.limit locals 99
+	.limit locals 3
 
 	iconst_0
 	iconst_5
@@ -84,7 +84,7 @@ if_3_end:
 
 .method public beLazy([I)B
 	.limit stack 99
-	.limit locals 99
+	.limit locals 4
 
 	aload_1
 	arraylength
@@ -130,7 +130,7 @@ while_5_end:
 
 .method public a(II)I
 	.limit stack 99
-	.limit locals 99
+	.limit locals 3
 
 	iconst_1
 	ireturn
@@ -138,7 +138,7 @@ while_5_end:
 
 .method public a(I)I
 	.limit stack 99
-	.limit locals 99
+	.limit locals 2
 
 	iconst_1
 	ireturn
