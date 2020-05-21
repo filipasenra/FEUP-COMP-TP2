@@ -720,7 +720,7 @@ public class CodeGenerator {
 
             String methodName = identifier2.val;
             String methodType = ((returnType != null) ? getSymbolType(returnType) : "");
-            String objectName = symbolClass.name;
+            String objectName = classOfMethod.name;
 
             this.printWriterFile.println("\t" + ((virtual) ? "invokevirtual " : "invokestatic ") + objectName + "/" + methodName + "(" + callArgs + ")" + methodType);
             return returnType;
