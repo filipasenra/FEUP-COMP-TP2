@@ -14,12 +14,14 @@ public class CodeGenerator {
     private int loopCounter;
     private int localVars = 0;
     private int nParams = 0;
-    private int maxStack = 0;
-    private int totalStack = 0;
+    private int maxStack;
+    private int totalStack;
 
     public CodeGenerator(SemanticAnalysis semanticAnalysis) {
         symbolTable = semanticAnalysis.getSymbolTable();
         this.loopCounter = 0;
+        this.maxStack = 0;
+        this.totalStack = 0;
     }
 
     public void generate(SimpleNode node) {
@@ -157,8 +159,23 @@ public class CodeGenerator {
 
         generateMethodBody(mainNode, symbolClass, symbolMethod);
 
+        System.out.println("Metodo: " + mainNode);
+        System.out.println("local limits: " + localLimits);
+        System.out.println("Stack limits: " + this.maxStack);
+        while(totalStack > 0){
+            this.printWriterFile.println("\tpop");
+            totalStack--;
+        }
         printWriterFile.println("\treturn");
+
+
+
+        System.out.println("STACK FINAL: " + this.totalStack);
+
+
         printWriterFile.println(".end method\n\n");
+        this.maxStack = 0;
+        this.totalStack = 0;
         this.localVars = 0;
     }
 
@@ -176,10 +193,23 @@ public class CodeGenerator {
         printWriterFile.println("\t.limit locals " + localLimits + "\n");
         //System.out.println("Metodo: " + methodNode.name + "\n\tLocal limits: " + localLimits);
         generateMethodBody(methodNode, symbolClass, symbolMethod);
+        System.out.println("Metodo: " + methodNode.name);
+        System.out.println("local limits: " + localLimits);
+        System.out.println("Stack limits: " + this.maxStack);
+
+        while(totalStack > 0){
+            this.printWriterFile.println("pop");
+            totalStack--;
+        }
+
+        System.out.println("STACK FINAL: " + this.totalStack);
+
 
         printWriterFile.write(".end method\n\n");
         this.localVars = 0;
         this.nParams = 0;
+        this.maxStack = 0;
+        this.totalStack=0;
     }
 
     private SymbolMethod getSymbolMethod(ArrayList<SymbolMethod> listSymbolMethod, int num) {
@@ -409,21 +439,32 @@ public class CodeGenerator {
 
             } else if (node instanceof ASTSUM) {
                 generateOperation(node, symbolClass, symbolMethod);
+                System.out.println("Total stack antes: " + this.totalStack);
+                reduceStack(1);
+                System.out.println("\tReduce em sum: " + this.totalStack + " / " + this.maxStack);
                 this.printWriterFile.println("\tiadd");
                 return Type.INT;
 
-
             } else if (node instanceof ASTSUB) {
                 generateOperation(node, symbolClass, symbolMethod);
+                System.out.println("Total stack antes: " + this.totalStack);
+                reduceStack(1);
+                System.out.println("\tReduce em sub: " + this.totalStack + " / " + this.maxStack);
                 this.printWriterFile.println("\tisub");
 
             } else if (node instanceof ASTMUL) {
                 generateOperation(node, symbolClass, symbolMethod);
+                System.out.println("Total stack antes: " + this.totalStack);
+                reduceStack(1);
+                System.out.println("\tReduce em mul: " + this.totalStack + " / " + this.maxStack);
                 this.printWriterFile.println("\timul");
                 return Type.INT;
 
             } else if (node instanceof ASTDIV) {
                 generateOperation(node, symbolClass, symbolMethod);
+                System.out.println("Total stack antes: " + this.totalStack);
+                reduceStack(1);
+                System.out.println("tReduce em div: " + this.totalStack + " / " + this.maxStack);
                 this.printWriterFile.println("\tidiv");
                 return Type.INT;
 
@@ -491,7 +532,9 @@ public class CodeGenerator {
         type = (varType == Type.INT || varType == Type.BOOLEAN) ? "i" : "a";
 
         store = (index <= 3) ? "store_" : "store ";
-
+        System.out.println("Total stack antes: " + this.totalStack);
+        reduceStack(1);
+        System.out.println("\tReduce em store: " + this.totalStack + " / " + this.maxStack);
         this.printWriterFile.println("\t" + type + store + index);
     }
 
@@ -500,6 +543,9 @@ public class CodeGenerator {
         //TODO: check if case for this is correct
         if(val.equals("this")) {
             this.printWriterFile.println("\taload0");
+            System.out.println("Total stack antes: " + this.totalStack);
+            incrementStack();
+            System.out.println("\tIncrement stack this.(aload0) : " + this.totalStack + " / "+ this.maxStack);
             return Type.OBJECT;
         }
 
@@ -516,7 +562,10 @@ public class CodeGenerator {
         type = (varType == Type.INT || varType == Type.BOOLEAN) ? "i" : "a";
 
         store = (index <= 3) ? "load_" : "load ";
-
+        System.out.println("Total stack antes: " + this.totalStack);
+        incrementStack();
+        System.out.println("\t" + type + store + index);
+        System.out.println("\tIncrement em load: " + this.totalStack + " / " + this.maxStack);
         this.printWriterFile.println("\t" + type + store + index);
         return varType;
     }
@@ -541,6 +590,10 @@ public class CodeGenerator {
             output += "\tldc " + value;
 
         }
+        System.out.println("Total stack antes: " + this.totalStack);
+        incrementStack();
+        System.out.println(output);
+        System.out.println("\tIncrement em loadINT: " + this.totalStack + " / " + this.maxStack);
         this.printWriterFile.println(output);
     }
 
@@ -721,6 +774,12 @@ public class CodeGenerator {
             String methodName = identifier2.val;
             String methodType = ((returnType != null) ? getSymbolType(returnType) : "");
             String objectName = symbolClass.name;
+
+            int decrement = 1 + methodCallTypes.size();
+            if(returnType != Type.VOID) decrement--;
+            System.out.println("Total stack antes: " + this.totalStack);
+            reduceStack(decrement);
+            System.out.println("\tReduce invoke(" + decrement +"): " + this.totalStack + " / " + this.maxStack);
 
             this.printWriterFile.println("\t" + ((virtual) ? "invokevirtual " : "invokestatic ") + objectName + "/" + methodName + "(" + callArgs + ")" + methodType);
             return returnType;

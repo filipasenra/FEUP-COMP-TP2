@@ -1,4 +1,4 @@
-import static io.println(int) void;
+/*import static io.println(int) void;
 
 class Simple {
 
@@ -35,25 +35,41 @@ class Simple {
 
 
 }
+*/
 
 
-/*import io.println(int);
+import static io.println(int) void;
 
 class Simple {
 
-    public static void main(String[] args){
-		int a;
-		int b;
-		Simple simple;
-		int c;
-        a = 30;
-		b = 0-10;
-        simple = new Simple();
-		c = simple.add(a,b);
-        io.println(c);
-	}
-
     public int add(int a, int b){
-		return a+b;
-	}
-}*/
+        int c;
+        c = a+b;
+        return c;
+    }
+
+    public static void main(String[] args){
+        int a;
+        int b;
+        int c;
+        Simple s;
+        a = 20;
+        b = 10;
+        s = new Simple();
+        c = s.add(a,b);
+        io.println(c);
+    }
+
+    public int test(int a, int b){
+        a = b + 10 * (3 + this.add(3,4));
+        return a;
+    }
+
+    public int test2(){
+        int result;
+        result = this.add(3,4);
+        return result;
+    }
+
+
+}
