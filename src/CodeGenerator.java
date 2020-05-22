@@ -442,18 +442,55 @@ public class CodeGenerator {
 
         //Special Case for element of array
         if (lhs.jjtGetNumChildren() != 0 && lhs.jjtGetChild(0) instanceof ASTaccessToArray) {
-            ASTaccessToArray arrayAccess = (ASTaccessToArray) lhs.jjtGetChild(0);
-            generateAccessToArray(lhs, arrayAccess, symbolClass, symbolMethod);
-            generateExpression(rhs, symbolClass, symbolMethod);
-            this.printWriterFile.println("\tiastore");
 
-        } else {
-            generateExpression(rhs, symbolClass, symbolMethod);
-            storeVariable(lhs, symbolClass, symbolMethod);
+            storeElementOfArray(lhs, rhs, symbolClass, symbolMethod);
 
+        } else if (symbolMethod.symbolTable.get(lhs.val) != null) {
+
+            storeLocalVariable(lhs, rhs, symbolClass, symbolMethod);
+
+        } else if(symbolClass.symbolTableFields.get(lhs.val) != null) {
+
+            storeField(lhs, rhs, symbolClass, symbolMethod);
         }
 
         this.printWriterFile.println();
+    }
+
+    private void storeElementOfArray(ASTIdentifier lhs, SimpleNode rhs, SymbolClass symbolClass, SymbolMethod symbolMethod) {
+
+        ASTaccessToArray arrayAccess = (ASTaccessToArray) lhs.jjtGetChild(0);
+        generateAccessToArray(lhs, arrayAccess, symbolClass, symbolMethod);
+        generateExpression(rhs, symbolClass, symbolMethod);
+        this.printWriterFile.println("\tiastore");
+
+    }
+
+    private void storeField(ASTIdentifier lhs, SimpleNode rhs, SymbolClass symbolClass, SymbolMethod symbolMethod) {
+
+        Type varType = symbolClass.symbolTableFields.get(lhs.val).getType();
+        this.printWriterFile.println("\taload_0");
+        this.generateExpression(rhs, symbolClass, symbolMethod);
+        this.printWriterFile.println("\tputfield " + lhs.val + ":" + getSymbolType(varType) );
+
+    }
+
+    private void storeLocalVariable(ASTIdentifier lhs, SimpleNode rhs, SymbolClass symbolClass, SymbolMethod symbolMethod) {
+
+        this.generateExpression(rhs, symbolClass, symbolMethod);
+
+        Type varType = symbolMethod.symbolTable.get(lhs.val).getType();
+        int index = symbolMethod.symbolTable.get(lhs.val).getIndex();
+
+        String type = (varType == Type.INT || varType == Type.BOOLEAN) ? "i" : "a";
+
+        String store = (index <= 3) ? "store_" : "store ";
+
+        System.out.println("Total stack antes: " + this.totalStack);
+        reduceStack(1);
+        System.out.println("\tReduce em store: " + this.totalStack + " / " + this.maxStack);
+        this.printWriterFile.println("\t" + type + store + index);
+
     }
 
     private Type generateExpression(SimpleNode node, SymbolClass symbolClass, SymbolMethod symbolMethod) {
@@ -647,32 +684,6 @@ public class CodeGenerator {
         generateExpression((SimpleNode) operation.jjtGetChild(1), symbolClass, symbolMethod);
     }
 
-    private void storeVariable(ASTIdentifier identifier, SymbolClass symbolClass, SymbolMethod symbolMethod) {
-
-        if (symbolMethod.symbolTable.get(identifier.val) != null) {
-            Type varType = symbolMethod.symbolTable.get(identifier.val).getType();
-            int index = symbolMethod.symbolTable.get(identifier.val).getIndex();
-
-            String type = (varType == Type.INT || varType == Type.BOOLEAN) ? "i" : "a";
-
-            String store = (index <= 3) ? "store_" : "store ";
-
-            System.out.println("Total stack antes: " + this.totalStack);
-            reduceStack(1);
-            System.out.println("\tReduce em store: " + this.totalStack + " / " + this.maxStack);
-            this.printWriterFile.println("\t" + type + store + index);
-
-        } else if(symbolClass.symbolTableFields.get(identifier.val) != null) {
-
-            //TODO: check if correct
-
-            Type varType = symbolClass.symbolTableFields.get(identifier.val).getType();
-            this.printWriterFile.println("\taload_0");
-            this.printWriterFile.println("\tputfield " + identifier.val + ":" + getSymbolType(varType) );
-
-        }
-    }
-
     private Type loadVariable(String val, SymbolClass symbolClass, SymbolMethod symbolMethod) {
 
         if(val.equals("this")) {
@@ -703,9 +714,8 @@ public class CodeGenerator {
 
         if (symbolClass.symbolTableFields.get(val) != null){
 
-            //TODO: check if correct
             Type varType = symbolClass.symbolTableFields.get(val).getType();
-            this.printWriterFile.println("\t aload_0");
+            this.printWriterFile.println("\taload_0");
             this.printWriterFile.println("\tgetfield " + val + ":" + getSymbolType(varType) );
 
             return varType;
@@ -743,8 +753,6 @@ public class CodeGenerator {
     }
 
     private void generateNewObject(ASTNewObject object, SymbolClass symbolClass, SymbolMethod symbolMethod) {
-
-        //TODO: check if new object with parameters is correct
 
         this.printWriterFile.println("\tnew " + object.val + "\n\tdup");
 
