@@ -4,6 +4,10 @@ class Test {
     int[] a;
     int c;
 
+    public Test(int a ){
+
+    }
+
     public int test() {
 
         return c;
@@ -27,6 +31,7 @@ class Test {
 
     public static void main(String[] args){
         int[] a;
+        Test Test;
 
         //array store
         a = new int[8];
@@ -39,5 +44,7 @@ class Test {
 
         //array position load
         System.out.println(a[0]);
+
+        Test = new Test(1);
     }
 }
