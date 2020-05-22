@@ -8,7 +8,7 @@
 .end method
 
 .method public add(II)I
-	.limit stack 99
+	.limit stack 2
 	.limit locals 4
 
 	iload_1
@@ -17,10 +17,12 @@
 	istore_3
 	iload_3
 	ireturn
+	pop
 .end method
 
+
 .method public static main([Ljava/lang/String;)V
-	.limit stack 99
+	.limit stack 2
 	.limit locals 5
 
 	bipush 20
@@ -37,32 +39,44 @@
 	invokevirtual Simple/add(II)I
 	istore_3
 	iload_3
-	invokestatic Simple/println(I)V
+	invokestatic io/println(I)V
 	return
 .end method
 
 
-.method public constInstr()I
-	.limit stack 99
+.method public test(II)I
+	.limit stack 6
+	.limit locals 3
+
+	iload_2
+	bipush 10
+	iconst_3
+	aload_0
+	iconst_3
+	iconst_4
+	invokevirtual Simple/add(II)I
+	iadd
+	imul
+	iadd
+	istore_1
+	iload_1
+	ireturn
+	pop
+.end method
+
+
+.method public test2()I
+	.limit stack 3
 	.limit locals 2
 
-	iconst_0
-	istore_1
+	aload_0
+	iconst_3
 	iconst_4
+	invokevirtual Simple/add(II)I
 	istore_1
-	bipush 8
-	istore_1
-	bipush 14
-	istore_1
-	sipush 250
-	istore_1
-	sipush 400
-	istore_1
-	sipush 1000
-	istore_1
-	ldc 100474650
-	istore_1
-	iconst_0
+	iload_1
 	ireturn
+	pop
 .end method
+
 
