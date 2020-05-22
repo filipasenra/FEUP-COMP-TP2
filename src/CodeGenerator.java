@@ -172,7 +172,6 @@ public class CodeGenerator {
 
         printWriterFile.println("\t.limit stack 99");
         printWriterFile.println("\t.limit locals " + localLimits + "\n");
-        //System.out.println("Metodo: " + methodNode.name + "\n\tLocal limits: " + localLimits);
         generateMethodBody(methodNode, symbolClass, symbolMethod);
 
         printWriterFile.write(".end method\n\n");
@@ -185,7 +184,6 @@ public class CodeGenerator {
             return listSymbolMethod.get(0);
 
         for (SymbolMethod symbolMethod : listSymbolMethod) {
-            System.out.println(symbolMethod.num + " : " + num);
             if (symbolMethod.num == num) {
                 return symbolMethod;
             }
@@ -395,8 +393,6 @@ public class CodeGenerator {
         if (type != null) {
             switch (type) {
                 case BOOLEAN:
-                    this.printWriterFile.println("\tireturn");
-                    break;
                 case INT:
                     this.printWriterFile.println("\tireturn");
                     break;
@@ -417,23 +413,17 @@ public class CodeGenerator {
         //Special Case for element of array
         if (lhs.jjtGetNumChildren() != 0 && lhs.jjtGetChild(0) instanceof ASTaccessToArray) {
             ASTaccessToArray arrayAccess = (ASTaccessToArray) lhs.jjtGetChild(0);
-            generateAccessToArray(lhs, arrayAccess, symbolMethod);
+            generateAccessToArray(lhs, arrayAccess, symbolClass, symbolMethod);
             generateExpression(rhs, symbolClass, symbolMethod);
             this.printWriterFile.println("\tiastore");
 
         } else {
             generateExpression(rhs, symbolClass, symbolMethod);
-            generateLhs(lhs, symbolMethod);
+            storeVariable(lhs, symbolClass, symbolMethod);
 
         }
 
         this.printWriterFile.println();
-    }
-
-    private void generateLhs(ASTIdentifier lhs, SymbolMethod symbolMethod) {
-        storeLocalVariable(lhs, symbolMethod);
-
-        //TODO -> Global variable
     }
 
     private Type generateExpression(SimpleNode node, SymbolClass symbolClass, SymbolMethod symbolMethod) {
@@ -481,7 +471,7 @@ public class CodeGenerator {
                 return Type.OBJECT;
 
             } else if (node instanceof ASTInitializeArray) {
-                generateArrayInitialization((ASTInitializeArray) node, symbolMethod);
+                generateArrayInitialization((ASTInitializeArray) node, symbolClass, symbolMethod);
                 return Type.INT_ARRAY;
 
             } else if (node instanceof ASTNegation) {
@@ -507,23 +497,19 @@ public class CodeGenerator {
             Type returnType = null;
             if (node.jjtGetChild(0) instanceof ASTaccessToArray){
 
-                returnType = generateAccessToArray(node, (ASTaccessToArray) node.jjtGetChild(0), symbolMethod);
+                returnType = generateAccessToArray(node, (ASTaccessToArray) node.jjtGetChild(0), symbolClass, symbolMethod);
                 this.printWriterFile.println("\tiaload");
             }
 
             return returnType;
         }
 
-        return loadLocalVariable(node.val, symbolMethod);
-
-
-        //TODO: global
+        return loadVariable(node.val, symbolClass, symbolMethod);
 
     }
 
     private void generateAnd(ASTAND node, SymbolClass symbolClass, SymbolMethod symbolMethod) {
 
-        System.out.println("OLA");
         if(node.jjtGetNumChildren() != 2)
             return;
 
@@ -620,48 +606,62 @@ public class CodeGenerator {
         generateExpression((SimpleNode) operation.jjtGetChild(1), symbolClass, symbolMethod);
     }
 
-    private void storeLocalVariable(ASTIdentifier identifier, SymbolMethod symbolMethod) {
-        Type varType = null;
-
-        int index = 0;
-        String store;
-        String type;
+    private void storeVariable(ASTIdentifier identifier, SymbolClass symbolClass, SymbolMethod symbolMethod) {
 
         if (symbolMethod.symbolTable.get(identifier.val) != null) {
-            varType = symbolMethod.symbolTable.get(identifier.val).getType();
-            index = symbolMethod.symbolTable.get(identifier.val).getIndex();
+            Type varType = symbolMethod.symbolTable.get(identifier.val).getType();
+            int index = symbolMethod.symbolTable.get(identifier.val).getIndex();
+
+            String type = (varType == Type.INT || varType == Type.BOOLEAN) ? "i" : "a";
+
+            String store = (index <= 3) ? "store_" : "store ";
+
+            this.printWriterFile.println("\t" + type + store + index);
+
+        } else if(symbolClass.symbolTableFields.get(identifier.val) != null) {
+
+            //TODO: check if correct
+
+            Type varType = symbolClass.symbolTableFields.get(identifier.val).getType();
+            this.printWriterFile.println("\taload_0");
+            this.printWriterFile.println("\tputfield " + identifier.val + ":" + getSymbolType(varType) );
+
         }
-
-        type = (varType == Type.INT || varType == Type.BOOLEAN) ? "i" : "a";
-
-        store = (index <= 3) ? "store_" : "store ";
-
-        this.printWriterFile.println("\t" + type + store + index);
     }
 
-    private Type loadLocalVariable(String val, SymbolMethod symbolMethod) {
+    private Type loadVariable(String val, SymbolClass symbolClass, SymbolMethod symbolMethod) {
 
         if(val.equals("this")) {
             this.printWriterFile.println("\taload_0");
             return Type.OBJECT;
         }
 
-        Type varType = null;
-        String store;
-        String type;
-        int index = 0;
-
         if (symbolMethod.symbolTable.get(val) != null) {
-            varType = symbolMethod.symbolTable.get(val).getType();
-            index = symbolMethod.symbolTable.get(val).getIndex();
+            Type varType = symbolMethod.symbolTable.get(val).getType();
+            int index = symbolMethod.symbolTable.get(val).getIndex();
+
+            String type = (varType == Type.INT || varType == Type.BOOLEAN) ? "i" : "a";
+            String store = (index <= 3) ? "load_" : "load ";
+
+            this.printWriterFile.println("\t" + type + store + index);
+
+            return varType;
+
         }
 
-        type = (varType == Type.INT || varType == Type.BOOLEAN) ? "i" : "a";
+        if (symbolClass.symbolTableFields.get(val) != null){
 
-        store = (index <= 3) ? "load_" : "load ";
+            //TODO: check if correct
 
-        this.printWriterFile.println("\t" + type + store + index);
-        return varType;
+            Type varType = symbolClass.symbolTableFields.get(val).getType();
+            this.printWriterFile.println("\t aload_0");
+            this.printWriterFile.println("\tgetfield " + val + ":" + getSymbolType(varType) );
+
+            return varType;
+
+        }
+
+        return null;
     }
 
     private void loadIntLiteral(String val) {
@@ -701,7 +701,7 @@ public class CodeGenerator {
 
     }
 
-    private void generateArrayInitialization(ASTInitializeArray arrayInit, SymbolMethod symbolMethod) {
+    private void generateArrayInitialization(ASTInitializeArray arrayInit, SymbolClass symbolClass, SymbolMethod symbolMethod) {
         if (arrayInit.jjtGetChild(0) instanceof ASTLiteral) {
             ASTLiteral arg = (ASTLiteral) arrayInit.jjtGetChild(0);
             loadIntLiteral(arg.val);
@@ -709,16 +709,15 @@ public class CodeGenerator {
         else if (arrayInit.jjtGetChild(0) instanceof ASTIdentifier) {
 
             ASTIdentifier arg = (ASTIdentifier) arrayInit.jjtGetChild(0);
-            loadLocalVariable(arg.val, symbolMethod);
+            loadVariable(arg.val, symbolClass, symbolMethod);
         }
 
         this.printWriterFile.println("\tnewarray int");
     }
 
-    private Type generateAccessToArray(ASTIdentifier node, ASTaccessToArray arrayAccess, SymbolMethod symbolMethod) {
+    private Type generateAccessToArray(ASTIdentifier node, ASTaccessToArray arrayAccess, SymbolClass symbolClass, SymbolMethod symbolMethod) {
 
-        //TODO: global
-        Type returnType = loadLocalVariable(node.val, symbolMethod);
+        Type returnType = loadVariable(node.val, symbolClass, symbolMethod);
 
         if (arrayAccess.jjtGetChild(0) instanceof ASTLiteral) {
             ASTLiteral arrayPos = (ASTLiteral) arrayAccess.jjtGetChild(0);

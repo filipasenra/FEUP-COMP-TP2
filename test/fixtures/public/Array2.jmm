@@ -3,10 +3,32 @@ import static io.printArray(int []) void;
 
 class Array2 {
 
-    public int[] test(int[] a) {
+    int[] a;
+    int c;
 
-    return a;
+    public int test() {
+
+        return c;
     }
+
+    public int test(int ola){
+
+        c = 1;
+        //array store
+        a = new int[8];
+
+        //array position store
+        a[0] = 2;
+
+        //array access
+        io.printArray(a);
+
+        //array position load
+        io.print(a[0]);
+
+        return 1;
+    }
+
     public static void main(String[] args){
         int[] a;
 
