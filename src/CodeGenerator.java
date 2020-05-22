@@ -237,7 +237,6 @@ public class CodeGenerator {
             return listSymbolMethod.get(0);
 
         for (SymbolMethod symbolMethod : listSymbolMethod) {
-            System.out.println(symbolMethod.num + " : " + num);
             if (symbolMethod.num == num) {
                 return symbolMethod;
             }
@@ -307,8 +306,8 @@ public class CodeGenerator {
 
             if (node instanceof ASTReturn) {
 
-                generateExpression((SimpleNode) node.jjtGetChild(0), symbolClass, symbolMethod); //expression
-                generateMethodReturn(symbolMethod);
+                Type type = generateExpression((SimpleNode) node.jjtGetChild(0), symbolClass, symbolMethod); //expression
+                generateMethodReturn(type);
                 return;
             }
 
@@ -349,17 +348,11 @@ public class CodeGenerator {
         SimpleNode statement = (SimpleNode) node.jjtGetChild(1);
 
         this.bodyCode.append("while_" + thisCounter + "_begin:\n");
+
         //evaluate expression
-        if (testExpression instanceof ASTBoolean){
-            ASTBoolean value = (ASTBoolean) testExpression;
-            int valueInt = value.val ? 1 : 0;
-            loadIntLiteral(String.valueOf(valueInt));
-            this.bodyCode.append("\tifeq while_" + thisCounter + "_end\n" );
-        }
-        if (testExpression instanceof ASTLESSTHAN){
-            generateOperation(testExpression,symbolClass, symbolMethod);
-            this.bodyCode.append("\tif_icmpge while_" + thisCounter + "_end\n");
-        }
+        if (!generateConditional(testExpression, symbolClass, symbolMethod, thisCounter, "while_", "_end"))
+            return;
+
         generateStatement(statement, symbolClass, symbolMethod);
         this.bodyCode.append("\tgoto while_" + thisCounter + "_begin\n");
         this.bodyCode.append("while_" + thisCounter + "_end:\n");
@@ -374,17 +367,9 @@ public class CodeGenerator {
         SimpleNode elseBlock = (SimpleNode) node.jjtGetChild(2);
 
         //**********Expression Test************
-        if (expression instanceof ASTBoolean) {
-            ASTBoolean value = (ASTBoolean) expression;
-            int valueInt = value.val ? 1 : 0;
-            loadIntLiteral(String.valueOf(valueInt));
-            this.bodyCode.append("\tifeq if_" + thisCounter + "_else\n");
-        }
-        if (expression instanceof ASTLESSTHAN) {
+        if (!generateConditional(expression, symbolClass, symbolMethod, thisCounter, "if_", "_else"))
+            return;
 
-            generateOperation(expression, symbolClass, symbolMethod);
-            this.bodyCode.append("\tif_icmpge if_" + thisCounter + "_else\n");
-        }
         //**************************************
 
         // *********IF BLOCK*********************
@@ -399,15 +384,68 @@ public class CodeGenerator {
         //******************************** */
     }
 
+    private boolean generateConditional(SimpleNode expression, SymbolClass symbolClass, SymbolMethod symbolMethod, int thisCounter, String firstPartTag, String secondPartTag){
 
-    private void generateMethodReturn(SymbolMethod symbolMethod) {
-        Type type = symbolMethod.getType();
+        if (expression instanceof ASTBoolean) {
+            generateBoolean((ASTBoolean) expression);
+            this.bodyCode.append("\tifeq " + firstPartTag + thisCounter + secondPartTag+"\n");
+
+            return true;
+
+        }
+
+        if (expression instanceof ASTLESSTHAN) {
+
+            if(expression.jjtGetNumChildren() != 2)
+                return false;
+
+            generateExpression((SimpleNode) expression.jjtGetChild(0), symbolClass, symbolMethod);
+            generateExpression((SimpleNode) expression.jjtGetChild(1), symbolClass, symbolMethod);
+
+            this.bodyCode.append("\tif_icmpge " + firstPartTag + thisCounter + secondPartTag+"\n");
+
+            return true;
+
+        }
+
+        if (expression instanceof ASTAND) {
+
+            if(expression.jjtGetNumChildren() != 2)
+                return false;
+
+            // Code for first child
+            generateExpression((SimpleNode) expression.jjtGetChild(0), symbolClass, symbolMethod);
+            this.bodyCode.append("\tif_eq " + firstPartTag + thisCounter + secondPartTag+"\n");
+
+            //Code for second child
+            generateExpression((SimpleNode) expression.jjtGetChild(1), symbolClass, symbolMethod);
+            this.bodyCode.append("\tif_eq " + firstPartTag + thisCounter + secondPartTag);
+
+            return true;
+
+        }
+
+        if(expression instanceof ASTNegation) {
+
+            if(expression.jjtGetNumChildren() != 1)
+                return false;
+
+            generateExpression((SimpleNode) expression.jjtGetChild(0), symbolClass, symbolMethod);
+
+            this.bodyCode.append("\tifne if_" + thisCounter + "_else\n");
+
+        }
+
+        return false;
+    }
+
+
+
+    private void generateMethodReturn(Type type) {
 
         if (type != null) {
             switch (type) {
                 case BOOLEAN:
-                    this.bodyCode.append("\tireturn\n");   //TODO -> return arrays
-                    break;
                 case INT:
                     this.bodyCode.append("\tireturn\n");
                     break;
@@ -428,39 +466,28 @@ public class CodeGenerator {
         //Special Case for element of array
         if (lhs.jjtGetNumChildren() != 0 && lhs.jjtGetChild(0) instanceof ASTaccessToArray) {
             ASTaccessToArray arrayAccess = (ASTaccessToArray) lhs.jjtGetChild(0);
-            generateAccessToArray(lhs, arrayAccess, symbolMethod);
+            generateAccessToArray(lhs, arrayAccess, symbolClass, symbolMethod);
             generateExpression(rhs, symbolClass, symbolMethod);
             this.bodyCode.append("\tiastore\n");
 
-        } else if (rhs.jjtGetNumChildren() != 0 && rhs.jjtGetChild(0) instanceof ASTaccessToArray) {
-            ASTaccessToArray arrayAccess = (ASTaccessToArray) rhs.jjtGetChild(0);
-            generateAccessToArray((ASTIdentifier) rhs, arrayAccess, symbolMethod);
-            this.bodyCode.append("\tiaload\n");
-            generateLhs(lhs, symbolMethod);
-
-        }else {
+        } else {
             generateExpression(rhs, symbolClass, symbolMethod);
-            generateLhs(lhs, symbolMethod);
+            storeVariable(lhs, symbolClass, symbolMethod);
 
         }
-    }
 
-    private void generateLhs(ASTIdentifier lhs, SymbolMethod symbolMethod) {
-        storeLocalVariable(lhs, symbolMethod);
-
-        //TODO -> Global variable
+        this.bodyCode.append("\n");
     }
 
     private Type generateExpression(SimpleNode node, SymbolClass symbolClass, SymbolMethod symbolMethod) {
         if (node != null) {
             if (node instanceof ASTAND) {
-                //generateOperation(node, symbolClass, symbolMethod);
-                //TODO: use if_icmpge (i think)
+                generateAnd((ASTAND) node, symbolClass, symbolMethod);
                 return Type.BOOLEAN;
 
             } else if (node instanceof ASTLESSTHAN) {
-                //generateOperation(node, symbolClass, symbolMethod);
-                //TODO: use if_icmpge (i think)
+
+                generateLessThan((ASTLESSTHAN) node, symbolClass, symbolMethod);
                 return Type.BOOLEAN;
 
             } else if (node instanceof ASTSUM) {
@@ -495,8 +522,8 @@ public class CodeGenerator {
                 return Type.INT;
 
             } else if (node instanceof ASTIdentifier) {
-                Type type =  this.loadLocalVariable(((ASTIdentifier) node).val, symbolMethod);
-                return type;
+
+                return generateIdentifier((ASTIdentifier) node, symbolClass, symbolMethod);
 
             } else if (node instanceof ASTLiteral) {
                 loadIntLiteral(((ASTLiteral) node).val);
@@ -508,15 +535,15 @@ public class CodeGenerator {
                 return Type.OBJECT;
 
             } else if (node instanceof ASTInitializeArray) {
-                generateArrayInitialization((ASTInitializeArray) node, symbolMethod);
+                generateArrayInitialization((ASTInitializeArray) node, symbolClass, symbolMethod);
                 return Type.INT_ARRAY;
 
             } else if (node instanceof ASTNegation) {
-                //TODO: negation
+                generateNegation((ASTNegation) node, symbolClass, symbolMethod);
                 return Type.BOOLEAN;
 
             } else if (node instanceof ASTBoolean) {
-                //TODO: negation
+                this.generateBoolean((ASTBoolean) node);
                 return Type.BOOLEAN;
 
             } else if (node instanceof ASTDotExpression){
@@ -527,63 +554,188 @@ public class CodeGenerator {
         return null;
     }
 
+    private Type generateIdentifier(ASTIdentifier node, SymbolClass symbolClass, SymbolMethod symbolMethod) {
+
+        if( node.jjtGetNumChildren() == 1) {
+
+            Type returnType = null;
+            if (node.jjtGetChild(0) instanceof ASTaccessToArray){
+
+                returnType = generateAccessToArray(node, (ASTaccessToArray) node.jjtGetChild(0), symbolClass, symbolMethod);
+                this.bodyCode.append("\tiaload\n");
+            }
+
+            return returnType;
+        }
+
+        return loadVariable(node.val, symbolClass, symbolMethod);
+
+    }
+
+    private void generateAnd(ASTAND node, SymbolClass symbolClass, SymbolMethod symbolMethod) {
+
+        if(node.jjtGetNumChildren() != 2)
+            return;
+
+        this.loopCounter++;
+        int thisCounter = this.loopCounter;
+
+        // Code for first child
+        generateExpression((SimpleNode) node.jjtGetChild(0), symbolClass, symbolMethod);
+        this.bodyCode.append("\tif_eq AND_" + thisCounter+"\n");
+
+        //Code for second child
+        generateExpression((SimpleNode) node.jjtGetChild(1), symbolClass, symbolMethod);
+        this.bodyCode.append("\tif_eq AND_" + thisCounter+"\n");
+
+        //If both are true
+        // *********IN CASE EXPRESSION IS TRUE *********************
+        this.bodyCode.append("\ticonst_1\n");
+        this.bodyCode.append("\tgoto AND_" + thisCounter + "_end\n");
+        //************************** */
+
+        //******* IN CASE EXPRESSION IS FALSE ***********/
+        this.bodyCode.append("AND_" + thisCounter + ":\n");
+        this.bodyCode.append("\ticonst_0\n");
+        this.bodyCode.append("AND_" + thisCounter + "_end:\n");
+        //******************************** */
+
+    }
+
+    private void generateLessThan(ASTLESSTHAN node, SymbolClass symbolClass, SymbolMethod symbolMethod) {
+
+        if(node.jjtGetNumChildren() != 2)
+            return;
+
+        this.loopCounter++;
+        int thisCounter = this.loopCounter;
+
+
+        generateExpression((SimpleNode) node.jjtGetChild(0), symbolClass, symbolMethod);
+        generateExpression((SimpleNode) node.jjtGetChild(1), symbolClass, symbolMethod);
+
+        this.bodyCode.append("\tif_icmpge lessThan_" + thisCounter+"\n");
+
+        // *********IN CASE EXPRESSION IS TRUE *********************
+        this.bodyCode.append("\ticonst_1\n");
+        this.bodyCode.append("\tgoto lessThan_" + thisCounter + "_end\n");
+        // **************************
+
+        // ******* IN CASE EXPRESSION IS FALSE
+        this.bodyCode.append("lessThan_" + thisCounter + ":\n");
+        this.bodyCode.append("\ticonst_0\n");
+        this.bodyCode.append("lessThan_" + thisCounter + "_end:\n");
+        // ********************************
+
+    }
+
+
+    private void generateNegation(ASTNegation node, SymbolClass symbolClass, SymbolMethod symbolMethod) {
+
+        if(node.jjtGetNumChildren() != 1)
+            return;
+
+        this.loopCounter++;
+        int thisCounter = this.loopCounter;
+
+        generateExpression((SimpleNode) node.jjtGetChild(0), symbolClass, symbolMethod);
+
+        this.bodyCode.append("\tifne negation_" + thisCounter+"\n");
+
+        // *********IN CASE EXPRESSION IS TRUE *********************
+        this.bodyCode.append("\ticonst_1\n");
+        this.bodyCode.append("\tgoto negation_" + thisCounter + "_end\n");
+        //************************** */
+
+        //******* IN CASE EXPRESSION IS FALSE ***********/
+        this.bodyCode.append("negation_" + thisCounter + ":\n");
+        this.bodyCode.append("\ticonst_0\n");
+        this.bodyCode.append("negation_" + thisCounter + "_end:\n");
+        //******************************** */
+
+    }
+
+    private void generateBoolean(ASTBoolean node) {
+
+        this.bodyCode.append("\ticonst_" + ((node.val) ? "1\n" : "0\n") );
+
+    }
+
     private void generateOperation(SimpleNode operation, SymbolClass symbolClass, SymbolMethod symbolMethod) {
+
+        if(operation.jjtGetNumChildren() != 2)
+            return;
 
         generateExpression((SimpleNode) operation.jjtGetChild(0), symbolClass, symbolMethod);
         generateExpression((SimpleNode) operation.jjtGetChild(1), symbolClass, symbolMethod);
     }
 
-    private void storeLocalVariable(ASTIdentifier identifier, SymbolMethod symbolMethod) {
-        Type varType = null;
-
-        int index = 0;
-        String store;
-        String type;
+    private void storeVariable(ASTIdentifier identifier, SymbolClass symbolClass, SymbolMethod symbolMethod) {
 
         if (symbolMethod.symbolTable.get(identifier.val) != null) {
-            varType = symbolMethod.symbolTable.get(identifier.val).getType();
-            index = symbolMethod.symbolTable.get(identifier.val).getIndex();
+            Type varType = symbolMethod.symbolTable.get(identifier.val).getType();
+            int index = symbolMethod.symbolTable.get(identifier.val).getIndex();
+
+            String type = (varType == Type.INT || varType == Type.BOOLEAN) ? "i" : "a";
+
+            String store = (index <= 3) ? "store_" : "store ";
+
+            System.out.println("Total stack antes: " + this.totalStack);
+            reduceStack(1);
+            System.out.println("\tReduce em store: " + this.totalStack + " / " + this.maxStack);
+            this.bodyCode.append("\t" + type + store + index);
+
+        } else if(symbolClass.symbolTableFields.get(identifier.val) != null) {
+
+            //TODO: check if correct
+
+            Type varType = symbolClass.symbolTableFields.get(identifier.val).getType();
+            this.bodyCode.append("\taload_0\n");
+            this.bodyCode.append("\tputfield " + identifier.val + ":" + getSymbolType(varType) +"\n");
+
         }
-
-        type = (varType == Type.INT || varType == Type.BOOLEAN) ? "i" : "a";
-
-        store = (index <= 3) ? "store_" : "store ";
-        System.out.println("Total stack antes: " + this.totalStack);
-        reduceStack(1);
-        System.out.println("\tReduce em store: " + this.totalStack + " / " + this.maxStack);
-        this.bodyCode.append("\t" + type + store + index + "\n");
     }
 
-    private Type loadLocalVariable(String val, SymbolMethod symbolMethod) {
+    private Type loadVariable(String val, SymbolClass symbolClass, SymbolMethod symbolMethod) {
 
-        //TODO: check if case for this is correct
         if(val.equals("this")) {
-            this.bodyCode.append("\taload0\n");
+            this.bodyCode.append("\taload_0\n");
             System.out.println("Total stack antes: " + this.totalStack);
             incrementStack();
-            System.out.println("\tIncrement stack this.(aload0) : " + this.totalStack + " / "+ this.maxStack);
+            System.out.println("\tIncrement stack this.(aload_0) : " + this.totalStack + " / "+ this.maxStack);
             return Type.OBJECT;
         }
 
-        Type varType = null;
-        String store;
-        String type;
-        int index = 0;
-
         if (symbolMethod.symbolTable.get(val) != null) {
-            varType = symbolMethod.symbolTable.get(val).getType();
-            index = symbolMethod.symbolTable.get(val).getIndex();
+            Type varType = symbolMethod.symbolTable.get(val).getType();
+            int index = symbolMethod.symbolTable.get(val).getIndex();
+
+            String type = (varType == Type.INT || varType == Type.BOOLEAN) ? "i" : "a";
+            String store = (index <= 3) ? "load_" : "load ";
+
+            System.out.println("Total stack antes: " + this.totalStack);
+            incrementStack();
+            System.out.println("\t" + type + store + index);
+            System.out.println("\tIncrement em load: " + this.totalStack + " / " + this.maxStack);
+
+            this.bodyCode.append("\t" + type + store + index+"\n");
+
+            return varType;
+
         }
 
-        type = (varType == Type.INT || varType == Type.BOOLEAN) ? "i" : "a";
+        if (symbolClass.symbolTableFields.get(val) != null){
 
-        store = (index <= 3) ? "load_" : "load ";
-        System.out.println("Total stack antes: " + this.totalStack);
-        incrementStack();
-        System.out.println("\t" + type + store + index);
-        System.out.println("\tIncrement em load: " + this.totalStack + " / " + this.maxStack);
-        this.bodyCode.append("\t" + type + store + index+"\n");
-        return varType;
+            //TODO: check if correct
+            Type varType = symbolClass.symbolTableFields.get(val).getType();
+            this.bodyCode.append("\taload_0\n");
+            this.bodyCode.append("\tgetfield " + val + ":" + getSymbolType(varType) +"\n");
+
+            return varType;
+
+        }
+
+        return null;
     }
 
     private void loadIntLiteral(String val) {
@@ -614,39 +766,51 @@ public class CodeGenerator {
     }
 
     private void generateNewObject(ASTNewObject object, SymbolClass symbolClass, SymbolMethod symbolMethod) {
-        //TODO: missing new object with parameters
 
-        Type varType = null;
-
-        if (symbolMethod.symbolTable.get(object.val) != null)
-            varType = symbolMethod.symbolTable.get(object.val).getType();
-
+        //TODO: check if new object with parameters is correct
 
         this.bodyCode.append("\tnew " + object.val + "\n\tdup\n");
-        this.bodyCode.append("\tinvokespecial " + object.val + "/<init>()V\n");
+
+        ArrayList<Type> methodCallTypes = processArgs(object, symbolClass, symbolMethod);
+
+        StringBuilder callArgs = new StringBuilder();
+        //Get list of arguments type
+        if (methodCallTypes.size() > 0) {
+            for (Type t : methodCallTypes) {
+                if (t != null) {
+                    callArgs.append(getSymbolType(t));
+                }
+            }
+        }
+
+        this.bodyCode.append("\tinvokespecial " + object.val + "/<init>(" + callArgs + ")V\n");
 
     }
 
-    private void generateArrayInitialization(ASTInitializeArray arrayInit, SymbolMethod symbolMethod) {
+    private void generateArrayInitialization(ASTInitializeArray arrayInit, SymbolClass symbolClass, SymbolMethod symbolMethod) {
         if (arrayInit.jjtGetChild(0) instanceof ASTLiteral) {
             ASTLiteral arg = (ASTLiteral) arrayInit.jjtGetChild(0);
             loadIntLiteral(arg.val);
         }
         else if (arrayInit.jjtGetChild(0) instanceof ASTIdentifier) {
+
             ASTIdentifier arg = (ASTIdentifier) arrayInit.jjtGetChild(0);
-            loadLocalVariable(arg.val, symbolMethod);
+            loadVariable(arg.val, symbolClass, symbolMethod);
         }
 
         this.bodyCode.append("\tnewarray int\n");
     }
 
-    private void generateAccessToArray(ASTIdentifier node, ASTaccessToArray arrayAccess, SymbolMethod symbolMethod) {
-        loadLocalVariable(node.val, symbolMethod);
+    private Type generateAccessToArray(ASTIdentifier node, ASTaccessToArray arrayAccess, SymbolClass symbolClass, SymbolMethod symbolMethod) {
+
+        Type returnType = loadVariable(node.val, symbolClass, symbolMethod);
 
         if (arrayAccess.jjtGetChild(0) instanceof ASTLiteral) {
             ASTLiteral arrayPos = (ASTLiteral) arrayAccess.jjtGetChild(0);
             loadIntLiteral(arrayPos.val);
         }
+
+        return returnType;
     }
 
     private Type generateDotExpression(SimpleNode node, SymbolClass symbolClass, SymbolMethod symbolMethod) {
@@ -708,8 +872,6 @@ public class CodeGenerator {
     }
 
     private Type generateThisStatement( ASTIdentifier identifier1, ASTIdentifier identifier2, SymbolClass symbolClass, SymbolMethod symbolMethod) {
-
-        //TODO: check if with "this" the call should be done in a different way
 
         this.generateExpression(identifier1, symbolClass, symbolMethod);
 
@@ -802,7 +964,9 @@ public class CodeGenerator {
             reduceStack(decrement);
             System.out.println("\tReduce invoke(" + decrement +"): " + this.totalStack + " / " + this.maxStack);
 
-            this.bodyCode.append("\t" + ((virtual) ? "invokevirtual " : "invokestatic ") + objectName + "/" + methodName + "(" + callArgs + ")" + methodType+"\n");
+            this.bodyCode.append("\t" + ((virtual) ? "invokevirtual " : "invokestatic ") + objectName + "/" + methodName + "(" + callArgs + ")" + methodType);
+            this.bodyCode.append("\n");
+
             return returnType;
         }
 

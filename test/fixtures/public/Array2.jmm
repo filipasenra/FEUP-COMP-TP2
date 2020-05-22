@@ -1,9 +1,38 @@
 import static io.print(int) void;
 import static io.printArray(int []) void;
+import Map(int, int);
 
 class Array2 {
+
+    int[] a;
+    int c;
+
+    public int test() {
+
+        return c;
+    }
+
+    public int test(int ola){
+
+        c = 1;
+        //array store
+        a = new int[8];
+
+        //array position store
+        a[0] = 2;
+
+        //array access
+        io.printArray(a);
+
+        //array position load
+        io.print(a[0]);
+
+        return 1;
+    }
+
     public static void main(String[] args){
         int[] a;
+        Map map;
 
         //array store
         a = new int[8];
@@ -16,5 +45,7 @@ class Array2 {
 
         //array position load
         io.print(a[0]);
+
+        map = new Map(1, 1);
     }
 }
