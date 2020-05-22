@@ -8,7 +8,7 @@
 .end method
 
 .method public static main([Ljava/lang/String;)V
-	.limit stack 99
+	.limit stack 4
 	.limit locals 5
 
 	iconst_2
@@ -31,6 +31,8 @@ while_1_end:
 	iload_3
 	iadd
 	istore_1
+	pop
+	pop
 	return
 .end method
 

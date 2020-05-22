@@ -8,7 +8,7 @@
 .end method
 
 .method public static main([Ljava/lang/String;)V
-	.limit stack 99
+	.limit stack 10
 	.limit locals 5
 
 	bipush 20
@@ -43,6 +43,7 @@ while_2_begin:
 	iload_2
 	isub
 	iastore
+
 	iload_3
 	iconst_1
 	isub
@@ -65,13 +66,22 @@ while_3_begin:
 	arraylength
 	if_icmpge while_3_end
 	aload 4
-	invokestatic WhileAndIf/println([I)
+	iaload
+	invokestatic io/println([I)
 	iload_3
 	iconst_1
 	iadd
 	istore_3
 	goto while_3_begin
 while_3_end:
+	pop
+	pop
+	pop
+	pop
+	pop
+	pop
+	pop
+	pop
 	return
 .end method
 

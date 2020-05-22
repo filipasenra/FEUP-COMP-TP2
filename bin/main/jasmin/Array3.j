@@ -1,4 +1,4 @@
-.class public Array
+.class public Array3
 .super java/lang/Object
 
 .method public <init>()V
@@ -8,26 +8,23 @@
 .end method
 
 .method public static main([Ljava/lang/String;)V
-	.limit stack 5
-	.limit locals 4
+	.limit stack 4
+	.limit locals 2
 
-	bipush 100
-	istore_2
-	bipush 12
-	istore_3
-	iload_2
+	bipush 8
 	newarray int
 	astore_1
 	aload_1
-	bipush 10
-	iload_3
+	iconst_0
+	iconst_2
 	iastore
 
 	aload_1
-	bipush 11
+	invokestatic io/printArray([I)V
+	aload_1
+	iconst_0
 	iaload
-	istore_3
-	pop
+	invokestatic io/print([I)
 	pop
 	pop
 	pop

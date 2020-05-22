@@ -8,7 +8,7 @@
 .end method
 
 .method public static main([Ljava/lang/String;)V
-	.limit stack 99
+	.limit stack 6
 	.limit locals 5
 
 	bipush 10
@@ -27,6 +27,7 @@ while_1_begin:
 	iload_2
 	isub
 	iastore
+
 	iload_2
 	iconst_1
 	iadd
@@ -44,46 +45,41 @@ while_1_end:
 	aload_1
 	invokevirtual Lazysort/printL([I)
 	istore_3
+	pop
+	pop
+	pop
+	pop
 	return
 .end method
 
 
 .method public quicksort([I)B
-	.limit stack 99
+	.limit stack 3
 	.limit locals 3
 
 	iconst_0
 	iconst_5
-	invokestatic Lazysort/random(II)I
+	invokestatic MathUtils/random(II)I
 	iconst_4
 	if_icmpge if_2_else
-	aload0
+	aload_0
 	aload_1
 	invokevirtual Lazysort/beLazy([I)B
+	iconst_1
 	istore_2
 	goto if_2_end
 if_2_else:
+	iconst_0
 	istore_2
 if_2_end:
-	istore_2
-	goto if_3_end
-if_3_else:
-	aload0
-	aload_1
-	iconst_0
-	aload_1
-	arraylength
-	iconst_1
-	isub
-	invokevirtual Lazysort/quicksort([II)
-	istore_2
-if_3_end:
 	iload_2
 	ireturn
+	pop
 .end method
 
+
 .method public beLazy([I)B
-	.limit stack 99
+	.limit stack 8
 	.limit locals 4
 
 	aload_1
@@ -100,8 +96,9 @@ while_4_begin:
 	aload_1
 	iconst_0
 	bipush 10
-	invokestatic Lazysort/random(II)I
+	invokestatic MathUtils/random(II)I
 	iastore
+
 	iload_3
 	iconst_1
 	iadd
@@ -115,32 +112,45 @@ while_5_begin:
 	aload_1
 	iconst_0
 	bipush 10
-	invokestatic Lazysort/random(II)I
+	invokestatic MathUtils/random(II)I
 	iconst_1
 	iadd
 	iastore
+
 	iload_3
 	iconst_1
 	iadd
 	istore_3
 	goto while_5_begin
 while_5_end:
+	iconst_1
 	ireturn
+	pop
+	pop
+	pop
+	pop
+	pop
+	pop
 .end method
 
+
 .method public a(II)I
-	.limit stack 99
+	.limit stack 1
 	.limit locals 3
 
 	iconst_1
 	ireturn
+	pop
 .end method
 
+
 .method public a(I)I
-	.limit stack 99
+	.limit stack 1
 	.limit locals 2
 
 	iconst_1
 	ireturn
+	pop
 .end method
+
 
