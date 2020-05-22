@@ -406,7 +406,7 @@ public class CodeGenerator {
             //Code for second child
             generateExpression((SimpleNode) expression.jjtGetChild(1), symbolClass, symbolMethod);
             reduceStack(1);
-            this.bodyCode.append("\tif_eq " + firstPartTag + thisCounter + secondPartTag);
+            this.bodyCode.append("\tif_eq " + firstPartTag + thisCounter + secondPartTag + "\n");
 
             return true;
 
@@ -420,6 +420,8 @@ public class CodeGenerator {
             generateExpression((SimpleNode) expression.jjtGetChild(0), symbolClass, symbolMethod);
             reduceStack(1);
             this.bodyCode.append("\tifne if_" + thisCounter + "_else\n");
+
+            return true;
 
         }
 
@@ -477,8 +479,7 @@ public class CodeGenerator {
         ASTaccessToArray arrayAccess = (ASTaccessToArray) lhs.jjtGetChild(0);
         generateAccessToArray(lhs, arrayAccess, symbolClass, symbolMethod);
         generateExpression(rhs, symbolClass, symbolMethod);
-
-        this.bodyCode.append("\tiastore");
+        this.bodyCode.append("\tiastore\n");
         reduceStack(3);     //pop from the stack the arrayref, index and value
     }
 
@@ -490,7 +491,7 @@ public class CodeGenerator {
         incrementStack();
 
         this.generateExpression(rhs, symbolClass, symbolMethod);
-        this.bodyCode.append("\tputfield " + lhs.val + ":" + getSymbolType(varType) );
+        this.bodyCode.append("\tputfield " + symbolClass.name + "/" + symbolClass.symbolTableFields.get(lhs.val).getIndex() + " " + getSymbolType(varType) + "\n");
         reduceStack(2); //pop from the stack objectref and value
     }
 
@@ -506,7 +507,8 @@ public class CodeGenerator {
         String store = (index <= 3) ? "store_" : "store ";
 
         reduceStack(1);
-        this.bodyCode.append("\t" + type + store + index);
+        this.bodyCode.append("\t" + type + store + index + "\n");
+
     }
 
     private Type generateExpression(SimpleNode node, SymbolClass symbolClass, SymbolMethod symbolMethod) {
@@ -730,7 +732,7 @@ public class CodeGenerator {
             this.bodyCode.append("\taload_0\n");
             incrementStack();
             
-            this.bodyCode.append("\tgetfield " + val + ":" + getSymbolType(varType) +"\n");
+            this.bodyCode.append("\tgetfield " + symbolClass.name + "/" +  symbolClass.symbolTableFields.get(val).getIndex() + " " + getSymbolType(varType) +"\n");
             incrementStack();
             reduceStack(1);
 
@@ -968,8 +970,7 @@ public class CodeGenerator {
             if(virtual) decrement++;
             if(returnType != Type.VOID) decrement--;
 
-            this.bodyCode.append("\t" + ((virtual) ? "invokevirtual " : "invokestatic ") + objectName + "/" + methodName + "(" + callArgs + ")" + methodType);
-            this.bodyCode.append("\n");
+            this.bodyCode.append("\t" + ((virtual) ? "invokevirtual " : "invokestatic ") + objectName + "/" + methodName + "(" + callArgs + ")" + methodType + "\n\n");
             reduceStack(decrement);
 
             return returnType;

@@ -32,7 +32,7 @@ public static void main(String[] a) {
     List Io;
     int b;
 
-    b = i;
+    b = 0;
     Io = new List();
 
     b = (new List(1)).size();
