@@ -1,0 +1,46 @@
+import static io.print(int) int;
+
+class Example1 {
+    int global_var;
+
+    public static void main(String[] args){
+        int a;
+        int[] b;
+        boolean c;
+        Example1 example1;
+
+        a = 1;
+        b = new int[8];
+        c=true;
+        example1 = new Example1();
+
+        b[3] = 0r;
+
+        global_var = example1.func(a, b, c);
+
+        while (c) {
+            c=false;
+            io.print(global_var);
+        }
+
+    }
+
+     public int func(int arg1, int[] arg2, boolean arg3) {
+        int res;
+
+        if(!arg3) {
+            res = arg2.length;
+        }
+        else {
+            res = arg1;
+        }
+
+        res = res + this.func1();
+
+        return res;
+     }
+
+     public int func1() {
+        return 2;
+     }
+}
