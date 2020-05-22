@@ -173,11 +173,6 @@ public class CodeGenerator {
         limits.append("\t.limit locals " + localLimits + "\n\n");
         this.bodyCode.append("\treturn\n");
         System.out.println("STACK FINAL: " + this.totalStack);
-
-        while(totalStack > 0){
-            this.bodyCode.append("\tpop\n");
-            totalStack--;
-        }
         this.bodyCode.append(".end method\n\n");
 
 
@@ -217,10 +212,7 @@ public class CodeGenerator {
 
         if(totalStack>0)
             System.out.println("FINAL STACK MAIOR DO QUE 0 no metodo" + methodNode.name);
-        while(totalStack > 0){
-            this.bodyCode.append("\tpop\n");
-            totalStack--;
-        }
+
         this.bodyCode.append(".end method\n\n");
 
 
@@ -340,8 +332,11 @@ public class CodeGenerator {
 
         //If it is not any of the others it is an expression
         generateExpression(node, symbolClass, symbolMethod);
-
-
+        
+        while(totalStack > 0){
+            this.bodyCode.append("\tpop\n");
+            totalStack--;
+        }
     }
 
 
@@ -458,18 +453,15 @@ public class CodeGenerator {
                 case INT:
                     this.bodyCode.append("\tireturn\n");
                     incrementStack();
-                    System.out.println("clear stack return");
                     this.totalStack=0;
                     break;
                 case VOID:
                     this.bodyCode.append("\treturn\n");
-                    System.out.println("clear stack return");
                     this.totalStack = 0;
                     break;
                 default:
                     this.bodyCode.append("\tareturn\n");
                     incrementStack();
-                    System.out.println("clear stack return");
                     this.totalStack = 0;
                     break;
             }
