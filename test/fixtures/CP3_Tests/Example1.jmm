@@ -14,7 +14,7 @@ class Example1 {
         c=true;
         example1 = new Example1();
 
-        b[3] = 0r;
+        b[3] = 0;
 
         global_var = example1.func(a, b, c);
 

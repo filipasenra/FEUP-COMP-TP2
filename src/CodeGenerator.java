@@ -419,7 +419,7 @@ public class CodeGenerator {
 
             //Code for second child
             generateExpression((SimpleNode) expression.jjtGetChild(1), symbolClass, symbolMethod);
-            this.bodyCode.append("\tif_eq " + firstPartTag + thisCounter + secondPartTag);
+            this.bodyCode.append("\tif_eq " + firstPartTag + thisCounter + secondPartTag + "\n");
 
             return true;
 
@@ -433,6 +433,8 @@ public class CodeGenerator {
             generateExpression((SimpleNode) expression.jjtGetChild(0), symbolClass, symbolMethod);
 
             this.bodyCode.append("\tifne if_" + thisCounter + "_else\n");
+
+            return true;
 
         }
 
@@ -485,16 +487,16 @@ public class CodeGenerator {
         ASTaccessToArray arrayAccess = (ASTaccessToArray) lhs.jjtGetChild(0);
         generateAccessToArray(lhs, arrayAccess, symbolClass, symbolMethod);
         generateExpression(rhs, symbolClass, symbolMethod);
-        this.bodyCode.append("\tiastore");
+        this.bodyCode.append("\tiastore\n");
 
     }
 
     private void storeField(ASTIdentifier lhs, SimpleNode rhs, SymbolClass symbolClass, SymbolMethod symbolMethod) {
 
         Type varType = symbolClass.symbolTableFields.get(lhs.val).getType();
-        this.bodyCode.append("\taload_0");
+        this.bodyCode.append("\taload_0\n");
         this.generateExpression(rhs, symbolClass, symbolMethod);
-        this.bodyCode.append("\tputfield " + lhs.val + ":" + getSymbolType(varType) );
+        this.bodyCode.append("\tputfield " + symbolClass.name + "/" + symbolClass.symbolTableFields.get(lhs.val).getIndex() + " " + getSymbolType(varType) + "\n");
 
     }
 
@@ -512,7 +514,7 @@ public class CodeGenerator {
         System.out.println("Total stack antes: " + this.totalStack);
         reduceStack(1);
         System.out.println("\tReduce em store: " + this.totalStack + " / " + this.maxStack);
-        this.bodyCode.append("\t" + type + store + index);
+        this.bodyCode.append("\t" + type + store + index + "\n");
 
     }
 
@@ -740,7 +742,7 @@ public class CodeGenerator {
             Type varType = symbolClass.symbolTableFields.get(val).getType();
 
             this.bodyCode.append("\taload_0\n");
-            this.bodyCode.append("\tgetfield " + val + ":" + getSymbolType(varType) +"\n");
+            this.bodyCode.append("\tgetfield " + symbolClass.name + "/" +  symbolClass.symbolTableFields.get(val).getIndex() + " " + getSymbolType(varType) +"\n");
 
             return varType;
 
@@ -973,8 +975,7 @@ public class CodeGenerator {
             reduceStack(decrement);
             System.out.println("\tReduce invoke(" + decrement +"): " + this.totalStack + " / " + this.maxStack);
 
-            this.bodyCode.append("\t" + ((virtual) ? "invokevirtual " : "invokestatic ") + objectName + "/" + methodName + "(" + callArgs + ")" + methodType);
-            this.bodyCode.append("\n");
+            this.bodyCode.append("\t" + ((virtual) ? "invokevirtual " : "invokestatic ") + objectName + "/" + methodName + "(" + callArgs + ")" + methodType + "\n\n");
 
             return returnType;
         }
