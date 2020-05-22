@@ -164,17 +164,13 @@ public class CodeGenerator {
         generateIndexes(mainNode, symbolMethod);
         generateMethodBody(mainNode, symbolClass, symbolMethod);
 
-        System.out.println("Metodo: " + mainNode);
-
         int localLimits = this.localVars+1; //nParams = 1
-
 
         limits.append("\t.limit stack " + this.maxStack + "\n");
         limits.append("\t.limit locals " + localLimits + "\n\n");
-        this.bodyCode.append("\treturn\n");
-        System.out.println("STACK FINAL: " + this.totalStack);
-        this.bodyCode.append(".end method\n\n");
 
+        this.bodyCode.append("\treturn\n");
+        this.bodyCode.append(".end method\n\n");
 
         this.maxStack = 0;
         this.totalStack = 0;
@@ -182,7 +178,6 @@ public class CodeGenerator {
 
         this.methodCode.append(limits);
         this.methodCode.append(this.bodyCode);
-
 
         this.printWriterFile.println(this.methodCode);
     }
@@ -201,27 +196,15 @@ public class CodeGenerator {
 
         generateMethodBody(methodNode, symbolClass, symbolMethod);
 
-        System.out.println("Metodo: " + methodNode.name);
-
-
-
         limits.append("\t.limit stack " + this.maxStack + "\n");
         limits.append("\t.limit locals " + localLimits + "\n\n");
-        
-        System.out.println("STACK FINAL: " + this.totalStack);
-
-        if(totalStack>0)
-            System.out.println("FINAL STACK MAIOR DO QUE 0 no metodo" + methodNode.name);
-
         this.bodyCode.append(".end method\n\n");
-
 
         this.localVars = 0;
         this.nParams = 0;
         this.maxStack = 0;
         this.totalStack = 0;
-
-
+        
         this.methodCode.append(limits);
         this.methodCode.append(this.bodyCode);
 
@@ -494,31 +477,21 @@ public class CodeGenerator {
         ASTaccessToArray arrayAccess = (ASTaccessToArray) lhs.jjtGetChild(0);
         generateAccessToArray(lhs, arrayAccess, symbolClass, symbolMethod);
         generateExpression(rhs, symbolClass, symbolMethod);
-        System.out.println("Total stack antes: " + this.totalStack);
-        reduceStack(3);
-        System.out.println("\tReduce em iastorestore(3): " + this.totalStack + " / " + this.maxStack);
-        System.out.println("\tiastore");
-        this.bodyCode.append("\tiastore");
 
+        this.bodyCode.append("\tiastore");
+        reduceStack(3);     //pop from the stack the arrayref, index and value
     }
 
     private void storeField(ASTIdentifier lhs, SimpleNode rhs, SymbolClass symbolClass, SymbolMethod symbolMethod) {
 
         Type varType = symbolClass.symbolTableFields.get(lhs.val).getType();
 
-        System.out.println("Total stack antes: " + this.totalStack);
-        System.out.println("\taload_0\n");
         this.bodyCode.append("\taload_0\n");
         incrementStack();
-        System.out.println("\tIncrement load: " + this.totalStack + " / " + this.maxStack);
 
         this.generateExpression(rhs, symbolClass, symbolMethod);
         this.bodyCode.append("\tputfield " + lhs.val + ":" + getSymbolType(varType) );
-        System.out.println("Total stack antes: " + this.totalStack);
-        reduceStack(2);
-        System.out.println("\tputfield " + lhs.val + ":" + getSymbolType(varType) );        
-        System.out.println("\tDecrement putfield(2): " + this.totalStack + " / " + this.maxStack);
-
+        reduceStack(2); //pop from the stack objectref and value
     }
 
     private void storeLocalVariable(ASTIdentifier lhs, SimpleNode rhs, SymbolClass symbolClass, SymbolMethod symbolMethod) {
@@ -532,12 +505,8 @@ public class CodeGenerator {
 
         String store = (index <= 3) ? "store_" : "store ";
 
-        System.out.println("Total stack antes: " + this.totalStack);
         reduceStack(1);
-        System.out.println("\t" + type + store + index);
-        System.out.println("\tReduce em store: " + this.totalStack + " / " + this.maxStack);
         this.bodyCode.append("\t" + type + store + index);
-
     }
 
     private Type generateExpression(SimpleNode node, SymbolClass symbolClass, SymbolMethod symbolMethod) {
@@ -553,37 +522,25 @@ public class CodeGenerator {
 
             } else if (node instanceof ASTSUM) {
                 generateOperation(node, symbolClass, symbolMethod);
-                System.out.println("Total stack antes: " + this.totalStack);
-                System.out.println("\tiadd\n");
-                reduceStack(1);
-                System.out.println("\tReduce em sum: " + this.totalStack + " / " + this.maxStack);
                 this.bodyCode.append("\tiadd\n");
+                reduceStack(1);
                 return Type.INT;
 
             } else if (node instanceof ASTSUB) {
                 generateOperation(node, symbolClass, symbolMethod);
-                System.out.println("Total stack antes: " + this.totalStack);
-                System.out.println("\tisub\n");
-                reduceStack(1);
-                System.out.println("\tReduce em sub: " + this.totalStack + " / " + this.maxStack);
                 this.bodyCode.append("\tisub\n");
+                reduceStack(1);
 
             } else if (node instanceof ASTMUL) {
                 generateOperation(node, symbolClass, symbolMethod);
-                System.out.println("Total stack antes: " + this.totalStack);
-                System.out.println("\timul\n");
-                reduceStack(1);
-                System.out.println("\tReduce em mul: " + this.totalStack + " / " + this.maxStack);
                 this.bodyCode.append("\timul\n");
+                reduceStack(1);
                 return Type.INT;
 
             } else if (node instanceof ASTDIV) {
                 generateOperation(node, symbolClass, symbolMethod);
-                System.out.println("Total stack antes: " + this.totalStack);
-                System.out.println("\tidiv\n");
-                reduceStack(1);
-                System.out.println("tReduce em div: " + this.totalStack + " / " + this.maxStack);
                 this.bodyCode.append("\tidiv\n");
+                reduceStack(1);
                 return Type.INT;
 
             } else if (node instanceof ASTIdentifier) {
@@ -628,11 +585,8 @@ public class CodeGenerator {
 
                 returnType = generateAccessToArray(node, (ASTaccessToArray) node.jjtGetChild(0), symbolClass, symbolMethod);
                 
-                System.out.println("Total stack antes: " + this.totalStack);
-                System.out.println("\tiaload\n");
-                reduceStack(1);
-                System.out.println("\tReduce iaload(1)" + this.totalStack + " / " + this.maxStack);        
                 this.bodyCode.append("\tiaload\n");
+                reduceStack(1);     //pop from the stack the arrayref and the index and push the value
             }
 
             return returnType;
@@ -662,24 +616,15 @@ public class CodeGenerator {
 
         //If both are true
         // *********IN CASE EXPRESSION IS TRUE *********************
-        System.out.println("Total stack antes: " + this.totalStack);
-        incrementStack();
-        System.out.println("\ticonst_1\n");
-        System.out.println("\tIncrement em iconst: " + this.totalStack + " / " + this.maxStack);
-
         this.bodyCode.append("\ticonst_1\n");
+        incrementStack();
         this.bodyCode.append("\tgoto AND_" + thisCounter + "_end\n");
         //************************** */
 
         //******* IN CASE EXPRESSION IS FALSE ***********/
         this.bodyCode.append("AND_" + thisCounter + ":\n");
-
-        System.out.println("Total stack antes: " + this.totalStack);
-        incrementStack();
-        System.out.println("\ticonst_1\n");
-        System.out.println("\tIncrement em iconst: " + this.totalStack + " / " + this.maxStack);
-
         this.bodyCode.append("\ticonst_0\n");
+        incrementStack();
         this.bodyCode.append("AND_" + thisCounter + "_end:\n");
         //******************************** */
 
@@ -700,25 +645,15 @@ public class CodeGenerator {
         this.bodyCode.append("\tif_icmpge lessThan_" + thisCounter+"\n");
 
         // *********IN CASE EXPRESSION IS TRUE *********************
-        System.out.println("Total stack antes: " + this.totalStack);
-        incrementStack();
-        System.out.println("\ticonst_1\n");
-        System.out.println("\tIncrement em iconst: " + this.totalStack + " / " + this.maxStack);
-
         this.bodyCode.append("\ticonst_1\n");
+        incrementStack();
         this.bodyCode.append("\tgoto lessThan_" + thisCounter + "_end\n");
         // **************************
 
         // ******* IN CASE EXPRESSION IS FALSE
         this.bodyCode.append("lessThan_" + thisCounter + ":\n");
-
-        System.out.println("Total stack antes: " + this.totalStack);
-        incrementStack();
-        System.out.println("\ticonst_1\n");
-        System.out.println("\tIncrement em iconst: " + this.totalStack + " / " + this.maxStack);
-
-
         this.bodyCode.append("\ticonst_0\n");
+        incrementStack();
         this.bodyCode.append("lessThan_" + thisCounter + "_end:\n");
         // ********************************
 
@@ -738,38 +673,23 @@ public class CodeGenerator {
         this.bodyCode.append("\tifne negation_" + thisCounter+"\n");
 
         // *********IN CASE EXPRESSION IS TRUE *********************
-        System.out.println("Total stack antes: " + this.totalStack);
-        incrementStack();
-        System.out.println("\ticonst_1\n");
-        System.out.println("\tIncrement em iconst: " + this.totalStack + " / " + this.maxStack);
-
         this.bodyCode.append("\ticonst_1\n");
+        incrementStack();
         this.bodyCode.append("\tgoto negation_" + thisCounter + "_end\n");
         //************************** */
 
         //******* IN CASE EXPRESSION IS FALSE ***********/
         this.bodyCode.append("negation_" + thisCounter + ":\n");
-        
-        System.out.println("Total stack antes: " + this.totalStack);
-        incrementStack();
-        System.out.println("\ticonst_1\n");
-        System.out.println("\tIncrement em iconst: " + this.totalStack + " / " + this.maxStack);
-
-
         this.bodyCode.append("\ticonst_0\n");
+        incrementStack();
         this.bodyCode.append("negation_" + thisCounter + "_end:\n");
         //******************************** */
 
     }
 
     private void generateBoolean(ASTBoolean node) {
-        System.out.println("Total stack antes: " + this.totalStack);
-        incrementStack();
-        System.out.println("\ticonst_1\n");
-        System.out.println("\tIncrement em iconst: " + this.totalStack + " / " + this.maxStack);
-
         this.bodyCode.append("\ticonst_" + ((node.val) ? "1\n" : "0\n") );
-
+        incrementStack();
     }
 
     private void generateOperation(SimpleNode operation, SymbolClass symbolClass, SymbolMethod symbolMethod) {
@@ -785,9 +705,7 @@ public class CodeGenerator {
 
         if(val.equals("this")) {
             this.bodyCode.append("\taload_0\n");
-            System.out.println("Total stack antes: " + this.totalStack);
             incrementStack();
-            System.out.println("\tIncrement stack this.(aload_0) : " + this.totalStack + " / "+ this.maxStack);
             return Type.OBJECT;
         }
 
@@ -797,13 +715,9 @@ public class CodeGenerator {
 
             String type = (varType == Type.INT || varType == Type.BOOLEAN) ? "i" : "a";
             String store = (index <= 3) ? "load_" : "load ";
-
-            System.out.println("Total stack antes: " + this.totalStack);
-            incrementStack();
-            System.out.println("\t" + type + store + index);
-            System.out.println("\tIncrement em load: " + this.totalStack + " / " + this.maxStack);
-
+            
             this.bodyCode.append("\t" + type + store + index+"\n");
+            incrementStack();
 
             return varType;
 
@@ -812,15 +726,13 @@ public class CodeGenerator {
         if (symbolClass.symbolTableFields.get(val) != null){
 
             Type varType = symbolClass.symbolTableFields.get(val).getType();
-            System.out.println("Total stack antes: " + this.totalStack);
+
             this.bodyCode.append("\taload_0\n");
             incrementStack();
-            System.out.println("\taload_0\n");
-            System.out.println("\tIncrement em load: " + this.totalStack + " / " + this.maxStack);
             
+            this.bodyCode.append("\tgetfield " + val + ":" + getSymbolType(varType) +"\n");
             incrementStack();
             reduceStack(1);
-            this.bodyCode.append("\tgetfield " + val + ":" + getSymbolType(varType) +"\n");
 
             return varType;
 
@@ -849,11 +761,8 @@ public class CodeGenerator {
             output += "\tldc " + value;
 
         }
-        System.out.println("Total stack antes: " + this.totalStack);
-        incrementStack();
-        System.out.println(output);
-        System.out.println("\tIncrement em loadINT: " + this.totalStack + " / " + this.maxStack);
         this.bodyCode.append(output + "\n");
+        incrementStack();
     }
 
     private void generateNewObject(ASTNewObject object, SymbolClass symbolClass, SymbolMethod symbolMethod) {
@@ -875,39 +784,25 @@ public class CodeGenerator {
         }
 
         int decrement = methodCallTypes.size() + 1;
-//        if(returnType != Type.VOID) decrement--;
-
-        System.out.println("Total stack antes: " + this.totalStack);
-        System.out.println("\tinvokespecial " + object.val + "/<init>(" + callArgs + ")V\n");
-        reduceStack(decrement);
-        System.out.println("\tReduce invokespecial(" + decrement +"): " + this.totalStack + " / " + this.maxStack);        
 
         this.bodyCode.append("\tinvokespecial " + object.val + "/<init>(" + callArgs + ")V\n");
+        reduceStack(decrement);
 
     }
 
     private void generateArrayInitialization(ASTInitializeArray arrayInit, SymbolClass symbolClass, SymbolMethod symbolMethod) {
-        int decrement=0;
         if (arrayInit.jjtGetChild(0) instanceof ASTLiteral) {
             ASTLiteral arg = (ASTLiteral) arrayInit.jjtGetChild(0);
             loadIntLiteral(arg.val);
-            decrement = Integer.parseInt(arg.val);
         }
         else if (arrayInit.jjtGetChild(0) instanceof ASTIdentifier) {
             ASTIdentifier arg = (ASTIdentifier) arrayInit.jjtGetChild(0);
             loadVariable(arg.val, symbolClass, symbolMethod);
         }
 
-        //TODO -> confirmar decrement
-        System.out.println("Total stack antes: " + this.totalStack);
-        System.out.println("\tnewarray int\n");
-        decrement--; //push to the stack the arrayref
-        //reduceStack(decrement);
+        this.bodyCode.append("\tnewarray int\n");
         incrementStack();
         reduceStack(1);
-        System.out.println("\tIncrement newarray" + this.totalStack + " / " + this.maxStack);        
-        System.out.println("\tReduce newarray(1)" + this.totalStack + " / " + this.maxStack);        
-        this.bodyCode.append("\tnewarray int\n");
     }
 
     private Type generateAccessToArray(ASTIdentifier node, ASTaccessToArray arrayAccess, SymbolClass symbolClass, SymbolMethod symbolMethod) {
@@ -1073,13 +968,9 @@ public class CodeGenerator {
             if(virtual) decrement++;
             if(returnType != Type.VOID) decrement--;
 
-            System.out.println("Total stack antes: " + this.totalStack);
-            System.out.println("\t" + ((virtual) ? "invokevirtual " : "invokestatic ") + objectName + "/" + methodName + "(" + callArgs + ")" + methodType);
-            reduceStack(decrement);
-            System.out.println("\tReduce invoke(" + decrement +"): " + this.totalStack + " / " + this.maxStack);
-
             this.bodyCode.append("\t" + ((virtual) ? "invokevirtual " : "invokestatic ") + objectName + "/" + methodName + "(" + callArgs + ")" + methodType);
             this.bodyCode.append("\n");
+            reduceStack(decrement);
 
             return returnType;
         }
