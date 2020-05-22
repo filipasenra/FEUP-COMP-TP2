@@ -255,8 +255,8 @@ public class CodeGenerator {
 
             if (node instanceof ASTReturn) {
 
-                generateExpression((SimpleNode) node.jjtGetChild(0), symbolClass, symbolMethod); //expression
-                generateMethodReturn(symbolMethod);
+                Type type = generateExpression((SimpleNode) node.jjtGetChild(0), symbolClass, symbolMethod); //expression
+                generateMethodReturn(type);
                 return;
             }
 
@@ -390,13 +390,12 @@ public class CodeGenerator {
 
 
 
-    private void generateMethodReturn(SymbolMethod symbolMethod) {
-        Type type = symbolMethod.getType();
+    private void generateMethodReturn(Type type) {
 
         if (type != null) {
             switch (type) {
                 case BOOLEAN:
-                    this.printWriterFile.println("\tireturn");   //TODO -> return arrays
+                    this.printWriterFile.println("\tireturn");
                     break;
                 case INT:
                     this.printWriterFile.println("\tireturn");

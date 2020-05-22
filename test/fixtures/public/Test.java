@@ -1,6 +1,11 @@
 
 
 class Test {
+
+    public String[] teste(String[] args) {
+
+        return args;
+    }
     public static void main(String[] args){
         int[] a;
 

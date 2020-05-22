@@ -2,6 +2,11 @@ import static io.print(int) void;
 import static io.printArray(int []) void;
 
 class Array2 {
+
+    public int[] test(int[] a) {
+
+    return a;
+    }
     public static void main(String[] args){
         int[] a;
 
