@@ -1,13 +1,14 @@
-import static io.print(int) int;
+import static ioPlus.printResult(int) void;
 
 class Example {
 
     public static void main(String[] args){
         int a;
+        int var;
         int[] b;
         boolean c;
         Example example1;
-        int var;
+
 
         a = 1;
         b = new int[8];
@@ -20,7 +21,7 @@ class Example {
 
         while (c) {
             c=false;
-            io.print(var);
+            ioPlus.printResult(var);
         }
 
     }
@@ -28,7 +29,7 @@ class Example {
      public int func(int arg1, int[] arg2, boolean arg3) {
         int res;
 
-        if(!arg3) {
+        if(arg3) {
             res = arg2.length;
         }
         else {
