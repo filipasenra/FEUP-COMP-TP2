@@ -810,10 +810,7 @@ public class CodeGenerator {
 
         Type returnType = loadVariable(node.val, symbolClass, symbolMethod);
 
-        if (arrayAccess.jjtGetChild(0) instanceof ASTLiteral) {
-            ASTLiteral arrayPos = (ASTLiteral) arrayAccess.jjtGetChild(0);
-            loadIntLiteral(arrayPos.val);
-        }
+        this.generateExpression((SimpleNode) arrayAccess.jjtGetChild(0), symbolClass, symbolMethod);
 
         return returnType;
     }
