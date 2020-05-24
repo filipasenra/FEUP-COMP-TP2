@@ -537,6 +537,7 @@ public class CodeGenerator {
                 generateOperation(node, symbolClass, symbolMethod);
                 this.bodyCode.append("\tisub\n");
                 reduceStack(1);
+                return Type.INT;
 
             } else if (node instanceof ASTMUL) {
                 generateOperation(node, symbolClass, symbolMethod);
