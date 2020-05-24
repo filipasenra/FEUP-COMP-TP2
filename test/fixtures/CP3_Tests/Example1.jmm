@@ -1,13 +1,13 @@
 import static io.print(int) int;
 
 class Example1 {
-    int global_var;
 
     public static void main(String[] args){
         int a;
         int[] b;
         boolean c;
         Example1 example1;
+        int var;
 
         a = 1;
         b = new int[8];
@@ -16,11 +16,11 @@ class Example1 {
 
         b[3] = 0;
 
-        global_var = example1.func(a, b, c);
+        var = example1.func(a, b, c);
 
         while (c) {
             c=false;
-            io.print(global_var);
+            io.print(var);
         }
 
     }
