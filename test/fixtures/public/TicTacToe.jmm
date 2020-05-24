@@ -105,52 +105,16 @@ class TicTacToe {
 
   // Returns a character signifying the winner.
   public int winner() {
-    int[] array;
-    int winner;
-    int i;
-    winner = 0-1;
-    array = new int[3];
-    // Check for three X's or O's in a row.
-    if (BoardBase.sameArray(row0) && 0 < row0[0]){
-        winner = row0[0];
-    }
-    else if (BoardBase.sameArray(row1) && 0 < row1[0]){
-        winner =  row1[0];
-    }
-    else if (BoardBase.sameArray(row2) && 0 < row2[0]){
-        winner =  row2[0];
-    } 
-    else{
-        i = 0;
-        while(winner < 1 && i < 3){
-            array[0] = row0[i];
-            array[1] = row1[i];
-            array[2] = row2[i];
-            if (BoardBase.sameArray(array) && 0 < array[0]){
-                winner = array[0];
-            }else{}
-            i=i+1;
-        }
-        if(winner < 1){
-            array[0] = row0[0];
-            array[1] = row1[1];
-            array[2] = row2[2];
-            if (BoardBase.sameArray(array) && 0 < array[0]){
-                winner = array[0];
-            }else{
-                array[0] = row0[2];
-                array[1] = row1[1];
-                array[2] = row2[0];
-                if (BoardBase.sameArray(array) && 0 < array[0]){
-                    winner = array[0];
-                }else{}
-            }
-        }else{}
-    }
-    if (winner < 1 && !(movesmade < 9)&& !(9 < movesmade))
-        winner = 0;
+int[] array;
+        int winner;
+        winner = 0-1;
+        array = new int[3];
+        // Check for three X's or O's in a row.
+
+        if (winner < 1 && !(movesmade < 9)&& !(9 < movesmade))
+            winner = 0;
         else{}
-    return winner;
+        return winner;
   }
 
 

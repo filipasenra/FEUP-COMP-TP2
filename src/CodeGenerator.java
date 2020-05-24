@@ -401,12 +401,12 @@ public class CodeGenerator {
             // Code for first child
             generateExpression((SimpleNode) expression.jjtGetChild(0), symbolClass, symbolMethod);
             reduceStack(1);
-            this.bodyCode.append("\tif_eq " + firstPartTag + thisCounter + secondPartTag+"\n");
+            this.bodyCode.append("\tifeq " + firstPartTag + thisCounter + secondPartTag+"\n");
 
             //Code for second child
             generateExpression((SimpleNode) expression.jjtGetChild(1), symbolClass, symbolMethod);
             reduceStack(1);
-            this.bodyCode.append("\tif_eq " + firstPartTag + thisCounter + secondPartTag + "\n");
+            this.bodyCode.append("\tifeq " + firstPartTag + thisCounter + secondPartTag + "\n");
 
             return true;
 
@@ -419,7 +419,7 @@ public class CodeGenerator {
 
             generateExpression((SimpleNode) expression.jjtGetChild(0), symbolClass, symbolMethod);
             reduceStack(1);
-            this.bodyCode.append("\tifne if_" + thisCounter + "_else\n");
+            this.bodyCode.append("\tifne " + firstPartTag + thisCounter + secondPartTag + "\n");
 
             return true;
 
@@ -609,12 +609,12 @@ public class CodeGenerator {
         // Code for first child
         generateExpression((SimpleNode) node.jjtGetChild(0), symbolClass, symbolMethod);
         reduceStack(1);
-        this.bodyCode.append("\tif_eq AND_" + thisCounter+"\n");
+        this.bodyCode.append("\tifeq AND_" + thisCounter+"\n");
 
         //Code for second child
         generateExpression((SimpleNode) node.jjtGetChild(1), symbolClass, symbolMethod);
         reduceStack(1);
-        this.bodyCode.append("\tif_eq AND_" + thisCounter+"\n");
+        this.bodyCode.append("\tifeq AND_" + thisCounter+"\n");
 
         //If both are true
         // *********IN CASE EXPRESSION IS TRUE *********************
