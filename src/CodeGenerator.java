@@ -588,6 +588,11 @@ public class CodeGenerator {
                 
                 this.bodyCode.append("\tiaload\n");
                 reduceStack(1);     //pop from the stack the arrayref and the index and push the value
+
+                if(returnType == Type.INT_ARRAY)
+                    return Type.INT;
+                else if (returnType == Type.STRING_ARRAY)
+                    return Type.STRING;
             }
 
             return returnType;
