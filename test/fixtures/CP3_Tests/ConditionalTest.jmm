@@ -1,4 +1,4 @@
-import static ioPlus.printResult(int) void;
+import static PrintTest.printTest(int, boolean) void;
 
 class ConditionalTest {
 
@@ -20,6 +20,7 @@ class ConditionalTest {
     public static void main(String[] args){
 
         ConditionalTest conditionalTest;
+        //Variables that hold if the tests have passed
         boolean firstTest;
         boolean secondTest;
         boolean thirdTest;
@@ -33,24 +34,26 @@ class ConditionalTest {
 
         while(conditionalTest.getBooleanVar()){
 
-            ioPlus.printResult(1);
             conditionalTest.setBooleanVar(false);
             firstTest = true;
         }
+        PrintTest.printTest(1, firstTest);
 
         if(!conditionalTest.getBooleanVar()){
-            ioPlus.printResult(2);
             secondTest = true;
         } else {
             secondTest = false;
         }
 
+        PrintTest.printTest(2, secondTest);
+
         if(secondTest) {
-            ioPlus.printResult(3);
             thirdTest = true;
         } else {
             thirdTest = false;
         }
+
+        PrintTest.printTest(3, thirdTest);
 
         if(firstTest) {
 
@@ -77,11 +80,7 @@ class ConditionalTest {
 
         }
 
-        if(fourthTest){
-            ioPlus.printResult(4);
-        } else {
-            ioPlus.printResult(6);
-        }
+        PrintTest.printTest(4, fourthTest);
 
         if(firstTest && secondTest && thirdTest){
             fifthTest = true;
@@ -89,11 +88,7 @@ class ConditionalTest {
             fifthTest = false;
         }
 
-        if(fifthTest){
-            ioPlus.printResult(5);
-        } else {
-            ioPlus.printResult(7);
-        }
+        PrintTest.printTest(5, fifthTest);
 
 
     }

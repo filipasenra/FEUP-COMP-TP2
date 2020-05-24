@@ -89,7 +89,7 @@ public class CodeGenerator {
             case "String":
                 return "Ljava/lang/String";
             case "boolean":
-                return "B";
+                return "Z";
             case "void":
                 return "V";
         }
@@ -109,7 +109,7 @@ public class CodeGenerator {
             case STRING:
                 return "Ljava/lang/String";
             case BOOLEAN:
-                return "B";
+                return "Z";
             case VOID:
                 return "V";
         }
