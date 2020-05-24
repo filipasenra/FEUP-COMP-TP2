@@ -1,47 +1,33 @@
 class Person {
 
-    String name;
+    int id;
     int age;
-    int heigth;
-    int weight;
 
-    Person(String name, int age, int height, int weigth) {
-        this.name = name;
-        this.age = age;
-        this.heigth = height;
-        this.weight = weigth;
+    public static void main(String[] args) {
     }
 
-    public String getName() {
-        return name;
+    Person(int id, int age) {
+        this.id = id;
+        this.age = age;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public int getAge() {
         return age;
     }
 
-    public int getHeigth() {
-        return heigth;
-    }
-
-    public int getWeight() {
-        return weight;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void setAge(int age) {
         this.age = age;
     }
 
-    public void setHeigth(int heigth) {
-        this.heigth = heigth;
+    public void printInfo() {
+        System.out.println("A pessoa com o id " + this.id + " tem " + this.age + " anos.");
     }
-
-    public void setWeight(int weight) {
-        this.weight = weight;
-    }
-
 }
