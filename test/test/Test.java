@@ -1,51 +1,33 @@
 class Test {
-    int[] test_arr;
 
-    public int find_maximum(int[] arr) {
-        int i;
-        int maximum;
-        int value;
+    boolean booleanVar;
 
-        i = 1;
-        maximum = arr[0];
-        while (i < arr.length) {
-            value = arr[i];
-            if (maximum < value) {
-                maximum = value;
-            } else {
-            }
-            i = i + 1;
-        }
+    public boolean setBooleanVar(boolean booleanVar1) {
 
-        return maximum;
+        booleanVar = booleanVar1;
+
+        return true;
+
     }
 
-    public int build_test_arr() {
-        test_arr = new int[5];
-        test_arr[0] = 14;
-        test_arr[1] = 28;
-        test_arr[2] = 0;
-        test_arr[3] = 0-5; // No unary minus in Java--
-        test_arr[4] = 12;
+    public boolean getBooleanVar() {
 
-        return 0;
+        return booleanVar;
     }
-
-    public int[] get_array() {
-
-        this.tets();
-        return test_arr;
-    }
-
-
-    public int tets() {return 0;}
 
     public static void main(String[] args) {
-        Test fm;
 
-        fm = new Test();
-        fm.build_test_arr();
+        Test conditionalTest;
 
-        fm.find_maximum(fm.get_array());
+        conditionalTest = new Test();
+        conditionalTest.setBooleanVar(true);
+
+        while (conditionalTest.getBooleanVar()) {
+
+            conditionalTest.setBooleanVar(false);
+        }
+
     }
+
+
 }
