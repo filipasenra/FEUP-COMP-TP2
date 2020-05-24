@@ -680,6 +680,7 @@ public class CodeGenerator {
 
         generateExpression((SimpleNode) node.jjtGetChild(0), symbolClass, symbolMethod);
 
+        reduceStack(1);
         this.bodyCode.append("\tifne negation_" + thisCounter+"\n");
 
         // *********IN CASE EXPRESSION IS TRUE *********************
