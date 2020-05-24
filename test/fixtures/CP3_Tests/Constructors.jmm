@@ -5,7 +5,7 @@ import Person.setId(int) void;
 import Person.setAge(int) void;
 import Person.printInfo(void) void;
 
-class Example2 {
+class Constructors {
 
     public static void main(String[] args){
             int id;
