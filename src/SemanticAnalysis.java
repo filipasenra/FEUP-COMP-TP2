@@ -1057,7 +1057,7 @@ public class SemanticAnalysis {
         if (symbolMethod.symbolTable.containsKey(node.val)) {
             type = symbolMethod.symbolTable.get(node.val).getType();
 
-        } else if (symbolClass.symbolTableFields.containsKey(node.val) && symbolMethod.name.equals("main")) {
+        } else if (symbolClass.symbolTableFields.containsKey(node.val) && symbolMethod.isStatic()) {
             this.errorMessage(node.val + " can't be accessed from a static context!", node.getLine());
             return null;
 
