@@ -490,7 +490,7 @@ public class CodeGenerator {
         incrementStack();
 
         this.generateExpression(rhs, symbolClass, symbolMethod);
-        this.bodyCode.append("\tputfield " + symbolClass.name + "/" + symbolClass.symbolTableFields.get(lhs.val).getIndex() + " " + getSymbolType(varType) + "\n");
+        this.bodyCode.append("\tputfield " + symbolClass.name + "/" +lhs.val + " " + getSymbolType(varType) + "\n");
         reduceStack(2); //pop from the stack objectref and value
     }
 
@@ -731,7 +731,7 @@ public class CodeGenerator {
             this.bodyCode.append("\taload_0\n");
             incrementStack();
             
-            this.bodyCode.append("\tgetfield " + symbolClass.name + "/" +  symbolClass.symbolTableFields.get(val).getIndex() + " " + getSymbolType(varType) +"\n");
+            this.bodyCode.append("\tgetfield " + symbolClass.name + "/" +  val + " " + getSymbolType(varType) +"\n");
             incrementStack();
             reduceStack(1);
 
