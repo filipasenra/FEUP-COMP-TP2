@@ -74,7 +74,7 @@ public class CodeGenerator {
 
         if (var.jjtGetChild(0) instanceof ASTType) {
             ASTType nodeType = (ASTType) var.jjtGetChild(0);
-            printWriterFile.println(".field public " + var.name + " " + getType(nodeType));
+            printWriterFile.println(".field private " + var.name + " " + getType(nodeType));
         }
     }
 
@@ -305,7 +305,6 @@ public class CodeGenerator {
             generateIfExpression(node, symbolClass, symbolMethod);
 
         } else if (node instanceof ASTWhile) {
-
             generateWhileExpression(node, symbolClass, symbolMethod);
 
         } else if (node instanceof ASTStatementBlock) {
@@ -963,7 +962,7 @@ public class CodeGenerator {
 
 
             String methodName = identifier2.val;
-            String methodType = ((returnType != null) ? getSymbolType(returnType) : "");
+            String methodType = ((returnType != null) ? getSymbolType(returnType) : "V");
             String objectName = classOfMethod.name;
 
             int decrement = methodCallTypes.size();
