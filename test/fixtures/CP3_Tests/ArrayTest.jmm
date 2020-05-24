@@ -14,10 +14,24 @@ class ArrayTest{
         return 0;
     }
 
+    public boolean fill_array(){
+        array[0] = 1;
+        array[1] = 2;
+        array[2] = 3;
+        array[3] = 4;
+        array[4] = 5;
+        array[5] = 4;
+        array[6] = 3;
+        array[7] = 2;
+        array[8] = 1;
+        array[9] = 0;
+
+        return true;
+    }
+
     public int test_length(){
         int l;
         l = array_len;
-        io.println(l);
         return l;
     }
 
@@ -28,11 +42,12 @@ class ArrayTest{
 
         array = new ArrayTest();
         array.initialize_array();
+        array.fill_array();
 
         len = array.test_length();
-        
-        arr = array.get_array();
+        io.println(len);
 
-        arr[0] = 1;
+        arr = array.get_array();
+        io.println(arr[0]);
     }
 }
