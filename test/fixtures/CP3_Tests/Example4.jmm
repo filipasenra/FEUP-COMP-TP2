@@ -1,4 +1,6 @@
-class Test {
+import static ioPlus.printResult(int) void;
+
+class ConditionalTest {
 
     boolean booleanVar;
 
@@ -15,15 +17,16 @@ class Test {
         return booleanVar;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args){
 
-        Test conditionalTest;
+        ConditionalTest conditionalTest;
 
-        conditionalTest = new Test();
+        conditionalTest = new ConditionalTest();
         conditionalTest.setBooleanVar(true);
 
-        while (conditionalTest.getBooleanVar()) {
+        while(conditionalTest.getBooleanVar()){
 
+            ioPlus.printResult(1);
             conditionalTest.setBooleanVar(false);
         }
 

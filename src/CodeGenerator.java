@@ -424,7 +424,11 @@ public class CodeGenerator {
 
         }
 
-        return false;
+        this.generateExpression(expression, symbolClass, symbolMethod);
+        reduceStack(1);
+        this.bodyCode.append("\tifeq " + firstPartTag + thisCounter + secondPartTag+"\n");
+
+        return true;
     }
 
 
@@ -944,6 +948,7 @@ public class CodeGenerator {
 
             //Get return type of method
             Type returnType = getReturnTypeMethod(classOfMethod, methodCallTypes, identifier2);
+            if (returnType == null) returnType = Type.VOID;
 
             StringBuilder callArgs = new StringBuilder();
             //Get list of arguments type
@@ -957,7 +962,7 @@ public class CodeGenerator {
 
 
             String methodName = identifier2.val;
-            String methodType = ((returnType != null) ? getSymbolType(returnType) : "V");
+            String methodType = getSymbolType(returnType);
             String objectName = classOfMethod.name;
 
             int decrement = methodCallTypes.size();
