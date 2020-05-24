@@ -1,18 +1,18 @@
 import static io.print(int) int;
 
-class Example1 {
+class Example {
 
     public static void main(String[] args){
         int a;
         int[] b;
         boolean c;
-        Example1 example1;
+        Example example1;
         int var;
 
         a = 1;
         b = new int[8];
         c=true;
-        example1 = new Example1();
+        example1 = new Example();
 
         b[3] = 0;
 
