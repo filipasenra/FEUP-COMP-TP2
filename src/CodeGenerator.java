@@ -297,7 +297,6 @@ public class CodeGenerator {
     }
 
     private void generateStatement(SimpleNode node, SymbolClass symbolClass, SymbolMethod symbolMethod) {
-
         if (node instanceof ASTEquality) {
             generateEquality((ASTEquality) node, symbolClass, symbolMethod);
 
@@ -371,7 +370,7 @@ public class CodeGenerator {
             generateBoolean((ASTBoolean) expression);
             reduceStack(1);
             this.bodyCode.append("\tifeq " + firstPartTag + thisCounter + secondPartTag+"\n");
-
+            this.totalStack = 0;
             return true;
 
         }
@@ -387,7 +386,7 @@ public class CodeGenerator {
 
             reduceStack(2);
             this.bodyCode.append("\tif_icmpge " + firstPartTag + thisCounter + secondPartTag+"\n");
-
+            this.totalStack = 0;
             return true;
 
         }
@@ -406,6 +405,7 @@ public class CodeGenerator {
             generateExpression((SimpleNode) expression.jjtGetChild(1), symbolClass, symbolMethod);
             reduceStack(1);
             this.bodyCode.append("\tifeq " + firstPartTag + thisCounter + secondPartTag + "\n");
+            this.totalStack = 0;
 
             return true;
 
@@ -419,6 +419,7 @@ public class CodeGenerator {
             generateExpression((SimpleNode) expression.jjtGetChild(0), symbolClass, symbolMethod);
             reduceStack(1);
             this.bodyCode.append("\tifne " + firstPartTag + thisCounter + secondPartTag + "\n");
+            this.totalStack = 0;
 
             return true;
 
@@ -427,6 +428,7 @@ public class CodeGenerator {
         this.generateExpression(expression, symbolClass, symbolMethod);
         reduceStack(1);
         this.bodyCode.append("\tifeq " + firstPartTag + thisCounter + secondPartTag+"\n");
+        this.totalStack = 0;
 
         return true;
     }
