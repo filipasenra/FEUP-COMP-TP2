@@ -792,14 +792,7 @@ public class CodeGenerator {
     }
 
     private void generateArrayInitialization(ASTInitializeArray arrayInit, SymbolClass symbolClass, SymbolMethod symbolMethod) {
-        if (arrayInit.jjtGetChild(0) instanceof ASTLiteral) {
-            ASTLiteral arg = (ASTLiteral) arrayInit.jjtGetChild(0);
-            loadIntLiteral(arg.val);
-        }
-        else if (arrayInit.jjtGetChild(0) instanceof ASTIdentifier) {
-            ASTIdentifier arg = (ASTIdentifier) arrayInit.jjtGetChild(0);
-            loadVariable(arg.val, symbolClass, symbolMethod);
-        }
+        this.generateExpression((SimpleNode) arrayInit.jjtGetChild(0), symbolClass, symbolMethod);
 
         this.bodyCode.append("\tnewarray int\n");
         incrementStack();
