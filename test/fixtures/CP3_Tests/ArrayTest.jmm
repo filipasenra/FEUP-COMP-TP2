@@ -1,8 +1,38 @@
 import static io.println(int) void;
 
 class ArrayTest{
+    int[] array;
+    int array_len;
+
+    public int[] get_array() {
+        return array;
+    }
+
+    public int initialize_array(){
+        array = new int[10];
+        array_len = array.length();
+        return 0;
+    }
+
+    public int test_length(){
+        int l;
+        l = array_len;
+        io.println(l);
+        return l;
+    }
 
     public static void main(String[] args){
-        io.println(2);
+        ArrayTest array;
+        int len;
+        int[] arr;
+
+        array = new ArrayTest();
+        array.initialize_array();
+
+        len = array.test_length();
+        
+        arr = array.get_array();
+
+        arr[0] = 1;
     }
 }
