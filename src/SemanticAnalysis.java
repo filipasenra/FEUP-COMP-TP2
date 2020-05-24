@@ -1058,8 +1058,8 @@ public class SemanticAnalysis {
             type = symbolMethod.symbolTable.get(node.val).getType();
 
         } else if (symbolClass.symbolTableFields.containsKey(node.val) && symbolMethod.isStatic()) {
-            this.errorMessage(node.val + " can't be accessed from a static context!", node.getLine());
-            return null;
+            this.errorMessage("non-static variable " + node.val + " cannot be referenced from a static context", node.getLine());
+            return symbolClass.symbolTableFields.get(node.val).getType();
 
         } else if (symbolClass.symbolTableFields.containsKey(node.val)) {
             type = symbolClass.symbolTableFields.get(node.val).getType();
