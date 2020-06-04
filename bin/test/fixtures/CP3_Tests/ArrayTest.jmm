@@ -12,7 +12,7 @@ class ArrayTest{
 
     public int[] get_array() {
         return array;
-    }
+    } 
 
     public int initialize_array(){
         array = new int[10];

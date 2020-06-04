@@ -161,7 +161,13 @@ if_1_end:
 lessThan_6:
 	iconst_0
 lessThan_6_end:
-	ifeq AND_5
+	ifne negation_5
+	iconst_1
+	goto negation_5_end
+negation_5:
+	iconst_0
+negation_5_end:
+	ifeq if_4_else
 	iconst_0
 	iload_1
 	if_icmpge lessThan_8
@@ -176,13 +182,7 @@ lessThan_8_end:
 negation_7:
 	iconst_0
 negation_7_end:
-	ifeq AND_5
-	iconst_1
-	goto AND_5_end
-AND_5:
-	iconst_0
-AND_5_end:
-	ifne if_4_else
+	ifeq if_4_else
 	aload_0
 	aload_0
 	getfield TicTacToe/row0 [I
@@ -201,7 +201,13 @@ if_4_else:
 lessThan_11:
 	iconst_0
 lessThan_11_end:
-	ifeq AND_10
+	ifne negation_10
+	iconst_1
+	goto negation_10_end
+negation_10:
+	iconst_0
+negation_10_end:
+	ifeq if_9_else
 	iconst_1
 	iload_1
 	if_icmpge lessThan_13
@@ -216,13 +222,7 @@ lessThan_13_end:
 negation_12:
 	iconst_0
 negation_12_end:
-	ifeq AND_10
-	iconst_1
-	goto AND_10_end
-AND_10:
-	iconst_0
-AND_10_end:
-	ifne if_9_else
+	ifeq if_9_else
 	aload_0
 	aload_0
 	getfield TicTacToe/row1 [I
@@ -241,7 +241,13 @@ if_9_else:
 lessThan_16:
 	iconst_0
 lessThan_16_end:
-	ifeq AND_15
+	ifne negation_15
+	iconst_1
+	goto negation_15_end
+negation_15:
+	iconst_0
+negation_15_end:
+	ifeq if_14_else
 	iconst_2
 	iload_1
 	if_icmpge lessThan_18
@@ -256,13 +262,7 @@ lessThan_18_end:
 negation_17:
 	iconst_0
 negation_17_end:
-	ifeq AND_15
-	iconst_1
-	goto AND_15_end
-AND_15:
-	iconst_0
-AND_15_end:
-	ifne if_14_else
+	ifeq if_14_else
 	aload_0
 	aload_0
 	getfield TicTacToe/row2 [I
@@ -629,13 +629,13 @@ if_25_end:
 if_23_end:
 	iload_2
 	iconst_1
-	if_icmpge lessThan_40
+	if_icmpge lessThan_41
 	iconst_1
-	goto lessThan_40_end
-lessThan_40:
+	goto lessThan_41_end
+lessThan_41:
 	iconst_0
-lessThan_40_end:
-	ifeq if_39_else
+lessThan_41_end:
+	ifeq AND_40
 	aload_0
 	getfield TicTacToe/movesmade I
 	bipush 9
@@ -645,7 +645,19 @@ lessThan_40_end:
 lessThan_43:
 	iconst_0
 lessThan_43_end:
-	ifeq AND_42
+	ifne negation_42
+	iconst_1
+	goto negation_42_end
+negation_42:
+	iconst_0
+negation_42_end:
+	ifeq AND_40
+	iconst_1
+	goto AND_40_end
+AND_40:
+	iconst_0
+AND_40_end:
+	ifeq if_39_else
 	bipush 9
 	aload_0
 	getfield TicTacToe/movesmade I
@@ -661,18 +673,6 @@ lessThan_45_end:
 negation_44:
 	iconst_0
 negation_44_end:
-	ifeq AND_42
-	iconst_1
-	goto AND_42_end
-AND_42:
-	iconst_0
-AND_42_end:
-	ifne negation_41
-	iconst_1
-	goto negation_41_end
-negation_41:
-	iconst_0
-negation_41_end:
 	ifeq if_39_else
 	iconst_0
 	istore_2
@@ -711,7 +711,13 @@ while_46_begin:
 lessThan_48:
 	iconst_0
 lessThan_48_end:
-	ifeq AND_47
+	ifne negation_47
+	iconst_1
+	goto negation_47_end
+negation_47:
+	iconst_0
+negation_47_end:
+	ifeq while_46_end
 	iconst_0
 	iconst_1
 	isub
@@ -730,13 +736,7 @@ lessThan_50_end:
 negation_49:
 	iconst_0
 negation_49_end:
-	ifeq AND_47
-	iconst_1
-	goto AND_47_end
-AND_47:
-	iconst_0
-AND_47_end:
-	ifne while_46_end
+	ifeq while_46_end
 	iconst_0
 	istore_3
 
