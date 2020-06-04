@@ -511,10 +511,15 @@ public class CodeGenerator {
 
     private void storeLocalVariable(ASTIdentifier lhs, SimpleNode rhs, SymbolClass symbolClass, SymbolMethod symbolMethod) {
 
+        int index = symbolMethod.symbolTable.get(lhs.val).getIndex();
+
+        //For iinc instruction
+        if (generateIinc(lhs, rhs, index))
+            return;
+
         this.generateExpression(rhs, symbolClass, symbolMethod);
 
         Type varType = symbolMethod.symbolTable.get(lhs.val).getType();
-        int index = symbolMethod.symbolTable.get(lhs.val).getIndex();
 
         String type = (varType == Type.INT || varType == Type.BOOLEAN) ? "i" : "a";
 
@@ -523,6 +528,39 @@ public class CodeGenerator {
         reduceStack(1);
         this.bodyCode.append("\t" + type + store + index + "\n");
 
+    }
+
+    private boolean generateIinc(ASTIdentifier lhs, SimpleNode rhs, int index) {
+
+        if(rhs instanceof ASTSUM){
+            if(rhs.jjtGetNumChildren() == 2) {
+                if (rhs.jjtGetChild(0) instanceof ASTIdentifier && rhs.jjtGetChild(1) instanceof ASTLiteral){
+
+                    ASTIdentifier identifier = (ASTIdentifier) rhs.jjtGetChild(0);
+
+                    return generateIinc(lhs, identifier, (ASTLiteral) rhs.jjtGetChild(1), index);
+
+                } else if (rhs.jjtGetChild(1) instanceof ASTIdentifier && rhs.jjtGetChild(0) instanceof ASTLiteral) {
+
+                    ASTIdentifier identifier = (ASTIdentifier) rhs.jjtGetChild(1);
+
+                    return generateIinc(lhs, identifier, (ASTLiteral) rhs.jjtGetChild(0), index);
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private boolean generateIinc(ASTIdentifier lhs, ASTIdentifier identifier, ASTLiteral literal, int index) {
+
+        if( identifier.val.equals(lhs.val)){
+            this.bodyCode.append("\tiinc " + index + " " + Integer.parseInt(literal.val) + "\n");
+
+            return true;
+        }
+
+        return false;
     }
 
     private Type generateExpression(SimpleNode node, SymbolClass symbolClass, SymbolMethod symbolMethod) {

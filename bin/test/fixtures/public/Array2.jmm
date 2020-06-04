@@ -22,7 +22,8 @@ class Array2 {
         a[0] = 2;
 
         //array access
-        io.printArray(a);
+
+        (a);
 
         //array position load
         io.print(a[0]);

@@ -8,16 +8,19 @@
 .end method
 
 .method public static main([Ljava/lang/String;)V
-	.limit stack 10
+	.limit stack 4
 	.limit locals 5
 
 	bipush 20
 	istore_1
+
 	bipush 10
 	istore_2
+
 	bipush 10
 	newarray int
 	astore 4
+
 	iload_1
 	iload_2
 	if_icmpge if_1_else
@@ -25,12 +28,14 @@
 	iconst_1
 	isub
 	istore_3
+
 	goto if_1_end
 if_1_else:
 	iload_2
 	iconst_1
 	isub
 	istore_3
+
 if_1_end:
 while_2_begin:
 	iconst_0
@@ -39,6 +44,7 @@ while_2_begin:
 	iload_3
 	if_icmpge while_2_end
 	aload 4
+	iload_3
 	iload_1
 	iload_2
 	isub
@@ -48,40 +54,39 @@ while_2_begin:
 	iconst_1
 	isub
 	istore_3
+
 	iload_1
 	iconst_1
 	isub
 	istore_1
+
 	iload_2
 	iconst_1
 	isub
 	istore_2
+
 	goto while_2_begin
 while_2_end:
 	iconst_0
 	istore_3
+
 while_3_begin:
 	iload_3
 	aload 4
 	arraylength
 	if_icmpge while_3_end
 	aload 4
+	iload_3
 	iaload
-	invokestatic io/println([I)
+	invokestatic io/println(I)V
+
 	iload_3
 	iconst_1
 	iadd
 	istore_3
+
 	goto while_3_begin
 while_3_end:
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
 	return
 .end method
 

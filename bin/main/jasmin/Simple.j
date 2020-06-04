@@ -15,31 +15,37 @@
 	iload_2
 	iadd
 	istore_3
+
 	iload_3
 	ireturn
-	pop
 .end method
 
 
 .method public static main([Ljava/lang/String;)V
-	.limit stack 2
+	.limit stack 3
 	.limit locals 5
 
 	bipush 20
 	istore_1
+
 	bipush 10
 	istore_2
+
 	new Simple
 	dup
 	invokespecial Simple/<init>()V
 	astore 4
+
 	aload 4
 	iload_1
 	iload_2
 	invokevirtual Simple/add(II)I
+
 	istore_3
+
 	iload_3
 	invokestatic io/println(I)V
+
 	return
 .end method
 
@@ -55,13 +61,14 @@
 	iconst_3
 	iconst_4
 	invokevirtual Simple/add(II)I
+
 	iadd
 	imul
 	iadd
 	istore_1
+
 	iload_1
 	ireturn
-	pop
 .end method
 
 
@@ -73,10 +80,11 @@
 	iconst_3
 	iconst_4
 	invokevirtual Simple/add(II)I
+
 	istore_1
+
 	iload_1
 	ireturn
-	pop
 .end method
 
 
