@@ -1,0 +1,46 @@
+
+import static io.println(int) void;
+import PrintArray();
+import PrintArray.printElement(int, int) void;
+import PrintArray.printLength(int) void;
+import PrintArray.printTitle() void;
+import PrintArray.printArray(int []) void;
+
+
+class Overview{
+    int[] array;
+    int array_len;
+
+    public int initialize_array(){
+        array = new int[10];
+        array_len = array.length();
+        return 0;
+    }
+
+    public boolean fill_array(){
+        array[0] = 1;
+        array[1] = 2;
+        array[2] = 3;
+        array[3] = 4;
+        array[4] = 5;
+        array[5] = 6;
+        array[6] = 7;
+        array[7] = 8;
+        array[8] = 9;
+        array[9] = 10;
+
+        return true;
+    }
+
+    public static void main(String[] args){
+
+        array = new ArrayTest();
+        
+        array.initialize_array();
+        array.fill_array();
+
+        
+    
+    
+    }
+}

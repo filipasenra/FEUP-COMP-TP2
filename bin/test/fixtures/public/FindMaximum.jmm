@@ -45,7 +45,7 @@ class FindMaximum {
 		FindMaximum fm;
 
 		fm = new FindMaximum();
-		new FindMaximum().build_test_arr();
+		fm.build_test_arr();
 
 		ioPlus.printResult(fm.find_maximum(fm.get_array()));
 	}

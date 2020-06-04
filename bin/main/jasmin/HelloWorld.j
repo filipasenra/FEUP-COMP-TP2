@@ -12,6 +12,7 @@
 	.limit locals 1
 
 	invokestatic ioPlus/printHelloWorld()V
+
 	return
 .end method
 

@@ -1,12 +1,12 @@
 .class public Life
 .super java/lang/Object
-.field public UNDERPOP_LIM I
-.field public OVERPOP_LIM I
-.field public REPRODUCE_NUM I
-.field public LOOPS_PER_MS I
-.field public xMax I
-.field public yMax I
-.field public field_name [I
+.field private UNDERPOP_LIM I
+.field private OVERPOP_LIM I
+.field private REPRODUCE_NUM I
+.field private LOOPS_PER_MS I
+.field private xMax I
+.field private yMax I
+.field private field_name [I
 
 .method public <init>()V
 	aload_0
@@ -22,92 +22,97 @@
 	dup
 	invokespecial Life/<init>()V
 	astore_1
+
 	aload_1
-	invokevirtual Life/init()B
+	invokevirtual Life/init()Z
+
+	pop
 while_1_begin:
 	iconst_1
 	ifeq while_1_end
 	aload_1
-	invokevirtual Life/printfield_name()B
+	invokevirtual Life/printfield_name()Z
+
+	pop
 	aload_1
-	invokevirtual Life/update()B
+	invokevirtual Life/update()Z
+
+	pop
 	invokestatic io/read()I
+
 	istore_2
+
 	goto while_1_begin
 while_1_end:
-	pop
 	return
 .end method
 
 
-.method public init()B
-	.limit stack 8
+.method public init()Z
+	.limit stack 3
 	.limit locals 3
 
 	iconst_1
 	newarray int
 	astore_1
+
+	aload_0
 	iconst_2
-	aload_0
-	putfield UNDERPOP_LIM:I
+	putfield Life/UNDERPOP_LIM I
 
+	aload_0
 	iconst_3
-	aload_0
-	putfield OVERPOP_LIM:I
+	putfield Life/OVERPOP_LIM I
 
+	aload_0
 	iconst_3
-	aload_0
-	putfield REPRODUCE_NUM:I
+	putfield Life/REPRODUCE_NUM I
 
+	aload_0
 	ldc 225000
-	aload_0
-	putfield LOOPS_PER_MS:I
+	putfield Life/LOOPS_PER_MS I
 
+	aload_0
 	aload_0
 	aload_1
 	invokevirtual Life/field_name([I)[I
-	aload_0
-	putfield field_name:[I
+
+	putfield Life/field_name [I
 
 	aload_1
 	iconst_0
 	iaload
 	istore_2
+
+	aload_0
 	iload_2
 	iconst_1
 	isub
-	aload_0
-	putfield xMax:I
+	putfield Life/xMax I
 
 	aload_0
-	getfield field_name:[I
+	aload_0
+	getfield Life/field_name [I
 	arraylength
 	iload_2
 	idiv
 	iconst_1
 	isub
-	aload_0
-	putfield yMax:I
+	putfield Life/yMax I
 
 	iconst_1
 	ireturn
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
 .end method
 
 
 .method public field_name([I)[I
-	.limit stack 304
+	.limit stack 3
 	.limit locals 3
 
 	bipush 100
 	newarray int
 	astore_2
+
 	aload_1
 	iconst_0
 	bipush 10
@@ -615,335 +620,40 @@ while_1_end:
 
 	aload_2
 	areturn
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
 .end method
 
 
-.method public update()B
-	.limit stack 3
+.method public update()Z
+	.limit stack 4
 	.limit locals 6
 
+	aload_0
+	getfield Life/field_name [I
+	arraylength
 	newarray int
 	astore 5
+
 	iconst_0
 	istore_1
+
 while_2_begin:
 	iload_1
 	aload_0
-	getfield field_name:[I
+	getfield Life/field_name [I
 	arraylength
 	if_icmpge while_2_end
 	aload_0
-	getfield field_name:[I
+	getfield Life/field_name [I
+	iload_1
 	iaload
 	istore_2
+
 	aload_0
 	iload_1
 	invokevirtual Life/getLiveNeighborN(I)I
+
 	istore_3
+
 	iload_2
 	iconst_1
 	if_icmpge lessThan_4
@@ -953,65 +663,153 @@ lessThan_4:
 	iconst_0
 lessThan_4_end:
 	ifne if_3_else
+	aload_0
+	iload_3
+	aload_0
+	getfield Life/UNDERPOP_LIM I
+	invokevirtual Life/ge(II)Z
+
+	ifeq AND_5
+	aload_0
+	iload_3
+	aload_0
+	getfield Life/OVERPOP_LIM I
+	invokevirtual Life/le(II)Z
+
+	ifeq AND_5
+	iconst_1
+	goto AND_5_end
+AND_5:
+	iconst_0
+AND_5_end:
+	istore 4
+
+	pop
+	iload 4
+	ifne if_6_else
+	aload 5
+	iload_1
+	iconst_0
+	iastore
+
+	goto if_6_end
+if_6_else:
+	aload 5
+	iload_1
+	aload_0
+	getfield Life/field_name [I
+	iload_1
+	iaload
+	iastore
+
+if_6_end:
+	goto if_3_end
+if_3_else:
+	aload_0
+	iload_3
+	aload_0
+	getfield Life/REPRODUCE_NUM I
+	invokevirtual Life/eq(II)Z
+
+	ifeq if_7_else
+	aload 5
+	iload_1
+	iconst_1
+	iastore
+
+	goto if_7_end
+if_7_else:
+	aload 5
+	iload_1
+	aload_0
+	getfield Life/field_name [I
+	iload_1
+	iaload
+	iastore
+
+if_7_end:
+if_3_end:
 	iload_1
 	iconst_1
 	iadd
 	istore_1
+
 	goto while_2_begin
 while_2_end:
-	aload 5
 	aload_0
-	putfield field_name:[I
+	aload 5
+	putfield Life/field_name [I
 
 	iconst_1
 	ireturn
-	pop
-	pop
 .end method
 
 
-.method public printfield_name()B
-	.limit stack 2
+.method public printfield_name()Z
+	.limit stack 4
 	.limit locals 3
 
 	iconst_0
 	istore_1
+
 	iconst_0
 	istore_2
-while_5_begin:
+
+while_8_begin:
 	iload_1
 	aload_0
-	getfield field_name:[I
+	getfield Life/field_name [I
 	arraylength
-	if_icmpge while_5_end
+	if_icmpge while_8_end
 	aload_0
-	getfield field_name:[I
+	iload_2
+	aload_0
+	getfield Life/xMax I
+	invokevirtual Life/gt(II)Z
+
+	ifeq if_9_else
+	invokestatic io/println()V
+
+	iconst_0
+	istore_2
+
+	goto if_9_end
+if_9_else:
+if_9_end:
+	aload_0
+	getfield Life/field_name [I
+	iload_1
 	iaload
-	invokestatic io/print([I)
+	invokestatic io/print(I)V
+
 	iload_1
 	iconst_1
 	iadd
 	istore_1
+
 	iload_2
 	iconst_1
 	iadd
 	istore_2
-	goto while_5_begin
-while_5_end:
+
+	goto while_8_begin
+while_8_end:
 	invokestatic io/println()V
+
 	invokestatic io/println()V
+
 	iconst_1
 	ireturn
 .end method
 
 
 .method public trIdx(II)I
-	.limit stack 2
+	.limit stack 3
 	.limit locals 3
 
 	iload_1
 	aload_0
-	getfield xMax:I
+	getfield Life/xMax I
 	iconst_1
 	iadd
 	iload_2
@@ -1022,27 +820,31 @@ while_5_end:
 
 
 .method public cartIdx(I)[I
-	.limit stack 6
+	.limit stack 3
 	.limit locals 6
 
 	aload_0
-	getfield xMax:I
+	getfield Life/xMax I
 	iconst_1
 	iadd
 	istore 4
+
 	iload_1
 	iload 4
 	idiv
 	istore_3
+
 	iload_1
 	iload_3
 	iload 4
 	imul
 	isub
 	istore_2
+
 	iconst_2
 	newarray int
 	astore 5
+
 	aload 5
 	iconst_0
 	iload_2
@@ -1055,74 +857,116 @@ while_5_end:
 
 	aload 5
 	areturn
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
 .end method
 
 
 .method public getNeighborCoords(I)[I
-	.limit stack 30
+	.limit stack 5
 	.limit locals 10
 
 	aload_0
 	iload_1
 	invokevirtual Life/cartIdx(I)[I
+
 	astore 8
+
 	aload 8
 	iconst_0
 	iaload
 	istore_2
+
 	aload 8
 	iconst_1
 	iaload
 	istore_3
+
 	iload_2
 	aload_0
-	getfield xMax:I
-	if_icmpge if_7_else
+	getfield Life/xMax I
+	if_icmpge if_10_else
 	iload_2
 	iconst_1
 	iadd
 	istore 6
-	goto if_7_end
-if_7_else:
+
+	aload_0
+	iload_2
 	iconst_0
-	istore 6
+	invokevirtual Life/gt(II)Z
+
+	ifeq if_11_else
 	iload_2
 	iconst_1
 	isub
 	istore 4
-if_7_end:
+
+	goto if_11_end
+if_11_else:
+	aload_0
+	getfield Life/xMax I
+	istore 4
+
+if_11_end:
+	goto if_10_end
+if_10_else:
+	iconst_0
+	istore 6
+
+	iload_2
+	iconst_1
+	isub
+	istore 4
+
+if_10_end:
 	iload_3
 	aload_0
-	getfield yMax:I
-	if_icmpge if_9_else
+	getfield Life/yMax I
+	if_icmpge if_12_else
 	iload_3
 	iconst_1
 	iadd
 	istore 7
-	goto if_9_end
-if_9_else:
+
+	aload_0
+	iload_3
 	iconst_0
-	istore 7
+	invokevirtual Life/gt(II)Z
+
+	ifeq if_13_else
 	iload_3
 	iconst_1
 	isub
 	istore 5
-if_9_end:
+
+	goto if_13_end
+if_13_else:
+	aload_0
+	getfield Life/yMax I
+	istore 5
+
+if_13_end:
+	goto if_12_end
+if_12_else:
+	iconst_0
+	istore 7
+
+	iload_3
+	iconst_1
+	isub
+	istore 5
+
+if_12_end:
 	bipush 8
 	newarray int
 	astore 9
+
 	aload 9
 	iconst_0
 	aload_0
 	iload_2
 	iload 5
 	invokevirtual Life/trIdx(II)I
+
 	iastore
 
 	aload 9
@@ -1131,6 +975,7 @@ if_9_end:
 	iload 4
 	iload 5
 	invokevirtual Life/trIdx(II)I
+
 	iastore
 
 	aload 9
@@ -1139,6 +984,7 @@ if_9_end:
 	iload 4
 	iload_3
 	invokevirtual Life/trIdx(II)I
+
 	iastore
 
 	aload 9
@@ -1147,6 +993,7 @@ if_9_end:
 	iload 4
 	iload 7
 	invokevirtual Life/trIdx(II)I
+
 	iastore
 
 	aload 9
@@ -1155,6 +1002,7 @@ if_9_end:
 	iload_2
 	iload 7
 	invokevirtual Life/trIdx(II)I
+
 	iastore
 
 	aload 9
@@ -1163,6 +1011,7 @@ if_9_end:
 	iload 6
 	iload 7
 	invokevirtual Life/trIdx(II)I
+
 	iastore
 
 	aload 9
@@ -1171,6 +1020,7 @@ if_9_end:
 	iload 6
 	iload_3
 	invokevirtual Life/trIdx(II)I
+
 	iastore
 
 	aload 9
@@ -1179,39 +1029,11 @@ if_9_end:
 	iload 6
 	iload 5
 	invokevirtual Life/trIdx(II)I
+
 	iastore
 
 	aload 9
 	areturn
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
-	pop
 .end method
 
 
@@ -1221,103 +1043,108 @@ if_9_end:
 
 	iconst_0
 	istore 4
+
 	aload_0
 	iload_1
 	invokevirtual Life/getNeighborCoords(I)[I
+
 	astore_2
+
 	iconst_0
 	istore_3
-while_11_begin:
+
+while_14_begin:
 	iload_3
 	aload_2
 	arraylength
-	if_icmpge while_11_end
+	if_icmpge while_14_end
+	aload_0
+	aload_0
+	getfield Life/field_name [I
+	aload_2
+	iload_3
+	iaload
+	iaload
+	iconst_0
+	invokevirtual Life/ne(II)Z
+
+	ifeq if_15_else
+	iload 4
+	iconst_1
+	iadd
+	istore 4
+
+	goto if_15_end
+if_15_else:
+if_15_end:
 	iload_3
 	iconst_1
 	iadd
 	istore_3
-	goto while_11_begin
-while_11_end:
+
+	goto while_14_begin
+while_14_end:
 	iload 4
 	ireturn
-	pop
-	pop
-	pop
 .end method
 
 
-.method public busyWait(I)B
+.method public busyWait(I)Z
 	.limit stack 3
 	.limit locals 4
 
 	iload_1
 	aload_0
-	getfield LOOPS_PER_MS:I
+	getfield Life/LOOPS_PER_MS I
 	imul
 	istore_3
+
 	iconst_0
 	istore_2
-while_13_begin:
+
+while_16_begin:
 	iload_2
 	iload_3
-	if_icmpge while_13_end
+	if_icmpge while_16_end
 	iload_2
 	iconst_1
 	iadd
 	istore_2
-	goto while_13_begin
-while_13_end:
+
+	goto while_16_begin
+while_16_end:
 	iconst_1
 	ireturn
-	pop
 .end method
 
 
-.method public eq(II)B
-	.limit stack 4
+.method public eq(II)Z
+	.limit stack 5
 	.limit locals 3
 
 	aload_0
 	iload_1
 	iload_2
-	invokevirtual Life/lt(II)B
-	if_eq AND_15
+	invokevirtual Life/lt(II)Z
+
+	ifeq AND_18
 	aload_0
 	iload_2
 	iload_1
-	invokevirtual Life/lt(II)B
-	ifne negation_16
-	iconst_1
-	goto negation_16_end
-negation_16:
-	iconst_0
-negation_16_end:
-	if_eq AND_15
-	iconst_1
-	goto AND_15_end
-AND_15:
-	iconst_0
-AND_15_end:
-	ifne negation_14
-	iconst_1
-	goto negation_14_end
-negation_14:
-	iconst_0
-negation_14_end:
-	ireturn
-	pop
-	pop
-.end method
+	invokevirtual Life/lt(II)Z
 
-
-.method public ne(II)B
-	.limit stack 3
-	.limit locals 3
-
-	aload_0
-	iload_1
-	iload_2
-	invokevirtual Life/eq(II)B
+	ifne negation_19
+	iconst_1
+	goto negation_19_end
+negation_19:
+	iconst_0
+negation_19_end:
+	ifeq AND_18
+	iconst_1
+	goto AND_18_end
+AND_18:
+	iconst_0
+AND_18_end:
 	ifne negation_17
 	iconst_1
 	goto negation_17_end
@@ -1325,130 +1152,146 @@ negation_17:
 	iconst_0
 negation_17_end:
 	ireturn
-	pop
 .end method
 
 
-.method public lt(II)B
-	.limit stack 2
-	.limit locals 3
-
-	iload_1
-	iload_2
-	if_icmpge lessThan_18
-	iconst_1
-	goto lessThan_18_end
-lessThan_18:
-	iconst_0
-lessThan_18_end:
-	ireturn
-	pop
-	pop
-.end method
-
-
-.method public le(II)B
-	.limit stack 4
-	.limit locals 3
-
-	aload_0
-	iload_1
-	iload_2
-	invokevirtual Life/lt(II)B
-	if_eq AND_21
-	aload_0
-	iload_1
-	iload_2
-	invokevirtual Life/eq(II)B
-	ifne negation_22
-	iconst_1
-	goto negation_22_end
-negation_22:
-	iconst_0
-negation_22_end:
-	if_eq AND_21
-	iconst_1
-	goto AND_21_end
-AND_21:
-	iconst_0
-AND_21_end:
-	ifne negation_20
-	iconst_1
-	goto negation_20_end
-negation_20:
-	iconst_0
-negation_20_end:
-	ifne negation_19
-	iconst_1
-	goto negation_19_end
-negation_19:
-	iconst_0
-negation_19_end:
-	ireturn
-	pop
-	pop
-.end method
-
-
-.method public gt(II)B
+.method public ne(II)Z
 	.limit stack 3
 	.limit locals 3
 
 	aload_0
 	iload_1
 	iload_2
-	invokevirtual Life/le(II)B
-	ifne negation_23
+	invokevirtual Life/eq(II)Z
+
+	ifne negation_20
 	iconst_1
-	goto negation_23_end
-negation_23:
+	goto negation_20_end
+negation_20:
 	iconst_0
-negation_23_end:
+negation_20_end:
 	ireturn
-	pop
 .end method
 
 
-.method public ge(II)B
-	.limit stack 4
+.method public lt(II)Z
+	.limit stack 3
+	.limit locals 3
+
+	iload_1
+	iload_2
+	if_icmpge lessThan_21
+	iconst_1
+	goto lessThan_21_end
+lessThan_21:
+	iconst_0
+lessThan_21_end:
+	ireturn
+.end method
+
+
+.method public le(II)Z
+	.limit stack 6
 	.limit locals 3
 
 	aload_0
 	iload_1
 	iload_2
-	invokevirtual Life/gt(II)B
-	if_eq AND_26
+	invokevirtual Life/lt(II)Z
+
+	ifeq AND_24
 	aload_0
 	iload_1
 	iload_2
-	invokevirtual Life/eq(II)B
-	ifne negation_27
-	iconst_1
-	goto negation_27_end
-negation_27:
-	iconst_0
-negation_27_end:
-	if_eq AND_26
-	iconst_1
-	goto AND_26_end
-AND_26:
-	iconst_0
-AND_26_end:
+	invokevirtual Life/eq(II)Z
+
 	ifne negation_25
 	iconst_1
 	goto negation_25_end
 negation_25:
 	iconst_0
 negation_25_end:
-	ifne negation_24
+	ifeq AND_24
 	iconst_1
-	goto negation_24_end
-negation_24:
+	goto AND_24_end
+AND_24:
 	iconst_0
-negation_24_end:
+AND_24_end:
+	ifne negation_23
+	iconst_1
+	goto negation_23_end
+negation_23:
+	iconst_0
+negation_23_end:
+	ifne negation_22
+	iconst_1
+	goto negation_22_end
+negation_22:
+	iconst_0
+negation_22_end:
 	ireturn
-	pop
-	pop
+.end method
+
+
+.method public gt(II)Z
+	.limit stack 3
+	.limit locals 3
+
+	aload_0
+	iload_1
+	iload_2
+	invokevirtual Life/le(II)Z
+
+	ifne negation_26
+	iconst_1
+	goto negation_26_end
+negation_26:
+	iconst_0
+negation_26_end:
+	ireturn
+.end method
+
+
+.method public ge(II)Z
+	.limit stack 6
+	.limit locals 3
+
+	aload_0
+	iload_1
+	iload_2
+	invokevirtual Life/gt(II)Z
+
+	ifeq AND_29
+	aload_0
+	iload_1
+	iload_2
+	invokevirtual Life/eq(II)Z
+
+	ifne negation_30
+	iconst_1
+	goto negation_30_end
+negation_30:
+	iconst_0
+negation_30_end:
+	ifeq AND_29
+	iconst_1
+	goto AND_29_end
+AND_29:
+	iconst_0
+AND_29_end:
+	ifne negation_28
+	iconst_1
+	goto negation_28_end
+negation_28:
+	iconst_0
+negation_28_end:
+	ifne negation_27
+	iconst_1
+	goto negation_27_end
+negation_27:
+	iconst_0
+negation_27_end:
+	ireturn
 .end method
 
 
