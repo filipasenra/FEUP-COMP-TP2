@@ -677,17 +677,16 @@ public class CodeGenerator {
         //If both are true
         // *********IN CASE EXPRESSION IS TRUE *********************
         this.bodyCode.append("\ticonst_1\n");
-        incrementStack();
         this.bodyCode.append("\tgoto AND_" + thisCounter + "_end\n");
         //************************** */
 
         //******* IN CASE EXPRESSION IS FALSE ***********/
         this.bodyCode.append("AND_" + thisCounter + ":\n");
         this.bodyCode.append("\ticonst_0\n");
-        incrementStack();
         this.bodyCode.append("AND_" + thisCounter + "_end:\n");
         //******************************** */
 
+        incrementStack();
     }
 
     private void generateLessThan(ASTLESSTHAN node, SymbolClass symbolClass, SymbolMethod symbolMethod) {
@@ -713,16 +712,16 @@ public class CodeGenerator {
 
         // *********IN CASE EXPRESSION IS TRUE *********************
         this.bodyCode.append("\ticonst_1\n");
-        incrementStack();
         this.bodyCode.append("\tgoto lessThan_" + thisCounter + "_end\n");
         // **************************
 
         // ******* IN CASE EXPRESSION IS FALSE
         this.bodyCode.append("lessThan_" + thisCounter + ":\n");
         this.bodyCode.append("\ticonst_0\n");
-        incrementStack();
         this.bodyCode.append("lessThan_" + thisCounter + "_end:\n");
         // ********************************
+
+        incrementStack();
 
     }
 
@@ -742,16 +741,16 @@ public class CodeGenerator {
 
         // *********IN CASE EXPRESSION IS TRUE *********************
         this.bodyCode.append("\ticonst_1\n");
-        incrementStack();
         this.bodyCode.append("\tgoto negation_" + thisCounter + "_end\n");
         //************************** */
 
         //******* IN CASE EXPRESSION IS FALSE ***********/
         this.bodyCode.append("negation_" + thisCounter + ":\n");
         this.bodyCode.append("\ticonst_0\n");
-        incrementStack();
         this.bodyCode.append("negation_" + thisCounter + "_end:\n");
         //******************************** */
+
+        incrementStack();
 
     }
 
