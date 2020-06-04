@@ -661,17 +661,17 @@ public class CodeGenerator {
         int thisCounter = this.loopCounter;
 
         // identifier < 0
-        // if(node.jjtGetChild(1) instanceof ASTLiteral && ((ASTLiteral)node.jjtGetChild(1)).val.equals("0")){
-        //     generateExpression((SimpleNode) node.jjtGetChild(0), symbolClass, symbolMethod);
-        //     this.bodyCode.append("\tifge lessThan_" + thisCounter+"\n");
-        //     reduceStack(1);                
-        // }
-        // else{
+        if(node.jjtGetChild(1) instanceof ASTLiteral && ((ASTLiteral)node.jjtGetChild(1)).val.equals("0")){
+            generateExpression((SimpleNode) node.jjtGetChild(0), symbolClass, symbolMethod);
+            this.bodyCode.append("\tifge lessThan_" + thisCounter+"\n");
+            reduceStack(1);                
+        }
+        else{
             generateExpression((SimpleNode) node.jjtGetChild(0), symbolClass, symbolMethod);
             generateExpression((SimpleNode) node.jjtGetChild(1), symbolClass, symbolMethod);
             reduceStack(2);
             this.bodyCode.append("\tif_icmpge lessThan_" + thisCounter+"\n");
-        //}
+        }
 
         // *********IN CASE EXPRESSION IS TRUE *********************
         this.bodyCode.append("\ticonst_1\n");
