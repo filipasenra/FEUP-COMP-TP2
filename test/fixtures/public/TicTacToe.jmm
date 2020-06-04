@@ -42,8 +42,10 @@ class TicTacToe {
 
   public boolean MoveRow(int[] row, int column) {
     boolean moved;
+    boolean b;
+    b=column<0;
 
-    if(column < 0){
+    if(b){
         moved = false;
     }else if(2 < column){
         moved = false;
@@ -62,7 +64,9 @@ class TicTacToe {
 
   public boolean Move(int row, int column) {
     boolean mov;
-    if((!(row < 0) && !(0 < row) )){
+    boolean b;
+    b = row < 0;
+    if((!(b) && !(0 < row) )){
         mov = this.MoveRow(row0,column);
     }else if (!(row < 1) && !(1 < row)){
         mov = this.MoveRow(row1,column);
@@ -78,9 +82,13 @@ class TicTacToe {
   // Returns true if indexes passed to the method are inbounds.
   public boolean inbounds(int row, int column) {
     boolean in;
-    if (row < 0)
+    boolean b;
+    boolean c;
+    b = row < 0;
+    c = column < 0;
+    if (b)
       in =  false;
-    else if (column < 0)
+    else if (c)
       in =  false;
     else if (2 < row) 
       in =  false;

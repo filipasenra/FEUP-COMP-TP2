@@ -380,12 +380,21 @@ public class CodeGenerator {
             if(expression.jjtGetNumChildren() != 2)
                 return false;
 
-            generateExpression((SimpleNode) expression.jjtGetChild(0), symbolClass, symbolMethod);
-            generateExpression((SimpleNode) expression.jjtGetChild(1), symbolClass, symbolMethod);
 
+            // identifier < 0
+            if(expression.jjtGetChild(1) instanceof ASTLiteral && ((ASTLiteral)expression.jjtGetChild(1)).val.equals("0")){
+                generateExpression((SimpleNode) expression.jjtGetChild(0), symbolClass, symbolMethod);
+                this.bodyCode.append("\tifge " + firstPartTag + thisCounter + secondPartTag+"\n");
+                reduceStack(1);                
+            }
 
-            reduceStack(2);
-            this.bodyCode.append("\tif_icmpge " + firstPartTag + thisCounter + secondPartTag+"\n");
+            else{
+                generateExpression((SimpleNode) expression.jjtGetChild(0), symbolClass, symbolMethod);
+                generateExpression((SimpleNode) expression.jjtGetChild(1), symbolClass, symbolMethod);
+                this.bodyCode.append("\tif_icmpge " + firstPartTag + thisCounter + secondPartTag+"\n");
+                reduceStack(2);
+            }
+
             this.totalStack = 0;
             return true;
 
@@ -651,11 +660,18 @@ public class CodeGenerator {
         this.loopCounter++;
         int thisCounter = this.loopCounter;
 
-
-        generateExpression((SimpleNode) node.jjtGetChild(0), symbolClass, symbolMethod);
-        generateExpression((SimpleNode) node.jjtGetChild(1), symbolClass, symbolMethod);
-        reduceStack(2);
-        this.bodyCode.append("\tif_icmpge lessThan_" + thisCounter+"\n");
+        // identifier < 0
+        // if(node.jjtGetChild(1) instanceof ASTLiteral && ((ASTLiteral)node.jjtGetChild(1)).val.equals("0")){
+        //     generateExpression((SimpleNode) node.jjtGetChild(0), symbolClass, symbolMethod);
+        //     this.bodyCode.append("\tifge lessThan_" + thisCounter+"\n");
+        //     reduceStack(1);                
+        // }
+        // else{
+            generateExpression((SimpleNode) node.jjtGetChild(0), symbolClass, symbolMethod);
+            generateExpression((SimpleNode) node.jjtGetChild(1), symbolClass, symbolMethod);
+            reduceStack(2);
+            this.bodyCode.append("\tif_icmpge lessThan_" + thisCounter+"\n");
+        //}
 
         // *********IN CASE EXPRESSION IS TRUE *********************
         this.bodyCode.append("\ticonst_1\n");
