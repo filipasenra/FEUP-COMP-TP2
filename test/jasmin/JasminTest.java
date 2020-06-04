@@ -44,4 +44,10 @@ public class JasminTest {
     }
 
 
+	@Test
+	public void testGuessNumber() {
+		JasminUtils.testJmm("fixtures/CP3_Tests/GuessNumber/GuessNumber.jmm", JasminUtils.getResource("fixtures/CP3_Tests/GuessNumber/GuessNumber.output"), JasminUtils.getResource("fixtures/CP3_Tests/GuessNumber/GuessNumber.input"));
+	}
+
+
 }
