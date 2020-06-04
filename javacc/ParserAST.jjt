@@ -343,7 +343,7 @@ void FinalExpression() #void : {Token t;} {
     | (t = <THIS> {jjtThis.val = t.image;} #Identifier)
     | ((t = <TRUE_> | t = <FALSE_>) {jjtThis.val = t.image.equals("true") ;} #Boolean)
     | ( t= <INTEGER_LITERAL> {jjtThis.val = t.image;} #Literal)
-    | ( <NEGATION> (<LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS> | Expression()) ) #Negation
+    | ( <NEGATION> DotExpression() ) #Negation
     | ( <LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS>)
 }
 
