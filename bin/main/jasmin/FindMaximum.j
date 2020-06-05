@@ -39,10 +39,7 @@ while_1_begin:
 	goto if_2_end
 if_2_else:
 if_2_end:
-	iload_2
-	iconst_1
-	iadd
-	istore_2
+	iinc 2 1
 
 	goto while_1_begin
 while_1_end:

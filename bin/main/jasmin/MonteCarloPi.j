@@ -73,18 +73,12 @@ while_2_begin:
 	invokevirtual MonteCarloPi/performSingleEstimate()Z
 
 	ifeq if_3_else
-	iload_2
-	iconst_1
-	iadd
-	istore_2
+	iinc 2 1
 
 	goto if_3_end
 if_3_else:
 if_3_end:
-	iload_3
-	iconst_1
-	iadd
-	istore_3
+	iinc 3 1
 
 	goto while_2_begin
 while_2_end:

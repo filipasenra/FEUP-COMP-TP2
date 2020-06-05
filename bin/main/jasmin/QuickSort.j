@@ -31,10 +31,7 @@ while_1_begin:
 	isub
 	iastore
 
-	iload_2
-	iconst_1
-	iadd
-	istore_2
+	iinc 2 1
 
 	goto while_1_begin
 while_1_end:
@@ -74,10 +71,7 @@ while_2_begin:
 	iaload
 	invokestatic io/println(I)V
 
-	iload_2
-	iconst_1
-	iadd
-	istore_2
+	iinc 2 1
 
 	goto while_2_begin
 while_2_end:
@@ -185,18 +179,12 @@ while_4_begin:
 	iload 7
 	iastore
 
-	iload 5
-	iconst_1
-	iadd
-	istore 5
+	iinc 5 1
 
 	goto if_5_end
 if_5_else:
 if_5_end:
-	iload 6
-	iconst_1
-	iadd
-	istore 6
+	iinc 6 1
 
 	goto while_4_begin
 while_4_end:

@@ -1284,7 +1284,7 @@ void FinalExpression()       : {Token t;} {
         jjtreeOpenNodeScope(jjtn006);
       }
       try {
-/*@egen*/ ( <NEGATION> (<LEFT_PARENTESIS> Expression() <RIGHT_PARENTESIS> | Expression()) )/*@bgen(jjtree)*/
+/*@egen*/ ( <NEGATION> DotExpression() )/*@bgen(jjtree)*/
       } catch (Throwable jjte006) {
         if (jjtc006) {
           jjtree.clearNodeScope(jjtn006);

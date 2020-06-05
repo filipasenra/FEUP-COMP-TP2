@@ -80,10 +80,7 @@ while_3_begin:
 	iaload
 	invokestatic io/println(I)V
 
-	iload_3
-	iconst_1
-	iadd
-	istore_3
+	iinc 3 1
 
 	goto while_3_begin
 while_3_end:

@@ -1,4 +1,23 @@
-# COMP - Project 1
+# COMPILERS Project - Java Compiler
+
+## Group and Self-evaluation
+
+###  Group A3
+* Cláudia Martins - up 
+* Filipa Serna - up 
+* Ana Teresa - up 
+* Raul Viana - up 2010208089
+### Self Evaluation
+* Cláudia Martins  Grade: , Contribution:
+* Filipa Serna     Grade: , Contribution:
+* Ana Teresa       Grade: , Contribution:
+* Raul Viana       Grade: , Contribution:
+<br><br>
+Project Grade: 
+
+## Summary
+This project's main goal was to apply the theoretical principals of the course Compilers practically. This was achieved by building a compiler for programs written in the yalm language.
+The main parts of the project are **Syntactic error controller**, **Semantic analysis**, and **Code generation**.
 
 ## Compile
 
@@ -39,65 +58,61 @@ java -jar <jar filename> <arguments>
 
 Where ``<jar filename>`` is the name of the JAR file that has been copied to the root folder, and ``<arguments>`` are the arguments to be passed to ``main()``.
 
-## Test
+### Test
 
 To test the program, run ``gradle test``. This will execute the build, and run the JUnit tests in the ``test`` folder. If you want to see output printed during the tests, use the flag ``-i`` (i.e., ``gradle test -i``).
 
-### Check List
 
-#### Semantic Analysis 
-1. [DONE] Todas as verificações feitas na análise semantica devem reportar erro excepto a verificação de inicialização de variáveis que deverá apenas dar um warning:
+## Semantic Analysis 
+1. All semantic checks report errors except the variable initialization, wich reports warning. 
 2. Symbol Table
 
-    . [DONE] global: inclui info de imports e a classe declarada 
-    
-    . [DONE] classe-specific: inclui info de extends, fields e methods
-    
-    . [DONE] method-specific: inclui info dos arguments e local variables
-    
-    . sub topics:
-       + [DONE] tem de permitir method overload (i.e. métodos com mesmo nome mas assinatura de parâmetros diferente)
-       + [DONE] tem de permitir consulta da tabela por parte da análise semantica (e geração de código)
-       + [DONE] tem de permitir ligar e desligar a sua impressão para fins de debug (neste caso para fins de avaliação)
+* global: it has been included info about imports and declared class;
+* class-specific: was included info about extends, fields and methods;
+* method-specific: included info about arguments and local variables;
+* allows method overload;
+* allows access from semantic analysis and code generation;
+* allows turn it on/off by arguments.
 
 3. Type Verification
     
-    . [DONE] verificar se operações são efetuadas com o mesmo tipo (e.g. int + boolean tem de dar erro)
-
-    . [DONE] não é possível utilizar arrays diretamente para operações aritmeticas (e.g. array1 + array2)
-    
-    . [DONE] verificar se um array access é de facto feito sobre um array
-    
-    . [DONE] verificar se o indice do array access é um inteiro 
-    
-    . [DONE] verificar se valor do assignee é igual ao do assigned (a_int = b_boolean não é permitido!)
-    
-    . [DONE] verificar se operação booleana é efetuada só com booleanos
-    
-    . [DONE] verificar se conditional expressions (if e while) resulta num booleano
-    
-    . [DONE] verificar se variáveis são inicializadas, dando um WARNING em vez de ERRO
-    
-       + [DONE] parametros são assumidos como inicializados
-       + [DONE] devem fazer uma análise através do control flow, i.e., se há um if e a variável só é inicializada dentro de ou o then ou o else, deve-se dar um warning a indicar que poderá não estar inicializada
-       + [DONE] será considerado bónus a quem resolver esta verificação usando erros em vez de warning.
-            - cuidado que se a analise não estiver bem feita os erros vão fazer com que o vosso compilador não passe para a geração de código!
-			- caso pretendam fazer esta abordagem com erros adicionem uma forma de ativar/desativar o erro para facilitar no caso de haver problemas.
+* verify between same type operations only;
+* doesn't allow operations between arrays;
+* allows array access to arrays only;
+* allows assignment type equals assigned type only;
+* allows int values to index accessing array only; 
+* allows boolean operation with booleans only;
+* allows conditional expression result to be a boolean only;
+* raises a warning if variable not initialized, not an error;
+* assumes parameters as initialized;
+* raises warning of possibly variable not initialized if initialized inside if or else block;
+ 
 			
 4. Function Verification
-	* [DONE] verificar se o "target" do método existe, e se este contém o método (e.g. a.foo, ver se 'a' existe e se tem um método 'foo')
-	    - [DONE] caso seja do tipo da classe declarada (e.g. a usar o this), verificar se é método do extends olhando para o que foi importado (isto se a classe fizer extends de outra classe importada)
-	* [DONE] caso o método não seja da classe declarada, isto é importada, verificar se método foi importado
-	* [DONE] verificar se o número de argumentos na invocação é igual ao número de par âmetros da declaração
-	* [DONE] verificar se o tipo dos parâmetros coincide com o tipo dos argumentos
-	    - [DONE] não esquecer que existe method overloading
+
+* verifies if method target exists and if it has the called method;
+* verifies if the type is of the declared class (this) and if so verifies if the method is extended from another class;
+* if the method isn't from the declared class verifies if it was imported;
+* verifies if the number of invoked arguments equals the number of declared ones;
+* verifies if the parameter types match the argument types;
+allows method oveloading.
+
 
 #### Code Generation 
-
-* [DONE] estrutura básica de classe (incluindo construtor <init>)
+* [DONE] estrutura básica de classe (incluindo construtor init)
 * [DONE] estrutura básica de fields
 * [DONE] estrutura básica de métodos (podem desconsiderar os limites neste checkpoint: limit_stack 99, limit_locals 99)
 * [DONE] assignments
-* operações aritméticas (com prioridade de operações correta)
-	- neste checkpoint não é necessário a seleção das operações mais eficientes mas isto será considerado no CP3 e versão final
-* invocação de métodos
+* [DONE] operações aritméticas (com prioridade de operações correta)
+* [DONE]invocação de métodos
+
+
+
+**DEALING WITH SYNTACTIC ERRORS: (Describe how the syntactic error recovery of your tool does work. Does it exit after the first error?)
+**SEMANTIC ANALYSIS: (Refer the semantic rules implemented by your tool.)
+**INTERMEDIATE REPRESENTATIONS (IRs): (for example, when applicable, briefly describe the HLIR (high-level IR) and the LLIR (low-level IR) used, if your tool includes an LLIR with structure different from the HLIR)
+**CODE GENERATION: (describe how the code generation of your tool works and identify the possible problems your tool has regarding code generation.)
+**OVERVIEW: (refer the approach used in your tool, the main algorithms, the third-party tools and/or packages, etc.)
+**TASK DISTRIBUTION: (Identify the set of tasks done by each member of the project. You can divide this by checkpoint it if helps)
+**PROS: (Identify the most positive aspects of your tool)
+**CONS: (Identify the most negative aspects of your tool)

@@ -24,10 +24,7 @@ while_1_begin:
 	bipush 9
 	istore_2
 
-	iload 4
-	iconst_1
-	iadd
-	istore 4
+	iinc 4 1
 
 	goto while_1_begin
 while_1_end:

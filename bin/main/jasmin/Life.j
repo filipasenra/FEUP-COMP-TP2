@@ -684,7 +684,6 @@ AND_5:
 AND_5_end:
 	istore 4
 
-	pop
 	iload 4
 	ifne if_6_else
 	aload 5
@@ -729,10 +728,7 @@ if_7_else:
 
 if_7_end:
 if_3_end:
-	iload_1
-	iconst_1
-	iadd
-	istore_1
+	iinc 1 1
 
 	goto while_2_begin
 while_2_end:
@@ -782,15 +778,9 @@ if_9_end:
 	iaload
 	invokestatic io/print(I)V
 
-	iload_1
-	iconst_1
-	iadd
-	istore_1
+	iinc 1 1
 
-	iload_2
-	iconst_1
-	iadd
-	istore_2
+	iinc 2 1
 
 	goto while_8_begin
 while_8_end:
@@ -1069,18 +1059,12 @@ while_14_begin:
 	invokevirtual Life/ne(II)Z
 
 	ifeq if_15_else
-	iload 4
-	iconst_1
-	iadd
-	istore 4
+	iinc 4 1
 
 	goto if_15_end
 if_15_else:
 if_15_end:
-	iload_3
-	iconst_1
-	iadd
-	istore_3
+	iinc 3 1
 
 	goto while_14_begin
 while_14_end:
@@ -1106,10 +1090,7 @@ while_16_begin:
 	iload_2
 	iload_3
 	if_icmpge while_16_end
-	iload_2
-	iconst_1
-	iadd
-	istore_2
+	iinc 2 1
 
 	goto while_16_begin
 while_16_end:
@@ -1119,7 +1100,7 @@ while_16_end:
 
 
 .method public eq(II)Z
-	.limit stack 5
+	.limit stack 3
 	.limit locals 3
 
 	aload_0
@@ -1127,7 +1108,13 @@ while_16_end:
 	iload_2
 	invokevirtual Life/lt(II)Z
 
-	ifeq AND_18
+	ifne negation_18
+	iconst_1
+	goto negation_18_end
+negation_18:
+	iconst_0
+negation_18_end:
+	ifeq AND_17
 	aload_0
 	iload_2
 	iload_1
@@ -1139,18 +1126,12 @@ while_16_end:
 negation_19:
 	iconst_0
 negation_19_end:
-	ifeq AND_18
+	ifeq AND_17
 	iconst_1
-	goto AND_18_end
-AND_18:
+	goto AND_17_end
+AND_17:
 	iconst_0
-AND_18_end:
-	ifne negation_17
-	iconst_1
-	goto negation_17_end
-negation_17:
-	iconst_0
-negation_17_end:
+AND_17_end:
 	ireturn
 .end method
 
@@ -1175,7 +1156,7 @@ negation_20_end:
 
 
 .method public lt(II)Z
-	.limit stack 3
+	.limit stack 2
 	.limit locals 3
 
 	iload_1
@@ -1191,7 +1172,7 @@ lessThan_21_end:
 
 
 .method public le(II)Z
-	.limit stack 6
+	.limit stack 3
 	.limit locals 3
 
 	aload_0
@@ -1199,7 +1180,13 @@ lessThan_21_end:
 	iload_2
 	invokevirtual Life/lt(II)Z
 
-	ifeq AND_24
+	ifne negation_24
+	iconst_1
+	goto negation_24_end
+negation_24:
+	iconst_0
+negation_24_end:
+	ifeq AND_23
 	aload_0
 	iload_1
 	iload_2
@@ -1211,18 +1198,12 @@ lessThan_21_end:
 negation_25:
 	iconst_0
 negation_25_end:
-	ifeq AND_24
+	ifeq AND_23
 	iconst_1
-	goto AND_24_end
-AND_24:
+	goto AND_23_end
+AND_23:
 	iconst_0
-AND_24_end:
-	ifne negation_23
-	iconst_1
-	goto negation_23_end
-negation_23:
-	iconst_0
-negation_23_end:
+AND_23_end:
 	ifne negation_22
 	iconst_1
 	goto negation_22_end
@@ -1253,7 +1234,7 @@ negation_26_end:
 
 
 .method public ge(II)Z
-	.limit stack 6
+	.limit stack 3
 	.limit locals 3
 
 	aload_0
@@ -1261,7 +1242,13 @@ negation_26_end:
 	iload_2
 	invokevirtual Life/gt(II)Z
 
-	ifeq AND_29
+	ifne negation_29
+	iconst_1
+	goto negation_29_end
+negation_29:
+	iconst_0
+negation_29_end:
+	ifeq AND_28
 	aload_0
 	iload_1
 	iload_2
@@ -1273,18 +1260,12 @@ negation_26_end:
 negation_30:
 	iconst_0
 negation_30_end:
-	ifeq AND_29
+	ifeq AND_28
 	iconst_1
-	goto AND_29_end
-AND_29:
+	goto AND_28_end
+AND_28:
 	iconst_0
-AND_29_end:
-	ifne negation_28
-	iconst_1
-	goto negation_28_end
-negation_28:
-	iconst_0
-negation_28_end:
+AND_28_end:
 	ifne negation_27
 	iconst_1
 	goto negation_27_end

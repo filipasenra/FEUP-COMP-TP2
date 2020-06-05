@@ -31,10 +31,7 @@ while_1_begin:
 	isub
 	iastore
 
-	iload_2
-	iconst_1
-	iadd
-	istore_2
+	iinc 2 1
 
 	goto while_1_begin
 while_1_end:
@@ -93,7 +90,6 @@ negation_4:
 negation_4_end:
 	istore_2
 
-	pop
 	goto if_3_end
 if_3_else:
 	aload_0
@@ -138,10 +134,7 @@ while_5_begin:
 
 	iastore
 
-	iload_3
-	iconst_1
-	iadd
-	istore_3
+	iinc 3 1
 
 	goto while_5_begin
 while_5_end:
@@ -159,10 +152,7 @@ while_6_begin:
 	iadd
 	iastore
 
-	iload_3
-	iconst_1
-	iadd
-	istore_3
+	iinc 3 1
 
 	goto while_6_begin
 while_6_end:
