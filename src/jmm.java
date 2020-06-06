@@ -7,6 +7,7 @@ public class jmm {
     private static boolean SEMANTIC = false;
     private static boolean AST = false;
     private static boolean ACTIVATE_ERROR = false;
+    private static boolean OPTIMIZE = false;
 
     // When in root folder (comp2020-3a)
     // gradle build
@@ -19,7 +20,7 @@ public class jmm {
 
     public static void main(String[] args) throws ParseException {
         if (args.length == 0 || args.length>3) {
-            System.err.println("Usage: java Jmm <filename> -debug(-ast/-semantic) and/or -error");
+            System.err.println("Usage: java Jmm <filename> -debug(-ast/-semantic) and/or -error and/or -o");
             return;
         }
 
@@ -38,8 +39,10 @@ public class jmm {
                 case "-semantic":
                     SEMANTIC = true;
                     break;
+                case "-o":
+                    OPTIMIZE = true;
                 default:
-                    System.err.println("Usage: java Jmm <filename> -debug(-ast/-semantic) and/or -error");
+                    System.err.println("Usage: java Jmm <filename> -debug(-ast/-semantic) and/or -error and/or -o");
                     System.exit(-1);
             }
         }
@@ -86,7 +89,7 @@ public class jmm {
             System.out.println("Finished Semantic Analysis\n");
         }
 
-        CodeGenerator generator = new CodeGenerator(semanticAnalysis);
+        CodeGenerator generator = new CodeGenerator(semanticAnalysis, OPTIMIZE);
         generator.generate(root);
 
         System.out.println("Jasmin code generated");

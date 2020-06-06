@@ -20,6 +20,10 @@
 	iaload
 	istore_3
 
+	iload_2
+	aload_1
+	arraylength
+	if_icmpge while_1_end
 while_1_begin:
 	iload_2
 	aload_1

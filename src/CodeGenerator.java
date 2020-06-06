@@ -19,14 +19,16 @@ public class CodeGenerator {
     private int totalStack;
     private StringBuilder methodCode;
     private StringBuilder bodyCode;
+    private boolean optimize;
 
-    public CodeGenerator(SemanticAnalysis semanticAnalysis) {
+    public CodeGenerator(SemanticAnalysis semanticAnalysis, boolean optimize) {
         symbolTable = semanticAnalysis.getSymbolTable();
         this.loopCounter = 0;
         this.localVars = 0;
         this.nParams = 0;
         this.maxStack = 0;
         this.totalStack = 0;
+        this.optimize = optimize;
         this.methodCode = new StringBuilder();
         this.bodyCode = new StringBuilder();
     }

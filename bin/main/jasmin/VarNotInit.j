@@ -17,6 +17,9 @@
 	iconst_2
 	istore_3
 
+	iload 4
+	iconst_1
+	if_icmpge while_1_end
 while_1_begin:
 	iload 4
 	iconst_1
