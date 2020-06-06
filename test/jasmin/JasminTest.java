@@ -74,4 +74,10 @@ public class JasminTest {
 	}
 
 
+	@Test
+	public void testSumDigits() {
+		JasminUtils.testJmm("fixtures/CP3_Tests/SumDigits/SumDigits.jmm", JasminUtils.getResource("fixtures/CP3_Tests/SumDigits/SumDigits.output"), JasminUtils.getResource("fixtures/CP3_Tests/SumDigits/SumDigits.input"));
+	}
+
+
 }
