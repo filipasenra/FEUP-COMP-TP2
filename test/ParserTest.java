@@ -248,6 +248,11 @@ public class ParserTest {
         test("fixtures/CP3_Tests/Constructors.jmm", false);
     }
 
+    @Test
+    public void SumDigitsTest() {
+        test("fixtures/CP3_Tests/SumDigits/SumDigits.jmm", false);
+    }
+
     //end of our tests
 
     @Test

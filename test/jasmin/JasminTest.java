@@ -64,12 +64,12 @@ public class JasminTest {
 	}
 
 	@Test
-	public void TestExample() {
+	public void testExample() {
 		JasminUtils.testJmm("fixtures/CP3_Tests/Example/Example.jmm", JasminUtils.getResource("fixtures/CP3_Tests/Example/Example.output"));
 	}
 
 	@Test
-	public void TestOverview() {
+	public void testOverview() {
 		JasminUtils.testJmm("fixtures/CP3_Tests/Overview/Overview.jmm", JasminUtils.getResource("fixtures/CP3_Tests/Overview/Overview.output"));
 	}
 

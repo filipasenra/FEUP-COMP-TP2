@@ -363,10 +363,10 @@ public class CodeGenerator {
 
         }
 
-       if(canWhileBeOptimizedTemplate3(testExpression, symbolClass, symbolMethod)) {
+       if(canWhileBeOptimizedTemplate2(testExpression, symbolClass, symbolMethod)) {
 
            //if all the values are available and it doesn't execute once, then while is never performed
-            if (canWhileBeOptimizedTemplate2(testExpression, symbolClass, symbolMethod)) {
+            if (checkWhileOptimizedTemplate2(testExpression, symbolClass, symbolMethod)) {
 
                 //TRANSFORM INTO A DO-WHILE
                 this.bodyCode.append("while_" + thisCounter + "_begin:\n");
@@ -382,12 +382,11 @@ public class CodeGenerator {
             return;
         }
 
-        this.bodyCode.append("OLA1: \n");
         this.generateWhileExpression(node, symbolClass, symbolMethod);
 
     }
 
-    private boolean canWhileBeOptimizedTemplate3(SimpleNode expression, SymbolClass symbolClass, SymbolMethod symbolMethod) {
+    private boolean canWhileBeOptimizedTemplate2(SimpleNode expression, SymbolClass symbolClass, SymbolMethod symbolMethod) {
 
         if (expression instanceof ASTBoolean)
             return true;
@@ -406,7 +405,7 @@ public class CodeGenerator {
 
 
                 } else {
-                    if(!canWhileBeOptimizedTemplate3((SimpleNode) firstChild, symbolClass, symbolMethod))
+                    if(!canWhileBeOptimizedTemplate2((SimpleNode) firstChild, symbolClass, symbolMethod))
                         return false;
                 }
 
@@ -417,7 +416,7 @@ public class CodeGenerator {
 
                 } else {
 
-                    if(!canWhileBeOptimizedTemplate3((SimpleNode) firstChild, symbolClass, symbolMethod))
+                    if(!canWhileBeOptimizedTemplate2((SimpleNode) firstChild, symbolClass, symbolMethod))
                         return false;
                 }
 
@@ -458,7 +457,7 @@ public class CodeGenerator {
 
         if(expression instanceof ASTNegation){
             if(expression.jjtGetNumChildren() == 1) {
-                return canWhileBeOptimizedTemplate3((SimpleNode) expression.jjtGetChild(0), symbolClass, symbolMethod);
+                return canWhileBeOptimizedTemplate2((SimpleNode) expression.jjtGetChild(0), symbolClass, symbolMethod);
             }
         }
 
@@ -466,10 +465,10 @@ public class CodeGenerator {
 
     }
 
-    private boolean canWhileBeOptimizedTemplate2(SimpleNode expression, SymbolClass symbolClass, SymbolMethod symbolMethod) {
+    private boolean checkWhileOptimizedTemplate2(SimpleNode expression, SymbolClass symbolClass, SymbolMethod symbolMethod) {
 
         if (expression instanceof ASTBoolean)
-            return ((ASTBoolean) expression).val;;
+            return ((ASTBoolean) expression).val;
 
         if (expression instanceof ASTAND) {
 
@@ -490,7 +489,7 @@ public class CodeGenerator {
 
 
                 } else {
-                   if(!(firstChildValue = canWhileBeOptimizedTemplate2((SimpleNode) firstChild, symbolClass, symbolMethod)))
+                   if(!(firstChildValue = checkWhileOptimizedTemplate2((SimpleNode) firstChild, symbolClass, symbolMethod)))
                         return false;
                 }
 
@@ -504,7 +503,7 @@ public class CodeGenerator {
 
                 } else {
 
-                    if(!(secondChildValue = canWhileBeOptimizedTemplate2((SimpleNode) firstChild, symbolClass, symbolMethod)))
+                    if(!(secondChildValue = checkWhileOptimizedTemplate2((SimpleNode) firstChild, symbolClass, symbolMethod)))
                         return false;
                 }
 
@@ -556,7 +555,7 @@ public class CodeGenerator {
 
         if(expression instanceof ASTNegation){
             if(expression.jjtGetNumChildren() == 1) {
-                return !canWhileBeOptimizedTemplate2((SimpleNode) expression.jjtGetChild(0), symbolClass, symbolMethod);
+                return !checkWhileOptimizedTemplate2((SimpleNode) expression.jjtGetChild(0), symbolClass, symbolMethod);
             }
         }
 
@@ -574,11 +573,7 @@ public class CodeGenerator {
 
     private boolean identifierIsConstant3(String val, SymbolMethod symbolMethod) {
 
-        if ((symbolMethod.symbolTable.get(val) != null) && (symbolMethod.symbolTable.get(val).constant != null)) {
-            return true;
-        }
-
-        return false;
+        return (symbolMethod.symbolTable.get(val) != null) && (symbolMethod.symbolTable.get(val).constant != null);
     }
 
     private boolean canWhileBeOptimizedTemplate1(SimpleNode expression) {
