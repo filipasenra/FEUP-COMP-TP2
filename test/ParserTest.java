@@ -3,7 +3,6 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.lang.reflect.Method;
 
-import jasmin.JasminUtils;
 import org.junit.Test;
 
 public class ParserTest {
@@ -194,7 +193,7 @@ public class ParserTest {
 
     @Test
     public void testVarInitWhile() {
-        test("fixtures/public/fail/semantic/ourTests/varInitWhile.jmm", false);
+        test("fixtures/public/fail/semantic/ourTests/varInitWhile.jmm", true); //change if -error flag is deactivated
     }
 
     @Test
@@ -240,18 +239,59 @@ public class ParserTest {
 
     @Test
     public void childTest() {
-        test("fixtures/CP3_Tests/Child.jmm", false);
+        test("fixtures/CP3_Tests/Person/Child.jmm", false);
     }
 
     @Test
     public void constructorsTest() {
-        test("fixtures/CP3_Tests/Constructors.jmm", false);
+        test("fixtures/CP3_Tests/Person/Constructors.jmm", false);
     }
 
     @Test
     public void SumDigitsTest() {
         test("fixtures/CP3_Tests/SumDigits/SumDigits.jmm", false);
     }
+
+    @Test
+    public void testArray() {
+        test("fixtures/public/Array.jmm", false);
+    }
+
+    @Test
+    public void testArray2() {
+        test("fixtures/public/Array2.jmm", false);
+    }
+
+    @Test
+    public void testArray3() {
+        test("fixtures/public/Array3.jmm", false);
+    }
+
+    @Test
+    public void testCustom() {
+        test("fixtures/public/Custom.jmm", false);
+    }
+
+    @Test
+    public void testVarNotInitWithinIf() {
+        test("fixtures/public/varNotInitWithinIf.jmm", true); //change if -error flag is deactivated
+    }
+
+    @Test
+    public void testVarNotInitWithinIf2() {
+        test("fixtures/public/varNotInitWithinIf2.jmm", false);
+    }
+
+    @Test
+    public void testVarNotInitWithinIf3() {
+        test("fixtures/public/varNotInitWithinIf3.jmm", true); //change if -error flag is deactivated
+    }
+
+    @Test
+    public void testVarNotInitWithinIf4() {
+        test("fixtures/public/varNotInitWithinIf4.jmm", true); //change if -error flag is deactivated
+    }
+
 
     //end of our tests
 

@@ -80,4 +80,15 @@ public class JasminTest {
 	}
 
 
+	@Test
+	public void testChild() {
+		JasminUtils.testJmm("fixtures/CP3_Tests/Person/Child.jmm", JasminUtils.getResource("fixtures/CP3_Tests/Person/Child.output"));
+	}
+
+	@Test
+	public void testConstructors() {
+		JasminUtils.testJmm("fixtures/CP3_Tests/Person/Constructors.jmm", JasminUtils.getResource("fixtures/CP3_Tests/Person/Constructors.output"));
+	}
+
+
 }
