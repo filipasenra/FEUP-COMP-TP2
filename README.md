@@ -65,6 +65,7 @@ To test the program, run ``gradle test``. This will execute the build, and run t
 
 ## Semantic Analysis 
 1. All semantic checks report errors except the variable initialization, wich reports warning. 
+
 2. Symbol Table
 
 * global: it has been included info about imports and declared class;
@@ -98,21 +99,34 @@ To test the program, run ``gradle test``. This will execute the build, and run t
 allows method oveloading.
 
 
-#### Code Generation 
-* [DONE] estrutura básica de classe (incluindo construtor init)
-* [DONE] estrutura básica de fields
-* [DONE] estrutura básica de métodos (podem desconsiderar os limites neste checkpoint: limit_stack 99, limit_locals 99)
-* [DONE] assignments
-* [DONE] operações aritméticas (com prioridade de operações correta)
-* [DONE]invocação de métodos
+## Code Generation 
+The code is generated to a folder called jasmin. 
+The best instructions are chosen in each situation. The code is created to a buffer, in order to compute the *limit_stck* and the *limit_locals* values. After that, these values are inserted in the correct position and the whole code is written to the file.
+We opted for an iterative approach, but maybe recursivity would be more advisable ace the problem characteristics. 
+* generates class structure with constructor;
+* generates the fields;
+* generates methods;
+* generates the correct number for limit_stack and limit_locals;
+* generates the variable assignments;
+* generates arithmetic operations;
+* generates method invocations;
+* selects the best instruction to load and store variables;
+* selects the best instruction when incrementing variable;
 
+## Overview
+(refer the approach used in your tool, the main algorithms, the third-party tools and/or packages, etc.)
 
+## Task Distribution
+(Identify the set of tasks done by each member of the project. You can divide this by checkpoint it if helps)
+
+* Cláudia Martins
+* Filipa Serna
+* Ana Teresa
+* Raul Viana
+## Pros
+
+## Cons
 
 **DEALING WITH SYNTACTIC ERRORS: (Describe how the syntactic error recovery of your tool does work. Does it exit after the first error?)
 **SEMANTIC ANALYSIS: (Refer the semantic rules implemented by your tool.)
 **INTERMEDIATE REPRESENTATIONS (IRs): (for example, when applicable, briefly describe the HLIR (high-level IR) and the LLIR (low-level IR) used, if your tool includes an LLIR with structure different from the HLIR)
-**CODE GENERATION: (describe how the code generation of your tool works and identify the possible problems your tool has regarding code generation.)
-**OVERVIEW: (refer the approach used in your tool, the main algorithms, the third-party tools and/or packages, etc.)
-**TASK DISTRIBUTION: (Identify the set of tasks done by each member of the project. You can divide this by checkpoint it if helps)
-**PROS: (Identify the most positive aspects of your tool)
-**CONS: (Identify the most negative aspects of your tool)
