@@ -37,11 +37,6 @@ if_1_else:
 	istore_3
 
 if_1_end:
-	iconst_0
-	iconst_1
-	isub
-	iload_3
-	if_icmpge while_2_end
 while_2_begin:
 	iconst_0
 	iconst_1
@@ -75,10 +70,6 @@ while_2_end:
 	iconst_0
 	istore_3
 
-	iload_3
-	aload 4
-	arraylength
-	if_icmpge while_3_end
 while_3_begin:
 	iload_3
 	aload 4

@@ -1094,6 +1094,13 @@ public class CodeGenerator {
 
         if (operation.jjtGetNumChildren() != 2)
             return;
+        //constant folding
+        if(this.optimize){
+            if(operation.jjtGetChild(0) instanceof ASTLiteral &&
+                operation.jjtGetChild(1) instanceof ASTLiteral){
+                   //make the opetaion and only then write the code to file
+                } 
+        }
 
         generateExpression((SimpleNode) operation.jjtGetChild(0), symbolClass, symbolMethod);
         generateExpression((SimpleNode) operation.jjtGetChild(1), symbolClass, symbolMethod);

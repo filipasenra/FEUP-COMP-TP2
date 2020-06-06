@@ -88,3 +88,23 @@
 .end method
 
 
+.method public ola()I
+	.limit stack 2
+	.limit locals 2
+
+	iconst_0
+	istore_1
+
+while_1_begin:
+	iload_1
+	iconst_2
+	if_icmpge while_1_end
+	iinc 1 1
+
+	goto while_1_begin
+while_1_end:
+	iconst_1
+	ireturn
+.end method
+
+

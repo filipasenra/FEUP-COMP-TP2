@@ -102,7 +102,7 @@ allows method oveloading.
 ## Code Generation 
 The code is generated to a folder called jasmin. 
 The best instructions are chosen in each situation. The code is created to a buffer, in order to compute the *limit_stck* and the *limit_locals* values. After that, these values are inserted in the correct position and the whole code is written to the file.
-We opted for an iterative approach, but maybe recursivity would be more advisable ace the problem characteristics. 
+We opted for an iterative approach, but maybe recursivity would be more advisable due to the problem characteristics. 
 * generates class structure with constructor;
 * generates the fields;
 * generates methods;

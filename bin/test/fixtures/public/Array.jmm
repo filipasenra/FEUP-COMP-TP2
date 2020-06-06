@@ -11,5 +11,6 @@ class Array {
         buffer = new int[bufsz];
         buffer[10] = value;
         value = buffer[11];
+
     }
 }
