@@ -345,15 +345,16 @@ public class CodeGenerator {
 
     private void generateOptimizedWhileExpression(SimpleNode node, SymbolClass symbolClass, SymbolMethod symbolMethod){
 
+        this.loopCounter++;
+        int thisCounter = this.loopCounter;
+
         SimpleNode testExpression = (SimpleNode) node.jjtGetChild(0);
+        SimpleNode statement = (SimpleNode) node.jjtGetChild(1);
 
         if(canWhileBeOptimized(testExpression)){
 
             //infinite while -> if false while is never performed, if true while is infinite
             if(checkWhileOptimized(testExpression)) {
-                this.loopCounter++;
-                int thisCounter = this.loopCounter;
-                SimpleNode statement = (SimpleNode) node.jjtGetChild(1);
 
                 this.bodyCode.append("while_" + thisCounter + "_begin:\n");
                 generateStatement(statement, symbolClass, symbolMethod);
@@ -363,7 +364,20 @@ public class CodeGenerator {
             return;
         }
 
-        generateWhileExpression(node, symbolClass, symbolMethod);
+        //evaluate expression
+        if (!generateConditional(testExpression, symbolClass, symbolMethod, thisCounter, "while_", "_end"))
+            return;
+
+        this.bodyCode.append("while_" + thisCounter + "_begin:\n");
+
+        generateStatement(statement, symbolClass, symbolMethod);
+
+        //evaluate expression
+        if (!generateConditionalOposite(testExpression, symbolClass, symbolMethod, thisCounter, "while_", "_begin"))
+            return;
+
+        this.bodyCode.append("while_" + thisCounter + "_end:\n");
+
     }
 
     private boolean canWhileBeOptimized(SimpleNode expression) {
@@ -500,6 +514,84 @@ public class CodeGenerator {
         return true;
     }
 
+
+    private boolean generateConditionalOposite(SimpleNode expression, SymbolClass symbolClass, SymbolMethod symbolMethod, int thisCounter, String firstPartTag, String secondPartTag){
+
+        if (expression instanceof ASTBoolean) {
+            generateBoolean((ASTBoolean) expression);
+            reduceStack(1);
+            this.bodyCode.append("\tifne " + firstPartTag + thisCounter + secondPartTag+"\n");
+            this.totalStack = 0;
+            return true;
+
+        }
+
+        if (expression instanceof ASTLESSTHAN) {
+
+            if(expression.jjtGetNumChildren() != 2)
+                return false;
+
+
+            // identifier < 0
+            if(expression.jjtGetChild(1) instanceof ASTLiteral && ((ASTLiteral)expression.jjtGetChild(1)).val.equals("0")){
+                generateExpression((SimpleNode) expression.jjtGetChild(0), symbolClass, symbolMethod);
+                this.bodyCode.append("\tiflt " + firstPartTag + thisCounter + secondPartTag+"\n");
+                reduceStack(1);
+            }
+
+            else{
+                generateExpression((SimpleNode) expression.jjtGetChild(0), symbolClass, symbolMethod);
+                generateExpression((SimpleNode) expression.jjtGetChild(1), symbolClass, symbolMethod);
+                this.bodyCode.append("\tif_icmplt " + firstPartTag + thisCounter + secondPartTag+"\n");
+                reduceStack(2);
+            }
+
+            this.totalStack = 0;
+            return true;
+
+        }
+
+        if (expression instanceof ASTAND) {
+
+            if(expression.jjtGetNumChildren() != 2)
+                return false;
+
+            // Code for first child
+            generateExpression((SimpleNode) expression.jjtGetChild(0), symbolClass, symbolMethod);
+            reduceStack(1);
+            this.bodyCode.append("\tifeq " + firstPartTag + thisCounter + secondPartTag+"\n");
+
+            //Code for second child
+            generateExpression((SimpleNode) expression.jjtGetChild(1), symbolClass, symbolMethod);
+            reduceStack(1);
+            this.bodyCode.append("\tifne " + firstPartTag + thisCounter + secondPartTag + "\n");
+            this.totalStack = 0;
+
+            return true;
+
+        }
+
+        if(expression instanceof ASTNegation) {
+
+            if(expression.jjtGetNumChildren() != 1)
+                return false;
+
+            generateExpression((SimpleNode) expression.jjtGetChild(0), symbolClass, symbolMethod);
+            reduceStack(1);
+            this.bodyCode.append("\tifeq " + firstPartTag + thisCounter + secondPartTag + "\n");
+            this.totalStack = 0;
+
+            return true;
+
+        }
+
+        this.generateExpression(expression, symbolClass, symbolMethod);
+        reduceStack(1);
+        this.bodyCode.append("\tifne " + firstPartTag + thisCounter + secondPartTag+"\n");
+        this.totalStack = 0;
+
+        return true;
+    }
 
 
     private void generateMethodReturn(Type type) {
