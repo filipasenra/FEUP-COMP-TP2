@@ -448,10 +448,12 @@ public class SemanticAnalysis {
         this.analysingStatementWithinIf(symbolClass, symbolMethod, elseBody, variablesInitializedInElse);
 
         for (SymbolVar symbolVar : variablesInitializedInIf) {
+            symbolVar.changedInIfOrWile = true;
             symbolVar.updateInitialized(!variablesInitializedInElse.contains(symbolVar));
         }
 
         for (SymbolVar symbolVar : variablesInitializedInElse) {
+            symbolVar.changedInIfOrWile = true;
             symbolVar.updateInitialized(!variablesInitializedInIf.contains(symbolVar));
         }
     }
@@ -476,6 +478,7 @@ public class SemanticAnalysis {
 
 
         for (SymbolVar symbolVar : variablesInitializedInIf) {
+            symbolVar.changedInIfOrWile = true;
 
             //if has been initialized in both, add to array initialized, if not, make it partially initialized
             if (variablesInitializedInElse.contains(symbolVar))
@@ -485,6 +488,7 @@ public class SemanticAnalysis {
         }
 
         for (SymbolVar symbolVar : variablesInitializedInElse) {
+            symbolVar.changedInIfOrWile = true;
 
             //if has been initialized in both, add to array initialized, if not, make it partially initialized
             if (variablesInitializedInIf.contains(symbolVar))
@@ -556,6 +560,10 @@ public class SemanticAnalysis {
         if (type1 == null || type2 == null)
             return;
 
+        if (symbolMethod.getSymbol(((ASTIdentifier) node.jjtGetChild(0)).val) != null) {
+            symbolMethod.getSymbol(((ASTIdentifier) node.jjtGetChild(0)).val).changedInIfOrWile = true;
+        }
+
         setInitializedWithinIf(symbolClass, symbolMethod, (ASTIdentifier) node.jjtGetChild(0), variablesInitialized);
 
         if (type1 != type2) {
@@ -567,8 +575,7 @@ public class SemanticAnalysis {
     private void setInitializedWithinIf(SymbolClass symbolClass, SymbolMethod symbolMethod, ASTIdentifier node, HashSet<SymbolVar> variablesInitialized) {
 
         if (symbolMethod.symbolTable.containsKey(node.val)) {
-            if (symbolMethod.symbolTable.get(node.val).getInitialized() != Initialized.INITIALIZED)
-            {
+            if (symbolMethod.symbolTable.get(node.val).getInitialized() != Initialized.INITIALIZED) {
                 variablesInitialized.add(symbolMethod.symbolTable.get(node.val));
                 symbolMethod.symbolTable.get(node.val).setInitialized(Initialized.PARTIALLY_INITIALIZED);
             }

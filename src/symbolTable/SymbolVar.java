@@ -4,6 +4,10 @@ public class SymbolVar extends Symbol {
 
     Initialized initialized = Initialized.NOT_INITIALIZED;
 
+    public String constant = null;
+    public boolean inited = false;
+    public boolean changedInIfOrWile = false;
+
     public SymbolVar(String name) {
         super(name);
     }
