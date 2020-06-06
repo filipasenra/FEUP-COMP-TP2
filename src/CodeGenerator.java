@@ -304,7 +304,8 @@ public class CodeGenerator {
             generateIfExpression(node, symbolClass, symbolMethod);
 
         } else if (node instanceof ASTWhile) {
-            generateWhileExpression(node, symbolClass, symbolMethod);
+            generateOptimizedWhileExpression(node, symbolClass, symbolMethod);
+            //generateWhileExpression(node, symbolClass, symbolMethod);
 
         } else if (node instanceof ASTStatementBlock) {
             for (int i = 0; i < node.jjtGetNumChildren(); i++)
@@ -337,6 +338,28 @@ public class CodeGenerator {
         this.bodyCode.append("\tgoto while_" + thisCounter + "_begin\n");
         this.bodyCode.append("while_" + thisCounter + "_end:\n");
     }
+
+    private void generateOptimizedWhileExpression(SimpleNode node, SymbolClass symbolClass, SymbolMethod symbolMethod){
+        this.loopCounter++;
+        int thisCounter = this.loopCounter;
+        SimpleNode testExpression = (SimpleNode) node.jjtGetChild(0);
+        SimpleNode statement = (SimpleNode) node.jjtGetChild(1);
+
+
+        //evaluate expression --> if false, go to the end
+        if (!generateConditional(testExpression, symbolClass, symbolMethod, thisCounter, "while_", "_end"))
+            return;
+
+        //if expression is true, do code
+        this.bodyCode.append("while_" + thisCounter + "_begin:\n");
+        if (!generateConditional(testExpression, symbolClass, symbolMethod, thisCounter, "while_", "_end"))
+            return;
+        generateStatement(statement, symbolClass, symbolMethod);
+
+        this.bodyCode.append("\tgoto while_" + thisCounter + "_begin\n");                
+        this.bodyCode.append("while_" + thisCounter + "_end:\n");
+    }
+
 
     private void generateIfExpression(SimpleNode node, SymbolClass symbolClass, SymbolMethod symbolMethod){
         this.loopCounter++;
