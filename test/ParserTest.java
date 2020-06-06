@@ -3,6 +3,7 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.lang.reflect.Method;
 
+import jasmin.JasminUtils;
 import org.junit.Test;
 
 public class ParserTest {
@@ -204,6 +205,47 @@ public class ParserTest {
     @Test
     public void staticContext() {
         test("fixtures/public/fail/semantic/ourTests/staticImport.jmm", true);
+    }
+
+
+
+    @Test
+    public void testGuessNumber() { test("fixtures/CP3_Tests/GuessNumber/GuessNumber.jmm", false); }
+
+    @Test
+    public void constPropOpt() {
+        test("fixtures/CP3_Tests/ConstPropOpt/ConstPropOpt.jmm", false);
+    }
+
+    @Test
+    public void arrayTest() {
+        test("fixtures/CP3_Tests/ArrayTest/ArrayTest.jmm", false);
+    }
+
+    @Test
+    public void conditionalTest() {
+        test("fixtures/CP3_Tests/ConditionalTest/ConditionalTest.jmm", false);
+    }
+
+    @Test
+    public void exampleTest() {
+        test("fixtures/CP3_Tests/Example/Example.jmm", false);
+    }
+
+    @Test
+    public void overviewTest() {
+        test("fixtures/CP3_Tests/Overview/Overview.jmm", false);
+    }
+
+
+    @Test
+    public void childTest() {
+        test("fixtures/CP3_Tests/Child.jmm", false);
+    }
+
+    @Test
+    public void constructorsTest() {
+        test("fixtures/CP3_Tests/Constructors.jmm", false);
     }
 
     //end of our tests

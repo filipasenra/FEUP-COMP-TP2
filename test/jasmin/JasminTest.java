@@ -48,5 +48,30 @@ public class JasminTest {
 		JasminUtils.testJmm("fixtures/CP3_Tests/GuessNumber/GuessNumber.jmm", JasminUtils.getResource("fixtures/CP3_Tests/GuessNumber/GuessNumber.output"), JasminUtils.getResource("fixtures/CP3_Tests/GuessNumber/GuessNumber.input"));
 	}
 
+	@Test
+	public void testConstPropOpt() {
+		JasminUtils.testJmm("fixtures/CP3_Tests/ConstPropOpt/ConstPropOpt.jmm", JasminUtils.getResource("fixtures/CP3_Tests/ConstPropOpt/ConstPropOpt.output"));
+	}
+
+	@Test
+	public void testArray() {
+		JasminUtils.testJmm("fixtures/CP3_Tests/ArrayTest/ArrayTest.jmm", JasminUtils.getResource("fixtures/CP3_Tests/ArrayTest/ArrayTest.output"));
+	}
+
+	@Test
+	public void testConditional() {
+		JasminUtils.testJmm("fixtures/CP3_Tests/ConditionalTest/ConditionalTest.jmm", JasminUtils.getResource("fixtures/CP3_Tests/ConditionalTest/ConditionalTest.output"));
+	}
+
+	@Test
+	public void TestExample() {
+		JasminUtils.testJmm("fixtures/CP3_Tests/Example/Example.jmm", JasminUtils.getResource("fixtures/CP3_Tests/Example/Example.output"));
+	}
+
+	@Test
+	public void TestOverview() {
+		JasminUtils.testJmm("fixtures/CP3_Tests/Overview/Overview.jmm", JasminUtils.getResource("fixtures/CP3_Tests/Overview/Overview.output"));
+	}
+
 
 }

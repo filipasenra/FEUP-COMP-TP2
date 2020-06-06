@@ -71,5 +71,16 @@ class Simple {
         return result;
     }
 
+    public int ola() {
+        int i;
+        i = 0;
+
+        while(i < 2){
+            i = i + 1;
+        }
+
+        return 1;
+    }
+
 
 }
