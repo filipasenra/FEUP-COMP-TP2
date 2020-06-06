@@ -89,8 +89,8 @@ public class jmm {
             System.out.println("Finished Semantic Analysis\n");
         }
 
-        CodeGenerator generator = new CodeGenerator(semanticAnalysis);
-        generator.generate(root, OPTIMIZE);
+        CodeGenerator generator = new CodeGenerator(semanticAnalysis, OPTIMIZE);
+        generator.generate(root);
 
         System.out.println("Jasmin code generated");
     }

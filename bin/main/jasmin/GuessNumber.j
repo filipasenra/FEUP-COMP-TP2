@@ -32,6 +32,8 @@
 	bipush 10
 	istore 4
 
+	iload 6
+	ifne while_1_end
 while_1_begin:
 	iload 6
 	ifne while_1_end
