@@ -7,6 +7,7 @@ public class jmm {
     private static boolean SEMANTIC = false;
     private static boolean AST = false;
     private static boolean ACTIVATE_ERROR = false;
+    private static boolean OPT = false;
 
     // When in root folder (comp2020-3a)
     // gradle build
@@ -18,7 +19,7 @@ public class jmm {
     //java -jar comp2020-3a.jar test/fixtures/public/fail/semantic/binop_incomp.jmm
 
     public static void main(String[] args) throws ParseException {
-        if (args.length == 0 || args.length>3) {
+        if (args.length == 0 || args.length > 3) {
             System.err.println("Usage: java Jmm <filename> -debug(-ast/-semantic) and/or -error");
             return;
         }
@@ -38,6 +39,10 @@ public class jmm {
                 case "-semantic":
                     SEMANTIC = true;
                     break;
+                case "-o":
+                    OPT = true;
+                    break;
+
                 default:
                     System.err.println("Usage: java Jmm <filename> -debug(-ast/-semantic) and/or -error");
                     System.exit(-1);
@@ -53,7 +58,7 @@ public class jmm {
             return;
         }
 
-        if(DEBUG || AST)
+        if (DEBUG || AST)
             System.out.println("Starting Parsing\n");
 
         SimpleNode root = myParser.ParseExpression(); // returns reference to root node
@@ -61,7 +66,7 @@ public class jmm {
             throw new RuntimeException("Has syntactic errors");
         }
 
-        if(DEBUG || AST) {
+        if (DEBUG || AST) {
             root.dump(""); // prints the tree on the screen
             System.out.println("Finished Parsing");
         }
@@ -70,7 +75,7 @@ public class jmm {
         semanticAnalysis.startAnalysing(root);
 
 
-        if(DEBUG || SEMANTIC)
+        if (DEBUG || SEMANTIC)
             System.out.println("Starting Semantic Analysis\n");
 
         if (semanticAnalysis.getNerros() > 0) {
@@ -81,7 +86,7 @@ public class jmm {
             System.err.println("Has " + semanticAnalysis.getNwarnings() + " semantic warnings");
         }
 
-        if(DEBUG || SEMANTIC) {
+        if (DEBUG || SEMANTIC) {
             semanticAnalysis.dump();
             System.out.println("Finished Semantic Analysis\n");
         }
