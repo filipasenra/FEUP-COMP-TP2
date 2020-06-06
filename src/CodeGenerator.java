@@ -364,7 +364,7 @@ public class CodeGenerator {
             return;
         }
 
-        //evaluate expression
+        //evaluate expression for the first time -> if not true, skips to the end
         if (!generateConditional(testExpression, symbolClass, symbolMethod, thisCounter, "while_", "_end"))
             return;
 
@@ -372,8 +372,8 @@ public class CodeGenerator {
 
         generateStatement(statement, symbolClass, symbolMethod);
 
-        //evaluate expression
-        if (!generateConditionalOposite(testExpression, symbolClass, symbolMethod, thisCounter, "while_", "_begin"))
+        //evaluate expression for the second time -> if true, skips to the begin
+        if (!generateConditionalOpposite(testExpression, symbolClass, symbolMethod, thisCounter, "while_", "_begin"))
             return;
 
         this.bodyCode.append("while_" + thisCounter + "_end:\n");
@@ -515,7 +515,7 @@ public class CodeGenerator {
     }
 
 
-    private boolean generateConditionalOposite(SimpleNode expression, SymbolClass symbolClass, SymbolMethod symbolMethod, int thisCounter, String firstPartTag, String secondPartTag){
+    private boolean generateConditionalOpposite(SimpleNode expression, SymbolClass symbolClass, SymbolMethod symbolMethod, int thisCounter, String firstPartTag, String secondPartTag){
 
         if (expression instanceof ASTBoolean) {
             generateBoolean((ASTBoolean) expression);
