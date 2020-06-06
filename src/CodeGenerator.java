@@ -305,10 +305,10 @@ public class CodeGenerator {
             generateIfExpression(node, symbolClass, symbolMethod);
 
         } else if (node instanceof ASTWhile) {
-            //if(this.optimize)
-            generateOptimizedWhileExpression(node, symbolClass, symbolMethod);
-           /* else
-                generateWhileExpression(node, symbolClass, symbolMethod);*/
+            if(this.optimize)
+                generateOptimizedWhileExpression(node, symbolClass, symbolMethod);
+            else
+                generateWhileExpression(node, symbolClass, symbolMethod);
 
         } else if (node instanceof ASTStatementBlock) {
             for (int i = 0; i < node.jjtGetNumChildren(); i++)
