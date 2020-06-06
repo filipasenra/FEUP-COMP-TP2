@@ -18,14 +18,16 @@ public class CodeGenerator {
     private int totalStack;
     private StringBuilder methodCode;
     private StringBuilder bodyCode;
+    private boolean optimize;
 
-    public CodeGenerator(SemanticAnalysis semanticAnalysis) {
+    public CodeGenerator(SemanticAnalysis semanticAnalysis, boolean optimize) {
         symbolTable = semanticAnalysis.getSymbolTable();
         this.loopCounter = 0;
         this.localVars = 0;
         this.nParams = 0;
         this.maxStack = 0;
         this.totalStack = 0;
+        this.optimize = optimize;
         this.methodCode = new StringBuilder();
         this.bodyCode = new StringBuilder();
     }
@@ -303,8 +305,10 @@ public class CodeGenerator {
             generateIfExpression(node, symbolClass, symbolMethod);
 
         } else if (node instanceof ASTWhile) {
+            //if(this.optimize)
             generateOptimizedWhileExpression(node, symbolClass, symbolMethod);
-            //generateWhileExpression(node, symbolClass, symbolMethod);
+           /* else
+                generateWhileExpression(node, symbolClass, symbolMethod);*/
 
         } else if (node instanceof ASTStatementBlock) {
             for (int i = 0; i < node.jjtGetNumChildren(); i++)
@@ -338,25 +342,54 @@ public class CodeGenerator {
         this.bodyCode.append("while_" + thisCounter + "_end:\n");
     }
 
+
     private void generateOptimizedWhileExpression(SimpleNode node, SymbolClass symbolClass, SymbolMethod symbolMethod) {
-        this.loopCounter++;
-        int thisCounter = this.loopCounter;
         SimpleNode testExpression = (SimpleNode) node.jjtGetChild(0);
-        SimpleNode statement = (SimpleNode) node.jjtGetChild(1);
 
+        if (canWhileBeOptimized(testExpression)) {
 
-        //evaluate expression --> if false, go to the end
-        if (!generateConditional(testExpression, symbolClass, symbolMethod, thisCounter, "while_", "_end"))
+            //infinite while -> if false while is never performed, if true while is infinite
+            if (checkWhileOptimized(testExpression)) {
+                this.loopCounter++;
+                int thisCounter = this.loopCounter;
+                SimpleNode statement = (SimpleNode) node.jjtGetChild(1);
+
+                this.bodyCode.append("while_" + thisCounter + "_begin:\n");
+                generateStatement(statement, symbolClass, symbolMethod);
+                this.bodyCode.append("\tgoto while_" + thisCounter + "_begin\n");
+            }
+
             return;
+        }
 
-        //if expression is true, do code
-        this.bodyCode.append("while_" + thisCounter + "_begin:\n");
-        if (!generateConditional(testExpression, symbolClass, symbolMethod, thisCounter, "while_", "_end"))
-            return;
-        generateStatement(statement, symbolClass, symbolMethod);
+        generateWhileExpression(node, symbolClass, symbolMethod);
+    }
 
-        this.bodyCode.append("\tgoto while_" + thisCounter + "_begin\n");
-        this.bodyCode.append("while_" + thisCounter + "_end:\n");
+    private boolean canWhileBeOptimized(SimpleNode expression) {
+        return expression instanceof ASTBoolean ||
+                (expression instanceof ASTAND && expression.jjtGetNumChildren() == 2 && expression.jjtGetChild(0) instanceof ASTBoolean && expression.jjtGetChild(1) instanceof ASTBoolean)
+                || (expression instanceof ASTLESSTHAN && expression.jjtGetNumChildren() == 2 && expression.jjtGetChild(0) instanceof ASTLiteral && expression.jjtGetChild(1) instanceof ASTLiteral);
+
+    }
+
+    private boolean checkWhileOptimized(SimpleNode expression) {
+
+        if (expression instanceof ASTBoolean)
+            return ((ASTBoolean) expression).val;
+
+        if (expression instanceof ASTAND) {
+            if (expression.jjtGetNumChildren() == 2 && expression.jjtGetChild(0) instanceof ASTBoolean && expression.jjtGetChild(1) instanceof ASTBoolean) {
+                return ((ASTBoolean) expression.jjtGetChild(1)).val && ((ASTBoolean) expression.jjtGetChild(1)).val;
+            }
+        }
+
+        if (expression instanceof ASTLESSTHAN) {
+            if (expression.jjtGetNumChildren() == 2 && expression.jjtGetChild(0) instanceof ASTLiteral && expression.jjtGetChild(1) instanceof ASTLiteral) {
+                return Integer.parseInt(((ASTLiteral) expression.jjtGetChild(1)).val) < Integer.parseInt(((ASTLiteral) expression.jjtGetChild(1)).val);
+            }
+        }
+
+        return false;
     }
 
 
@@ -528,7 +561,8 @@ public class CodeGenerator {
             storeField(lhs, rhs, symbolClass, symbolMethod);
         }
 
-        generateOptimizedEquality(node, symbolClass, symbolMethod);
+        if (this.optimize)
+            generateOptimizedEquality(node, symbolClass, symbolMethod);
 
         this.bodyCode.append("\n");
     }
@@ -814,11 +848,13 @@ public class CodeGenerator {
 
     private Type loadVariable(String val, SymbolClass symbolClass, SymbolMethod symbolMethod) {
 
-        if ((symbolMethod.symbolTable.get(val) != null) && (symbolMethod.symbolTable.get(val).constant != null)) {
-            if (!symbolMethod.symbolTable.get(val).changedInIfOrWile) {
-                if (symbolMethod.symbolTable.get(val).getType() == Type.INT) {
-                    loadIntLiteral(symbolMethod.symbolTable.get(val).constant);
-                    return Type.INT;
+        if (this.optimize) {
+            if ((symbolMethod.symbolTable.get(val) != null) && (symbolMethod.symbolTable.get(val).constant != null)) {
+                if (!symbolMethod.symbolTable.get(val).changedInIfOrWile) {
+                    if (symbolMethod.symbolTable.get(val).getType() == Type.INT) {
+                        loadIntLiteral(symbolMethod.symbolTable.get(val).constant);
+                        return Type.INT;
+                    }
                 }
             }
         }

@@ -1,3 +1,5 @@
+import symbolTable.Symbol;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
@@ -7,7 +9,8 @@ public class jmm {
     private static boolean SEMANTIC = false;
     private static boolean AST = false;
     private static boolean ACTIVATE_ERROR = false;
-    private static boolean OPT = false;
+    private static boolean OPTIMIZE = false;
+
 
     // When in root folder (comp2020-3a)
     // gradle build
@@ -19,8 +22,8 @@ public class jmm {
     //java -jar comp2020-3a.jar test/fixtures/public/fail/semantic/binop_incomp.jmm
 
     public static void main(String[] args) throws ParseException {
-        if (args.length == 0 || args.length > 3) {
-            System.err.println("Usage: java Jmm <filename> -debug(-ast/-semantic) and/or -error");
+        if (args.length == 0 || args.length > 4) {
+            System.err.println("Usage: java Jmm <filename> -debug(-ast/-semantic) and/or -error and/or -o");
             return;
         }
 
@@ -40,11 +43,11 @@ public class jmm {
                     SEMANTIC = true;
                     break;
                 case "-o":
-                    OPT = true;
+                    OPTIMIZE = true;
                     break;
 
                 default:
-                    System.err.println("Usage: java Jmm <filename> -debug(-ast/-semantic) and/or -error");
+                    System.err.println("Usage: java Jmm <filename> -debug(-ast/-semantic) and/or -error and/or -o");
                     System.exit(-1);
             }
         }
@@ -91,7 +94,7 @@ public class jmm {
             System.out.println("Finished Semantic Analysis\n");
         }
 
-        CodeGenerator generator = new CodeGenerator(semanticAnalysis);
+        CodeGenerator generator = new CodeGenerator(semanticAnalysis, OPTIMIZE);
         generator.generate(root);
 
         System.out.println("Jasmin code generated");
