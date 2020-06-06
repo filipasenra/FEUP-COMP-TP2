@@ -34,7 +34,7 @@ public class SymbolMethod extends Symbol {
 
         String ifIsStatic = "";
         if(this.isStatic)
-            ifIsObject = "is static";
+            ifIsObject = " is static";
 
         System.out.println(prefix + "  Return Type: " + this.type + ifIsObject + ifIsStatic);
 

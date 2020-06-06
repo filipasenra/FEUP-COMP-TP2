@@ -334,7 +334,7 @@ public class CodeGenerator {
         this.bodyCode.append("while_" + thisCounter + "_begin:\n");
 
         //evaluate expression
-        if (!generateConditional(testExpression, symbolClass, symbolMethod, thisCounter, "while_", "_end"))
+        if (!generateConditional(testExpression, symbolClass, symbolMethod, thisCounter, "while_", "_end", true))
             return;
 
         generateStatement(statement, symbolClass, symbolMethod);
@@ -364,7 +364,7 @@ public class CodeGenerator {
         }
 
         //evaluate expression for the first time -> if not true, skips to the end
-        if (!generateConditional(testExpression, symbolClass, symbolMethod, thisCounter, "while_", "_end"))
+        if (!generateConditional(testExpression, symbolClass, symbolMethod, thisCounter, "while_", "_end", true))
             return;
 
         this.bodyCode.append("while_" + thisCounter + "_begin:\n");
@@ -372,7 +372,7 @@ public class CodeGenerator {
         generateStatement(statement, symbolClass, symbolMethod);
 
         //evaluate expression for the second time -> if true, skips to the begin
-        if (!generateConditionalOpposite(testExpression, symbolClass, symbolMethod, thisCounter, "while_", "_begin"))
+        if (!generateConditional(testExpression, symbolClass, symbolMethod, thisCounter, "while_", "_begin", false))
             return;
 
         this.bodyCode.append("while_" + thisCounter + "_end:\n");
@@ -416,7 +416,7 @@ public class CodeGenerator {
         SimpleNode elseBlock = (SimpleNode) node.jjtGetChild(2);
 
         //**********Expression Test************
-        if (!generateConditional(expression, symbolClass, symbolMethod, thisCounter, "if_", "_else"))
+        if (!generateConditional(expression, symbolClass, symbolMethod, thisCounter, "if_", "_else", true))
             return;
 
         //**************************************
@@ -433,12 +433,13 @@ public class CodeGenerator {
         //******************************** */
     }
 
-    private boolean generateConditional(SimpleNode expression, SymbolClass symbolClass, SymbolMethod symbolMethod, int thisCounter, String firstPartTag, String secondPartTag) {
+    private boolean generateConditional(SimpleNode expression, SymbolClass symbolClass, SymbolMethod symbolMethod, int thisCounter, String firstPartTag, String secondPartTag, boolean normal) {
 
         if (expression instanceof ASTBoolean) {
             generateBoolean((ASTBoolean) expression);
             reduceStack(1);
-            this.bodyCode.append("\tifeq " + firstPartTag + thisCounter + secondPartTag + "\n");
+
+            this.bodyCode.append("\t" + ((normal) ? "ifeq" : "ifne") + " " + firstPartTag + thisCounter + secondPartTag + "\n");
             this.totalStack = 0;
             return true;
 
@@ -453,12 +454,14 @@ public class CodeGenerator {
             // identifier < 0
             if (expression.jjtGetChild(1) instanceof ASTLiteral && ((ASTLiteral) expression.jjtGetChild(1)).val.equals("0")) {
                 generateExpression((SimpleNode) expression.jjtGetChild(0), symbolClass, symbolMethod);
-                this.bodyCode.append("\tifge " + firstPartTag + thisCounter + secondPartTag + "\n");
+
+                this.bodyCode.append("\t" + (normal ? "ifge" : "iflt") + " " + firstPartTag + thisCounter + secondPartTag + "\n");
                 reduceStack(1);
             } else {
                 generateExpression((SimpleNode) expression.jjtGetChild(0), symbolClass, symbolMethod);
                 generateExpression((SimpleNode) expression.jjtGetChild(1), symbolClass, symbolMethod);
-                this.bodyCode.append("\tif_icmpge " + firstPartTag + thisCounter + secondPartTag + "\n");
+
+                this.bodyCode.append("\t" + (normal ? "if_icmpge" : "if_icmplt") + " " + firstPartTag + thisCounter + secondPartTag + "\n");
                 reduceStack(2);
             }
 
@@ -480,7 +483,8 @@ public class CodeGenerator {
             //Code for second child
             generateExpression((SimpleNode) expression.jjtGetChild(1), symbolClass, symbolMethod);
             reduceStack(1);
-            this.bodyCode.append("\tifeq " + firstPartTag + thisCounter + secondPartTag + "\n");
+
+            this.bodyCode.append("\t" + (normal ? "ifeq" : "ifne") + " " + firstPartTag + thisCounter + secondPartTag + "\n");
             this.totalStack = 0;
 
             return true;
@@ -494,7 +498,7 @@ public class CodeGenerator {
 
             generateExpression((SimpleNode) expression.jjtGetChild(0), symbolClass, symbolMethod);
             reduceStack(1);
-            this.bodyCode.append("\tifne " + firstPartTag + thisCounter + secondPartTag + "\n");
+            this.bodyCode.append("\t" + (normal ? "ifne" : "ifeq") + " " + firstPartTag + thisCounter + secondPartTag + "\n");
             this.totalStack = 0;
 
             return true;
@@ -503,85 +507,7 @@ public class CodeGenerator {
 
         this.generateExpression(expression, symbolClass, symbolMethod);
         reduceStack(1);
-        this.bodyCode.append("\tifeq " + firstPartTag + thisCounter + secondPartTag + "\n");
-        this.totalStack = 0;
-
-        return true;
-    }
-
-    private boolean generateConditionalOpposite(SimpleNode expression, SymbolClass symbolClass, SymbolMethod symbolMethod, int thisCounter, String firstPartTag, String secondPartTag){
-
-        if (expression instanceof ASTBoolean) {
-            generateBoolean((ASTBoolean) expression);
-            reduceStack(1);
-            this.bodyCode.append("\tifne " + firstPartTag + thisCounter + secondPartTag+"\n");
-            this.totalStack = 0;
-            return true;
-
-        }
-
-        if (expression instanceof ASTLESSTHAN) {
-
-            if(expression.jjtGetNumChildren() != 2)
-                return false;
-
-
-            // identifier < 0
-            if(expression.jjtGetChild(1) instanceof ASTLiteral && ((ASTLiteral)expression.jjtGetChild(1)).val.equals("0")){
-                generateExpression((SimpleNode) expression.jjtGetChild(0), symbolClass, symbolMethod);
-                this.bodyCode.append("\tiflt " + firstPartTag + thisCounter + secondPartTag+"\n");
-                reduceStack(1);
-            }
-
-            else{
-                generateExpression((SimpleNode) expression.jjtGetChild(0), symbolClass, symbolMethod);
-                generateExpression((SimpleNode) expression.jjtGetChild(1), symbolClass, symbolMethod);
-                this.bodyCode.append("\tif_icmplt " + firstPartTag + thisCounter + secondPartTag+"\n");
-                reduceStack(2);
-            }
-
-            this.totalStack = 0;
-            return true;
-
-        }
-
-        if (expression instanceof ASTAND) {
-
-            if(expression.jjtGetNumChildren() != 2)
-                return false;
-
-            // Code for first child
-            generateExpression((SimpleNode) expression.jjtGetChild(0), symbolClass, symbolMethod);
-            reduceStack(1);
-            this.bodyCode.append("\tifeq " + firstPartTag + thisCounter + secondPartTag+"\n");
-
-            //Code for second child
-            generateExpression((SimpleNode) expression.jjtGetChild(1), symbolClass, symbolMethod);
-            reduceStack(1);
-            this.bodyCode.append("\tifne " + firstPartTag + thisCounter + secondPartTag + "\n");
-            this.totalStack = 0;
-
-            return true;
-
-        }
-
-        if(expression instanceof ASTNegation) {
-
-            if(expression.jjtGetNumChildren() != 1)
-                return false;
-
-            generateExpression((SimpleNode) expression.jjtGetChild(0), symbolClass, symbolMethod);
-            reduceStack(1);
-            this.bodyCode.append("\tifeq " + firstPartTag + thisCounter + secondPartTag + "\n");
-            this.totalStack = 0;
-
-            return true;
-
-        }
-
-        this.generateExpression(expression, symbolClass, symbolMethod);
-        reduceStack(1);
-        this.bodyCode.append("\tifne " + firstPartTag + thisCounter + secondPartTag+"\n");
+        this.bodyCode.append("\t" + (normal ? "ifeq" : "ifne") + " " + firstPartTag + thisCounter + secondPartTag + "\n");
         this.totalStack = 0;
 
         return true;

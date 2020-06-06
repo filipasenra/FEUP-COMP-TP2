@@ -33,7 +33,7 @@ public class JmmCompiler {
             Method mainMethod = mainClass.getMethod("main", String[].class);
 
             // Invoke main method with file as argument
-            String[] mainArgs = { jmm.getAbsolutePath() };
+            String[] mainArgs = { jmm.getAbsolutePath(), "-o" };
             Object[] invokeArgs = { mainArgs };
             mainMethod.invoke(null, invokeArgs);
 
