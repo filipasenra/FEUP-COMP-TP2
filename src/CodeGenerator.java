@@ -907,27 +907,67 @@ public class CodeGenerator {
                 return Type.BOOLEAN;
 
             } else if (node instanceof ASTSUM) {
-                generateOperation(node, symbolClass, symbolMethod);
-                this.bodyCode.append("\tiadd\n");
-                reduceStack(1);
+                //constant folding
+                if(this.optimize){
+                    if(node.jjtGetChild(0) instanceof ASTLiteral && node.jjtGetChild(1) instanceof ASTLiteral){
+                        int lhs = Integer.parseInt(((ASTLiteral)node.jjtGetChild(0)).val);
+                        int rhs = Integer.parseInt(((ASTLiteral)node.jjtGetChild(1)).val);
+                        loadIntLiteral(Integer.toString(lhs+rhs));
+                    }
+                }
+                else{
+                    generateOperation(node, symbolClass, symbolMethod);
+                    this.bodyCode.append("\tiadd\n");
+                    reduceStack(1);
+                }
                 return Type.INT;
 
             } else if (node instanceof ASTSUB) {
-                generateOperation(node, symbolClass, symbolMethod);
-                this.bodyCode.append("\tisub\n");
-                reduceStack(1);
+                //constant folding
+                if(this.optimize){
+                    if(node.jjtGetChild(0) instanceof ASTLiteral && node.jjtGetChild(1) instanceof ASTLiteral){
+                        int lhs = Integer.parseInt(((ASTLiteral)node.jjtGetChild(0)).val);
+                        int rhs = Integer.parseInt(((ASTLiteral)node.jjtGetChild(1)).val);
+                        loadIntLiteral(Integer.toString(lhs-rhs));
+                    }
+                }
+                else{
+                    generateOperation(node, symbolClass, symbolMethod);
+                    this.bodyCode.append("\tisub\n");
+                    reduceStack(1);
+                }
                 return Type.INT;
 
             } else if (node instanceof ASTMUL) {
-                generateOperation(node, symbolClass, symbolMethod);
-                this.bodyCode.append("\timul\n");
-                reduceStack(1);
+                //constant folding
+                if(this.optimize){
+                    if(node.jjtGetChild(0) instanceof ASTLiteral && node.jjtGetChild(1) instanceof ASTLiteral){
+                        int lhs = Integer.parseInt(((ASTLiteral)node.jjtGetChild(0)).val);
+                        int rhs = Integer.parseInt(((ASTLiteral)node.jjtGetChild(1)).val);
+                        loadIntLiteral(Integer.toString(lhs*rhs));
+                    }
+                }
+                else{                
+                    generateOperation(node, symbolClass, symbolMethod);
+                    this.bodyCode.append("\timul\n");
+                    reduceStack(1);
+                }
                 return Type.INT;
 
             } else if (node instanceof ASTDIV) {
-                generateOperation(node, symbolClass, symbolMethod);
-                this.bodyCode.append("\tidiv\n");
-                reduceStack(1);
+                //constant folding                
+                if(this.optimize){
+                    if(node.jjtGetChild(0) instanceof ASTLiteral && node.jjtGetChild(1) instanceof ASTLiteral){
+                        int lhs = Integer.parseInt(((ASTLiteral)node.jjtGetChild(0)).val);
+                        int rhs = Integer.parseInt(((ASTLiteral)node.jjtGetChild(1)).val);
+                        loadIntLiteral(Integer.toString(lhs/rhs));
+                    }
+                }
+                else{                
+                    generateOperation(node, symbolClass, symbolMethod);
+                    this.bodyCode.append("\tidiv\n");
+                    reduceStack(1);
+                }
                 return Type.INT;
 
             } else if (node instanceof ASTIdentifier) {
@@ -1094,13 +1134,6 @@ public class CodeGenerator {
 
         if (operation.jjtGetNumChildren() != 2)
             return;
-        //constant folding
-        if(this.optimize){
-            if(operation.jjtGetChild(0) instanceof ASTLiteral &&
-                operation.jjtGetChild(1) instanceof ASTLiteral){
-                   //make the opetaion and only then write the code to file
-                } 
-        }
 
         generateExpression((SimpleNode) operation.jjtGetChild(0), symbolClass, symbolMethod);
         generateExpression((SimpleNode) operation.jjtGetChild(1), symbolClass, symbolMethod);
