@@ -11,8 +11,8 @@
 ### Self Evaluation
 * Cláudia Martins  Grade: 18, Contribution: 25%
 * Filipa Serna     Grade: 19, Contribution: 35%
-* Ana Teresa       Grade: 15, Contribution: 20%
-* Raul Viana       Grade: 15, Contribution: 20%
+* Ana Teresa       Grade: 17, Contribution: 20%
+* Raul Viana       Grade: 16, Contribution: 20%
 
 Project Grade: 18
 
@@ -24,7 +24,7 @@ The main parts of the project are **Syntactic error controller**, **Semantic ana
 
 To compile the program, run ``gradle build``. This will compile all classes to ``classes/main/java`` and copy the JAR file to the root directory. This JAR file will be created with the same name as the repository folder.
 
-## Usage
+## Usagea
 ```cmd
 java Jmm <filename> -debug(-ast/-semantic) and/or -error and -o
 
