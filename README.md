@@ -5,7 +5,7 @@
 ###  Group A3
 * Cláudia Martins - up 
 * Filipa Serna - up201704077
-* Ana Teresa - up 
+* Ana Teresa - up201606703 
 * Raul Viana - up2010208089
 
 ### Self Evaluation
@@ -13,7 +13,7 @@
 * Filipa Serna     Grade: , Contribution:
 * Ana Teresa       Grade: , Contribution:
 * Raul Viana       Grade: , Contribution:
-<br><br>
+
 Project Grade: 
 
 ## Summary
@@ -174,8 +174,7 @@ We feel that we made a good trade: larger functions for code reusability.
 
 ## Pros
 
-TODO
-
+Use of instructions with low cost such as iinc or ifge in order to be as much efficient as possible.
 ## Cons
 
-TODO
+Compiler could be optimized minimizing the number of allocated registeries.
