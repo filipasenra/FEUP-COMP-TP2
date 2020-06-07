@@ -12,9 +12,9 @@
 * Cláudia Martins  Grade: , Contribution: 25%
 * Filipa Serna     Grade: , Contribution:
 * Ana Teresa       Grade: 15, Contribution: 20%
-* Raul Viana       Grade: 14, Contribution: 15%
+* Raul Viana       Grade: 15, Contribution: 20%
 
-Project Grade: 18
+    Project Grade: 18
 
 ## Summary
 This project's main goal was to apply the theoretical principals of the course Compilers. This was achieved by building a compiler for programs written in the Java- language.
@@ -22,7 +22,7 @@ The main parts of the project are **Syntactic error controller**, **Semantic ana
 
 ## Compile
 
-To compile the program, run ``gradle build``. This will compile your classes to ``classes/main/java`` and copy the JAR file to the root directory. The JAR file will have the same name as the repository folder.
+To compile the program, run ``gradle build``. This will compile all classes to ``classes/main/java`` and copy the JAR file to the root directory. This JAR file will be created with the same name as the repository folder.
 
 ## Usage
 ```cmd
@@ -92,7 +92,8 @@ When the -error flag is active, these warnings become errors.
 
 ### AST
 
-TODO: maybe
+The source code is read and is transformed into an intermediate data structure - a graph. In this case, it is an abstract syntax tree (AST). This AST has representations of every entity possibly present in the source code. 
+The information int the AST is used to fill the compiler output information and in later stages to support the code generation.
 
 ### Symbol Table
 
@@ -174,6 +175,7 @@ We feel that we made a good trade: larger functions for code reusability.
 ## Pros
 
 Use of instructions with low cost such as iinc or ifge in order to be as much efficient as possible. Some code optimizations, such constant folding and propagation, and while template are performed while generating the code. 
+
 ## Cons
 
 Compiler could be optimized minimizing the number of allocated registeries.
