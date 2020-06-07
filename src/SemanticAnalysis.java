@@ -253,7 +253,31 @@ public class SemanticAnalysis {
     private void startAnalysingClass(ASTClassDeclaration classNode) {
 
         SymbolClass symbolClass = (SymbolClass) this.symbolTable.get(classNode.name);
-        symbolClass.superClass = classNode.ext;
+
+        if(classNode.ext != null) {
+            if (!this.symbolTable.containsKey(classNode.ext)) {
+                this.errorMessage("Super Class " + classNode.ext + " not found!", classNode.getLine());
+            } else {
+
+                SymbolClass symbolObject = (SymbolClass) this.symbolTable.get(classNode.ext);
+                boolean hasDefaultConstructor = false;
+
+                for (ArrayList<Type> constructorSignature : symbolObject.symbolTableConstructors) {
+
+                    if (constructorSignature.equals(new ArrayList<>())) {
+                        hasDefaultConstructor = true;
+                        break;
+                    }
+                }
+
+                if (!hasDefaultConstructor)
+                    this.errorMessage("Import of Default Constructor of Super Class " + classNode.ext + " is missing!", classNode.getLine());
+
+
+                symbolClass.superClass = classNode.ext;
+            }
+        }
+
 
         for (int i = 0; i < classNode.jjtGetNumChildren(); i++) {
 
@@ -903,6 +927,7 @@ public class SemanticAnalysis {
 
                     SymbolClass ssc = (SymbolClass) symbolTable.get(sc.superClass);
 
+
                     //if class has a method with the same name
                     if (ssc.symbolTableMethods.containsKey(node2.val)) {
 
@@ -913,9 +938,9 @@ public class SemanticAnalysis {
                             return type;
                     }
 
-
                     this.errorMessage(node2.val + " is undefined!", node2.getLine());
                     return null;
+
                 }
 
 

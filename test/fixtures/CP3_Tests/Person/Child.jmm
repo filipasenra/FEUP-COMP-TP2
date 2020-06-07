@@ -1,4 +1,4 @@
-import Person(int, int);
+import Person();
 import Person.printInfo() void;
 
 class Child extends Person {
