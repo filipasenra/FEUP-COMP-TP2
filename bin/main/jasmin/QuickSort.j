@@ -18,10 +18,6 @@
 	iconst_0
 	istore_2
 
-	iload_2
-	aload_1
-	arraylength
-	if_icmpge while_1_end
 while_1_begin:
 	iload_2
 	aload_1
@@ -65,10 +61,6 @@ while_1_end:
 	iconst_0
 	istore_2
 
-	iload_2
-	aload_1
-	arraylength
-	if_icmpge while_2_end
 while_2_begin:
 	iload_2
 	aload_1
@@ -161,9 +153,6 @@ if_3_end:
 	iload_2
 	istore 6
 
-	iload 6
-	iload_3
-	if_icmpge while_4_end
 while_4_begin:
 	iload 6
 	iload_3

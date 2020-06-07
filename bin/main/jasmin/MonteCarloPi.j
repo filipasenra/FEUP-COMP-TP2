@@ -65,9 +65,6 @@ if_1_end:
 	iconst_0
 	istore_2
 
-	iload_3
-	iload_1
-	if_icmpge while_2_end
 while_2_begin:
 	iload_3
 	iload_1

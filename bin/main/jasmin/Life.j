@@ -27,8 +27,6 @@
 	invokevirtual Life/init()Z
 
 	pop
-	iconst_1
-	ifeq while_1_end
 while_1_begin:
 	iconst_1
 	ifeq while_1_end
@@ -638,11 +636,6 @@ while_1_end:
 	iconst_0
 	istore_1
 
-	iload_1
-	aload_0
-	getfield Life/field_name [I
-	arraylength
-	if_icmpge while_2_end
 while_2_begin:
 	iload_1
 	aload_0
@@ -758,11 +751,6 @@ while_2_end:
 	iconst_0
 	istore_2
 
-	iload_1
-	aload_0
-	getfield Life/field_name [I
-	arraylength
-	if_icmpge while_8_end
 while_8_begin:
 	iload_1
 	aload_0
@@ -1055,10 +1043,6 @@ if_12_end:
 	iconst_0
 	istore_3
 
-	iload_3
-	aload_2
-	arraylength
-	if_icmpge while_14_end
 while_14_begin:
 	iload_3
 	aload_2
@@ -1102,9 +1086,6 @@ while_14_end:
 	iconst_0
 	istore_2
 
-	iload_2
-	iload_3
-	if_icmpge while_16_end
 while_16_begin:
 	iload_2
 	iload_3

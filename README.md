@@ -136,19 +136,20 @@ The Symbolvar class extends the Symbol Class and has the following extra fields:
 
 ## Code Generation 
 The code is generated to a folder called jasmin. 
+
 The best instructions are chosen in each situation. The code is not wrote directly to the file but to a buffer, in order to compute the *limit_stack* and the *limit_locals* values. 
 After the limit of the stack and locals is computed, the instructors are wrote to the output file followed by the code present in the buffer.
 
 We opted for an iterative approach: 
-* generates class structure with constructor;
-* generates the fields;
-* generates methods;
-    * generates the correct number for limit_stack and limit_locals;
-    * generates the variable assignments;
-    * generates arithmetic operations;
-    * generates method invocations;
-    * selects the best instruction to load and store variables;
-    * selects the best instruction when incrementing variable;
+* Generates class structure with constructor;
+* Generates the fields;
+* Generates methods;
+    * Generates the correct number for limit_stack and limit_locals;
+    * Generates the variable assignments;
+    * Generates arithmetic operations;
+    * Generates method invocations;
+    * Selects the best instruction to load and store variables;
+    * Selects the best instruction when incrementing variable;
 
 ## Overview
 

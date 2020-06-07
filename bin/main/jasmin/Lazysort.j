@@ -18,10 +18,6 @@
 	iconst_0
 	istore_2
 
-	iload_2
-	aload_1
-	arraylength
-	if_icmpge while_1_end
 while_1_begin:
 	iload_2
 	aload_1
@@ -124,11 +120,6 @@ if_3_end:
 	iconst_0
 	istore_3
 
-	iload_3
-	iload_2
-	iconst_2
-	idiv
-	if_icmpge while_5_end
 while_5_begin:
 	iload_3
 	iload_2
@@ -147,9 +138,6 @@ while_5_begin:
 
 	goto while_5_begin
 while_5_end:
-	iload_3
-	iload_2
-	if_icmpge while_6_end
 while_6_begin:
 	iload_3
 	iload_2
