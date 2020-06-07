@@ -3,13 +3,13 @@
 ## Group and Self-evaluation
 
 ###  Group A3
-* Cláudia Martins - up 
+* Cláudia Martins - up201704136 
 * Filipa Serna - up201704077
 * Ana Teresa - up201606703 
 * Raul Viana - up2010208089
 
 ### Self Evaluation
-* Cláudia Martins  Grade: , Contribution:
+* Cláudia Martins  Grade: , Contribution: 25%
 * Filipa Serna     Grade: , Contribution:
 * Ana Teresa       Grade: , Contribution:
 * Raul Viana       Grade: 14, Contribution: 15%
@@ -166,8 +166,8 @@ We feel that we made a good trade: larger functions for code reusability.
 
 ## Task Distribution
 
-* Cláudia Martins
-* Filipa Senra - Parser, Syntactic Errors, Semantic Analysis with Cláudia, Code Generation With the Rest of the Group.
+* Cláudia Martins - Semantic Analysis, Code Generation, Parser.
+* Filipa Senra - Parser, Syntactic Errors, Semantic Analysis, Code Generation.
 * Ana Teresa
 * Raul Viana - Code Generation
 
