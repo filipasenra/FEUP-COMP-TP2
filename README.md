@@ -58,6 +58,9 @@ When the -error flag is active, these warnings become errors.
 1. Variables
 * Redefinition of local variables;
 * Redefinition of global variables;
+* Constructor with appropriate Parameters
+* Checks if the Super Class was imported
+* Checks if Default Constructor was Imported for the Super Class
 
 3. Type Verification
     
