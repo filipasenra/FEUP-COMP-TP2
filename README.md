@@ -4,9 +4,10 @@
 
 ###  Group A3
 * Cláudia Martins - up 
-* Filipa Serna - up 
+* Filipa Serna - up201704077
 * Ana Teresa - up 
-* Raul Viana - up 2010208089
+* Raul Viana - up2010208089
+
 ### Self Evaluation
 * Cláudia Martins  Grade: , Contribution:
 * Filipa Serna     Grade: , Contribution:
@@ -16,20 +17,18 @@
 Project Grade: 
 
 ## Summary
-This project's main goal was to apply the theoretical principals of the course Compilers practically. This was achieved by building a compiler for programs written in the yalm language.
+This project's main goal was to apply the theoretical principals of the course Compilers. This was achieved by building a compiler for programs written in the Java- language.
 The main parts of the project are **Syntactic error controller**, **Semantic analysis**, and **Code generation**.
 
 ## Compile
 
 To compile the program, run ``gradle build``. This will compile your classes to ``classes/main/java`` and copy the JAR file to the root directory. The JAR file will have the same name as the repository folder.
 
-### Run
-
-To run you have two options: Run the ``.class`` files or run the JAR.
-
 ##Usage
 ```cmd
-java Jmm <filename> -debug(-ast/-semantic) and/or -error
+java Jmm <filename> -debug(-ast/-semantic) and/or -error and -o
+
+java -jar comp2020-3a.jar <filename> -debug(-ast/-semantic) and/or -error and -o
 ```
 
 Without the -error flag, non-initialized variables just trigger **warnings**.
@@ -37,96 +36,142 @@ With the -error flag, non-initialized variables trigger **errors**!
 The -debug flag prints both the ASTTree and the Symbol Table.
 The -ast flag prints the ASTTree.
 The -semantic prints the Symbol Table.
-
-### Run ``.class``
-
-To run the ``.class`` files, do the following:
-
-```cmd
-java -cp "./build/classes/java/main/" <class_name> <arguments>
-```
-
-Where ``<class_name>`` is the name of the class you want to run and ``<arguments>`` are the arguments to be passed to ``main()``.
-
-### Run ``.jar``
-
-To run the JAR, do the following command:
-
-```cmd
-java -jar <jar filename> <arguments>
-```
-
-Where ``<jar filename>`` is the name of the JAR file that has been copied to the root folder, and ``<arguments>`` are the arguments to be passed to ``main()``.
+The -o triggers some optimizations.
 
 ### Test
 
 To test the program, run ``gradle test``. This will execute the build, and run the JUnit tests in the ``test`` folder. If you want to see output printed during the tests, use the flag ``-i`` (i.e., ``gradle test -i``).
 
+## Syntactic Errors
+
+As requested in the project assignment, we only recover from errors in the conditional statement of a while cycle.
+If an error is found in the conditional statement of an while cycle, the compiler ignores every token until the next stable token, '{', showing an error message indicating which tokens were expected and the line and column where the error occurred. 
+Our Program displays up to 10 errors in order to not overload the programmer and provide a better user experience.
+
 
 ## Semantic Analysis 
-1. All semantic checks report errors except the variable initialization, wich reports warning. 
+1. All semantic checks report errors except the variable initialization, which reports warning by default. 
+When the -error flag is active, these warnings become errors.
 
 2. Symbol Table
 
-* global: it has been included info about imports and declared class;
-* class-specific: was included info about extends, fields and methods;
-* method-specific: included info about arguments and local variables;
-* allows method overload;
-* allows access from semantic analysis and code generation;
-* allows turn it on/off by arguments.
+1. Variables
+* Redefinition of local variables;
+* Redefinition of global variables;
 
 3. Type Verification
     
-* verify between same type operations only;
-* doesn't allow operations between arrays;
-* allows array access to arrays only;
-* allows assignment type equals assigned type only;
-* allows int values to index accessing array only; 
-* allows boolean operation with booleans only;
-* allows conditional expression result to be a boolean only;
-* raises a warning if variable not initialized, not an error;
-* assumes parameters as initialized;
-* raises warning of possibly variable not initialized if initialized inside if or else block;
- 
-			
-4. Function Verification
+* Operations between elements of the same type;
+* Doesn't allow operations between arrays;
+* Array access is only allowed to arrays;
+* Only int values to index accessing array; 
+* Only int values to initialize an array;
+* Assignment between the same type;
+* Boolean operation with booleans;
+* Conditional Expression only excepts operations, variables or function calls that return boolean;
+* Raises an error if variable has not been initialized, 
+* Raises a warning if variable has been initialized in an if (only in a block) or while, or error when *-error* flag is active;
+* Assumes Parameters as Initialized;
 
-* verifies if method target exists and if it has the called method;
-* verifies if the type is of the declared class (this) and if so verifies if the method is extended from another class;
-* if the method isn't from the declared class verifies if it was imported;
-* verifies if the number of invoked arguments equals the number of declared ones;
-* verifies if the parameter types match the argument types;
-allows method oveloading.
+// TODO: outras cenas que me possa ter esquecido
+ 
+4. Methods
+
+* Allows overload of methods;
+* Only allows calls to methods that exists with the correct signature;
+* Checks if the method was imported or bellows to the current class
+* Checks if method call is for the current class or if it is a method of the super class (when it applies)
+* Verifies if the parameter types match the method signature;
+* Verifies if the return type of method matches the assign variable (when it applies)
+* Method can be declared after or before any other function calls it
+
+## Intermediate Representations (IRs)
+
+### AST
+
+TODO: maybe
+
+### Symbol Table
+
+## Symbol
+
+The Symbol Class serves has a base for all the Symbols in the Symbol Table.
+It has the following fields:
+* name: name of the symbol (for example, in SymbolClass holds the Class name)
+* type: type of the symbol (for example, in SymbolMethod holds the return type)
+* object_name: used when type is an Object: holds the type of Object
+* index: unique index
+* isStatic: where the method or variable is static
+
+## SymbolClass
+
+This class represents a Class (imported or the one we that is defined in the file) and holds all the information relative to a class.
+
+The SymbolClass class extends the Symbol Class and has the following extra fields:
+* symbolTableMethods: hashmap with its methods
+* symbolTableFields: hashmap with its fields
+* symbolTableConstructors: hashmaps with the constructors available
+* superClass: name of super Class
+* imported: flag that tells if the class was imported or not (for printing proposes)
+
+## SymbolMethod
+
+This Class represents a method and holds all of its information.
+
+The SymbolMethod class extends the Symbol Class and has the following extra fields:
+* symbolTable: hashmap with the local variables (including arguments)
+* types: arraylist with the method signature
+* num: unique id that represents the class
+
+## SymbolVar
+
+This Class represents a variable and all of its information.
+
+The Symbolvar class extends the Symbol Class and has the following extra fields:
+* initialized: whether the variable has been initialized, partially initialized (in an if or while) or non-initialized
+* constant: if the variable is constant, then constant holds its value
+* initiated: where the variable has been initiated before (used in code generation)
+* changedInIfOrWile: whether the variable value has changed in a while or if (used with constant value)
 
 
 ## Code Generation 
 The code is generated to a folder called jasmin. 
-The best instructions are chosen in each situation. The code is created to a buffer, in order to compute the *limit_stck* and the *limit_locals* values. After that, these values are inserted in the correct position and the whole code is written to the file.
-We opted for an iterative approach, but maybe recursivity would be more advisable ace the problem characteristics. 
+The best instructions are chosen in each situation. The code is not wrote directly to the file but to a buffer, in order to compute the *limit_stack* and the *limit_locals* values. 
+After the limit of the stack and locals is computed, the instructors are wrote to the output file followed by the code present in the buffer.
+
+We opted for an iterative approach: 
 * generates class structure with constructor;
 * generates the fields;
 * generates methods;
-* generates the correct number for limit_stack and limit_locals;
-* generates the variable assignments;
-* generates arithmetic operations;
-* generates method invocations;
-* selects the best instruction to load and store variables;
-* selects the best instruction when incrementing variable;
+    * generates the correct number for limit_stack and limit_locals;
+    * generates the variable assignments;
+    * generates arithmetic operations;
+    * generates method invocations;
+    * selects the best instruction to load and store variables;
+    * selects the best instruction when incrementing variable;
 
 ## Overview
-(refer the approach used in your tool, the main algorithms, the third-party tools and/or packages, etc.)
+
+In the developing of this program, we didn't use any third-party tools and/or packages.
+All the algorithms implemented were developed by us.
+All the program's structure was also developed by us.
+The ASTree is analysed 2 times over the program’s execution, one for building the Symbol Table and the Semantic Analysis and one for Generating the Code.
+We opted for building the Symbol Table and performing the Semantic Analysis at the same time since we felt it wasn't necessary to separate the two, decreasing the number of times we went through the ASTree.
+Although this allowed for a faster run-time, it resulted in a Class with Many Methods. Although the developed classes are quite big, since we refractor the code quite a lot, we feel that it isn't confusisng.
+We feel that we made a good trade: larger functions for code reusability. 
 
 ## Task Distribution
 (Identify the set of tasks done by each member of the project. You can divide this by checkpoint it if helps)
 
 * Cláudia Martins
-* Filipa Serna
+* Filipa Senra - Parser, Syntactic Errors, Semantic Analysis with Cláudia, Code Generation With the Rest of the Group.
 * Ana Teresa
 * Raul Viana
+
 ## Pros
+
+TODO
 
 ## Cons
 
-**DEALING WITH SYNTACTIC ERRORS: (Describe how the syntactic error recovery of your tool does work. Does it exit after the first error?)
-**SEMANTIC ANALYSIS: (Refer the semantic rules implemented by your tool.)
-**INTERMEDIATE REPRESENTATIONS (IRs): (for example, when applicable, briefly describe the HLIR (high-level IR) and the LLIR (low-level IR) used, if your tool includes an LLIR with structure different from the HLIR)
+TODO
