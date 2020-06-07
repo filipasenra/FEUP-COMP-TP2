@@ -1,4 +1,5 @@
 import HelperClassGuessNumber(boolean, int);
+import HelperClassGuessNumber(boolean, int); //warning for this
 import HelperClassGuessNumber.getNumberToGuess(void) int;
 import HelperClassGuessNumber.getGuessedNumber(void) int;
 import HelperClassGuessNumber.printLowGuess(void) void;

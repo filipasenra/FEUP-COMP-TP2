@@ -9,12 +9,12 @@
 * Raul Viana - up2010208089
 
 ### Self Evaluation
-* Cláudia Martins  Grade: , Contribution: 25%
-* Filipa Serna     Grade: , Contribution:
+* Cláudia Martins  Grade: 18, Contribution: 25%
+* Filipa Serna     Grade: 19, Contribution: 35%
 * Ana Teresa       Grade: 15, Contribution: 20%
 * Raul Viana       Grade: 15, Contribution: 20%
 
-    Project Grade: 18
+Project Grade: 18
 
 ## Summary
 This project's main goal was to apply the theoretical principals of the course Compilers. This was achieved by building a compiler for programs written in the Java- language.
@@ -50,21 +50,21 @@ Our Program displays up to 10 errors in order to not overload the programmer and
 
 
 ## Semantic Analysis 
-1. All semantic checks report errors except the variable initialization, which reports warning by default. 
-When the -error flag is active, these warnings become errors.
-
-2. Symbol Table
 
 1. Variables
-* Redefinition of local variables;
-* Redefinition of global variables;
-* Constructor with appropriate Parameters
-* Checks if the Super Class was imported
-* Checks if Default Constructor was Imported for the Super Class
+* Checks for Redefinition of local variables;
+* Checks for Redefinition of global variables;
+* Allows for Constructor other than the default;
+* Checks for Constructor with appropriate Parameters
 
-3. Type Verification
+2. Imports
+* Checks if the Super Class was imported;
+* Checks if Default Constructor was Imported for the Super Class;
+* Warning when an import is repeated
+
+2. Type Verification
     
-* Operations between elements of the same type;
+* Operations must be between elements of the same type;
 * Doesn't allow operations between arrays;
 * Array access is only allowed to arrays;
 * Only int values to index accessing array; 
@@ -73,16 +73,14 @@ When the -error flag is active, these warnings become errors.
 * Boolean operation with booleans;
 * Conditional Expression only excepts operations, variables or function calls that return boolean;
 * Raises an error if variable has not been initialized, 
-* Raises a warning if variable has been initialized in an if (only in a block) or while, or error when *-error* flag is active;
+* **Raises a warning if variable has been initialized in an if (only in a block) or while, or error when *-error* flag is active;**
 * Assumes Parameters as Initialized;
-
-// TODO: outras cenas que me possa ter esquecido
  
 4. Methods
 
 * Allows overload of methods;
 * Only allows calls to methods that exists with the correct signature;
-* Checks if the method was imported or bellows to the current class
+* Checks if the method was imported or belongs to the current class
 * Checks if method call is for the current class or if it is a method of the super class (when it applies)
 * Verifies if the parameter types match the method signature;
 * Verifies if the return type of method matches the assign variable (when it applies)
@@ -92,8 +90,12 @@ When the -error flag is active, these warnings become errors.
 
 ### AST
 
-The source code is read and is transformed into an intermediate data structure - a graph. In this case, it is an abstract syntax tree (AST). This AST has representations of every entity possibly present in the source code. 
-The information int the AST is used to fill the compiler output information and in later stages to support the code generation.
+The source code is read and is transformed into an intermediate data structure - a graph. 
+In this case, it is an abstract syntax tree (AST). 
+The ASTree has representations for every possible entity present in the source code (for example ASTIntegrer represents
+an integer (number) in the code and holds its value).
+The information int the AST is used to fill the compiler output information and 
+in later stages to support the code generation and syntactical analysis.
 
 ### Symbol Table
 
@@ -157,7 +159,7 @@ We opted for an iterative approach:
 
 ## Overview
 
-In the developing of this program, we didn't use any third-party tools and/or packages.
+In the development of this program, we didn't use any third-party tools and/or packages.
 All the algorithms implemented were developed by us.
 All the program's structure was also developed by us.
 The ASTree is analysed 2 times over the program’s execution, one for building the Symbol Table and the Semantic Analysis and one for Generating the Code.
@@ -174,8 +176,14 @@ We feel that we made a good trade: larger functions for code reusability.
 
 ## Pros
 
-Use of instructions with low cost such as iinc or ifge in order to be as much efficient as possible. Some code optimizations, such constant folding and propagation, and while template are performed while generating the code. 
+We are very pleased with the developed tool. Some key features that we think make our project stand out are:
+* Declaration of Objects with Constructor with Parameters;
+* Flow Control Analysis is implemented with errors (activated with *-error* flag, default only displays warnings)
+* Use of instructions with low cost such as *iinc* or *ifge* in order to be as much efficient as possible;
+* Some code optimizations, such constant folding and propagation, and using a do-while template when possible 
+are performed while generating the code. 
 
 ## Cons
 
-Compiler could be optimized minimizing the number of allocated registeries.
+Unfortunately, we didn't get to implement all the features we wanted, such as:
+* Compiler could be optimized minimizing the number of allocated registries.
