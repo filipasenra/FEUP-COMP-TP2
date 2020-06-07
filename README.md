@@ -12,9 +12,9 @@
 * Cláudia Martins  Grade: , Contribution:
 * Filipa Serna     Grade: , Contribution:
 * Ana Teresa       Grade: , Contribution:
-* Raul Viana       Grade: , Contribution:
+* Raul Viana       Grade: 14, Contribution: 15%
 
-Project Grade: 
+Project Grade: 18
 
 ## Summary
 This project's main goal was to apply the theoretical principals of the course Compilers. This was achieved by building a compiler for programs written in the Java- language.
@@ -24,7 +24,7 @@ The main parts of the project are **Syntactic error controller**, **Semantic ana
 
 To compile the program, run ``gradle build``. This will compile your classes to ``classes/main/java`` and copy the JAR file to the root directory. The JAR file will have the same name as the repository folder.
 
-##Usage
+## Usage
 ```cmd
 java Jmm <filename> -debug(-ast/-semantic) and/or -error and -o
 
@@ -141,12 +141,12 @@ The Symbolvar class extends the Symbol Class and has the following extra fields:
 The code is generated to a folder called jasmin. 
 
 The best instructions are chosen in each situation. The code is not wrote directly to the file but to a buffer, in order to compute the *limit_stack* and the *limit_locals* values. 
-After the limit of the stack and locals is computed, the instructors are wrote to the output file followed by the code present in the buffer.
+After the *limit of the stack* and *locals* are computed, the instructions are wrote to the output file followed by the code present in the buffer.
 
 We opted for an iterative approach: 
 * Generates class structure with constructor;
 * Generates the fields;
-* Generates methods;
+* Generates methods:
     * Generates the correct number for limit_stack and limit_locals;
     * Generates the variable assignments;
     * Generates arithmetic operations;
@@ -165,16 +165,15 @@ Although this allowed for a faster run-time, it resulted in a Class with Many Me
 We feel that we made a good trade: larger functions for code reusability. 
 
 ## Task Distribution
-(Identify the set of tasks done by each member of the project. You can divide this by checkpoint it if helps)
 
 * Cláudia Martins
 * Filipa Senra - Parser, Syntactic Errors, Semantic Analysis with Cláudia, Code Generation With the Rest of the Group.
 * Ana Teresa
-* Raul Viana
+* Raul Viana - Code Generation
 
 ## Pros
 
-Use of instructions with low cost such as iinc or ifge in order to be as much efficient as possible.
+Use of instructions with low cost such as iinc or ifge in order to be as much efficient as possible. Some code optimizations, such constant folding and propagation, and while template are performed while generating the code. 
 ## Cons
 
 Compiler could be optimized minimizing the number of allocated registeries.
