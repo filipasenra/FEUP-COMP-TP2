@@ -11,7 +11,7 @@
 ### Self Evaluation
 * Cláudia Martins  Grade: , Contribution: 25%
 * Filipa Serna     Grade: , Contribution:
-* Ana Teresa       Grade: , Contribution:
+* Ana Teresa       Grade: 15, Contribution: 20%
 * Raul Viana       Grade: 14, Contribution: 15%
 
 Project Grade: 18
@@ -168,7 +168,7 @@ We feel that we made a good trade: larger functions for code reusability.
 
 * Cláudia Martins - Semantic Analysis, Code Generation, Parser.
 * Filipa Senra - Parser, Syntactic Errors, Semantic Analysis, Code Generation.
-* Ana Teresa
+* Ana Teresa - Code Generation
 * Raul Viana - Code Generation
 
 ## Pros
