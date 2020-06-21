@@ -145,8 +145,7 @@ public class CodeGenerator {
                 SymbolMethod symbolMethod = getSymbolMethod(symbolClass.symbolTableMethods.get(methodDeclaration.name), i);
 
                 if (symbolMethod == null) {
-                    System.err.println("ERROR generating code for method " + methodDeclaration.name);
-                    System.exit(0);
+                    throw new RuntimeException("ERROR generating code for method " + methodDeclaration.name);
                 }
                 generateMethod(methodDeclaration, symbolClass, symbolMethod);
             }
