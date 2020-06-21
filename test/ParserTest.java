@@ -9,7 +9,11 @@ public class ParserTest {
 
     private static String CLASS_WITH_MAIN = "jmm";
 
-    private void test(String jmmResource, boolean mustFail) {
+    public void test(String jmmResource, boolean mustFail) {
+        test(null, jmmResource, mustFail);
+    }
+
+    public void test(String expected, String jmmResource, boolean mustFail) {
         // Copy contents of resource to a temporary file
         File tempFolder = CompUtils.getTempFolder("comp_jmm_test");
         File testFile = CompUtils.resourceCopy(jmmResource, tempFolder);
@@ -191,10 +195,10 @@ public class ParserTest {
         test("fixtures/public/fail/semantic/ourTests/repetitiveVars.jmm", true);
     }
 
-    @Test
-    public void testVarInitWhile() {
-        test("fixtures/public/fail/semantic/ourTests/varInitWhile.jmm", true); //change if -error flag is deactivated
-    }
+    // @Test
+    // public void testVarInitWhile() {
+    //     test("fixtures/public/fail/semantic/ourTests/varInitWhile.jmm", true); //change if -error flag is deactivated
+    // }
 
     @Test
     public void testStaticContext() {
@@ -271,7 +275,7 @@ public class ParserTest {
     public void testCustom() {
         test("fixtures/public/Custom.jmm", false);
     }
-
+/*
     @Test
     public void testVarNotInitWithinIf() {
         test("fixtures/public/varNotInitWithinIf.jmm", true); //change if -error flag is deactivated
@@ -290,7 +294,7 @@ public class ParserTest {
     @Test
     public void testVarNotInitWithinIf4() {
         test("fixtures/public/varNotInitWithinIf4.jmm", true); //change if -error flag is deactivated
-    }
+    }*/
 
 
     //end of our tests

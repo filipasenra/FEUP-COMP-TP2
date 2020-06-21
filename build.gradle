@@ -43,7 +43,7 @@ sourceSets {
           srcDir 'generated/jjtree'
       }
    }
-   
+   /*
    test {
       java {
          srcDir 'test'
@@ -52,7 +52,7 @@ sourceSets {
       resources {
         srcDir 'test'
       }
-   }  
+   }  */
 }
 
 
