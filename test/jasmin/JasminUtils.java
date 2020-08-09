@@ -40,19 +40,55 @@ public class JasminUtils {
 		return TEST_CLASSPATH;
 	}
 
-    public static void testJmm(String jmmResource, String expectedOutput) {	
-		testJmm(jmmResource,expectedOutput, null);
+    public static String testJmm(String jmmResource, String expectedOutput) {	
+		 return testJmm(jmmResource,expectedOutput, null, true);
 	}
 
-    public static void testJmm(String jmmResource, String expectedOutput, String stdin) {	
+	
+    public static String testJmm(String jmmResource, String expectedOutput, String stdin) {	
+		return testJmm(jmmResource,expectedOutput, stdin, true);
+	}
+
+	public static String testJmm(String jmmResource, String expectedOutput, Boolean test) {	
+		return testJmm(jmmResource,expectedOutput, null, test);
+	}
+
+
+    public static String testJmm(String jmmResource, String expectedOutput, String stdin, Boolean test) {	
 		// Create jmm file
         File tempFolder = SpecsIo.getTempFolder(jmmResource);
         File testFile = SpecsIo.resourceCopy(jmmResource, tempFolder);
 		
 		String jCode = JmmCompiler.compile(testFile);
+		String jFilename = SpecsIo.removeExtension(testFile.getName()) + ".j";
+		SpecsIo.write(new File(tempFolder, jFilename), jCode);
 	
-		testJasminBase(jCode, expectedOutput, stdin);
+		File resultsFolder = SpecsIo.mkdir("resultsProject"); 
+
+
+		String jBaseFilename = SpecsIo.removeExtension(jmmResource) + ".j";		
+		File jBaseFile = new File(jBaseFilename);
+
+		File testFolder = SpecsIo.mkdir(resultsFolder, jBaseFile.getParent());
+
+		File jmmFile = new File(testFolder, testFile.getName());
+		SpecsIo.write(jmmFile, SpecsIo.read(testFile));
+		
+		File jFile = new File(testFolder, jBaseFile.getName());
+		SpecsIo.write(jFile, jCode);
+
+		//System.out.println("Writing generated code to folder: " + testFolder.getAbsolutePath());	
+	
+
+//		SpecsIo.mkdir("j_files");
+//		File jFile = new File(
+		
+		if(test)
+			testJasminBase(jCode, expectedOutput, stdin);
+		return jCode;
 	}
+
+	
 
 
 	public static File getJasminJar(){

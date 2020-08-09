@@ -47,8 +47,8 @@ public class jmm {
                     break;
 
                 default:
-                    System.err.println("Usage: java Jmm <filename> -debug(-ast/-semantic) and/or -error and/or -o");
-                    System.exit(-1);
+                    System.out.println("Usage: java Jmm <filename> -debug(-ast/-semantic) and/or -error and/or -o");
+					return;
             }
         }
 
