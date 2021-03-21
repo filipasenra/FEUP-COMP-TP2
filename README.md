@@ -24,7 +24,7 @@ The main parts of the project are **Syntactic error controller**, **Semantic ana
 
 To compile the program, run ``gradle build``. This will compile all classes to ``classes/main/java`` and copy the JAR file to the root directory. This JAR file will be created with the same name as the repository folder.
 
-## Usagea
+## Usage
 ```cmd
 java Jmm <filename> -debug(-ast/-semantic) and/or -error and -o
 
@@ -99,7 +99,7 @@ in later stages to support the code generation and syntactical analysis.
 
 ### Symbol Table
 
-## Symbol
+#### Symbol
 
 The Symbol Class serves has a base for all the Symbols in the Symbol Table.
 It has the following fields:
@@ -109,7 +109,7 @@ It has the following fields:
 * index: unique index
 * isStatic: where the method or variable is static
 
-## SymbolClass
+#### SymbolClass
 
 This class represents a Class (imported or the one we that is defined in the file) and holds all the information relative to a class.
 
@@ -120,7 +120,7 @@ The SymbolClass class extends the Symbol Class and has the following extra field
 * superClass: name of super Class
 * imported: flag that tells if the class was imported or not (for printing proposes)
 
-## SymbolMethod
+#### SymbolMethod
 
 This Class represents a method and holds all of its information.
 
@@ -129,7 +129,7 @@ The SymbolMethod class extends the Symbol Class and has the following extra fiel
 * types: arraylist with the method signature
 * num: unique id that represents the class
 
-## SymbolVar
+#### SymbolVar
 
 This Class represents a variable and all of its information.
 
@@ -140,7 +140,7 @@ The Symbolvar class extends the Symbol Class and has the following extra fields:
 * changedInIfOrWile: whether the variable value has changed in a while or if (used with constant value)
 
 
-## Code Generation 
+#### Code Generation 
 The code is generated to a folder called jasmin. 
 
 The best instructions are chosen in each situation. The code is not wrote directly to the file but to a buffer, in order to compute the *limit_stack* and the *limit_locals* values. 
